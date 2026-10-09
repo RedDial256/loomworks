@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@red_dial/loom": "0.0.0",
+    "@red_dial/create-weaver": "0.0.0",
+    "@red_dial/loom-ui": "0.0.0"
+  },
+  "changesets": []
+}
