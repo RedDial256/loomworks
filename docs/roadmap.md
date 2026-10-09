@@ -1,6 +1,6 @@
-# Loomworks — Roadmap (draft)
+# Loomworks — Roadmap
 
-Monorepo (`red-dial/loomworks`, pnpm workspaces, MIT) with:
+Monorepo (`RedDial256/loomworks`, pnpm workspaces, MIT) with:
 
 | Folder | npm package | Published |
 |---|---|---|
@@ -42,7 +42,7 @@ Manifest schema (item → files, npm deps, item deps, optional demo, min version
 - Blocked by: T01
 
 **T05 `loom init` + theme** `pkg:loom` `pkg:ui`
-Creates light and dark themes with the typed `Theme` contract, Unistyles `configure`, `@/theme` alias in `tsconfig`, `loom.json`, installs dependencies (Unistyles, Gesture Handler, AsyncStorage). Token values are placeholders; the real scale comes from the design system session.
+Creates light and dark themes with the typed `Theme` contract, Unistyles `configure`, `@/theme` alias in `tsconfig`, `loom.json`, installs dependencies (Unistyles, Gesture Handler, AsyncStorage). The `Theme` contract and token scales follow [ADR 0002](adr/0002-design-tokens.md); final per-role color values for both themes are decided in this ticket.
 - Running it on a fresh Expo project yields a typechecking app with a working theme.
 - Blocked by: T02, T04
 
@@ -52,7 +52,7 @@ Resolves item dependencies, copies files, installs npm deps, per-file conflict p
 - Blocked by: T04, T05
 
 **T07 `Box` and `Text`** `pkg:ui`
-First components: open-ended props (`ViewProps`/`TextProps`), native Unistyles variants, user `style` last. Typography uses placeholder tokens.
+First components: open-ended props (`ViewProps`/`TextProps`), native Unistyles variants, user `style` last. Typography presets come from ADR 0002.
 - Installable with `loom add box text`; unit tests for variants and style override.
 - Blocked by: T05
 
@@ -65,7 +65,7 @@ CI job: fresh Expo 57 project → `loom init` → `loom add box text` → `tsc -
 
 ## Decision gate — Design system and tokens
 
-A dedicated session (grilling) before Phase 2: token scales (color roles, spacing, radii, typography, elevation, motion, breakpoints), naming, light/dark mapping and how components consume them. The outcome replaces the placeholder values from T05/T07 and is recorded as an ADR and in `CONTEXT.md`-style docs.
+Done: recorded in [ADR 0002](adr/0002-design-tokens.md), backed by three benchmarks in `docs/research/`. Remaining: per-role color values in T05 and a visual pass once Phase 1 components exist.
 
 ## Later phases (outline, not ticketed yet)
 
