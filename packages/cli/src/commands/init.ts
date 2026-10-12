@@ -201,18 +201,18 @@ async function configureEntry(
   const usesRouter = !!declaredRange(pkg, 'expo-router');
 
   if (pkg.main === 'expo-router/entry' || (!pkg.main && usesRouter)) {
-    if (!(await exists(join(cwd, 'index.ts')))) {
-      await writeFile(
-        join(cwd, 'index.ts'),
-        `import 'expo-router/entry';\nimport './${setup}';\n`
-      );
-    } else if (!(await appendImport(cwd, 'index.ts', setup))) {
-      return false;
-    }
-    await editJsonFile(join(cwd, 'package.json'), () => [
+    // Take over (or create) `index.ts`, keeping the router entry first.
+    const file = join(cwd, 'index.ts');
+    const current = await readFile(file, 'utf8').catch(() => '');
+    const withRouter = current.includes('expo-router/entry')
+      ? current
+      : `import 'expo-router/entry';\n${current}`;
+    if (withRouter !== current) await writeFile(file, withRouter);
+    const appended = await appendImport(cwd, 'index.ts', setup);
+    const mainChanged = await editJsonFile(join(cwd, 'package.json'), () => [
       [['main'], 'index.ts'],
     ]);
-    return true;
+    return withRouter !== current || appended || mainChanged;
   }
 
   const entry = pkg.main && (await findLocalFile(cwd, pkg.main));

@@ -137,6 +137,30 @@ describe('init', () => {
     expect(await read(cwd, 'babel.config.js')).toContain("root: 'app-src'");
   });
 
+  it('keeps the router entry first when taking over an existing index.ts', async () => {
+    await writeTree(cwd, {
+      ...expoProject(),
+      'index.ts': "export * from './lib';\n",
+    });
+    await runInit({ install: false });
+
+    expect(await read(cwd, 'index.ts')).toBe(
+      "import 'expo-router/entry';\nexport * from './lib';\nimport './src/theme/unistyles';\n"
+    );
+    expect((await readJsonFile(cwd, 'package.json')).main).toBe('index.ts');
+  });
+
+  it('points main at an index.ts that already imports the setup', async () => {
+    const entry =
+      "import 'expo-router/entry';\nimport './src/theme/unistyles';\n";
+    await writeTree(cwd, { ...expoProject(), 'index.ts': entry });
+    const { result } = await runInit({ install: false });
+
+    expect(await read(cwd, 'index.ts')).toBe(entry);
+    expect((await readJsonFile(cwd, 'package.json')).main).toBe('index.ts');
+    expect(result.configured).toContain('entry file');
+  });
+
   it('appends the setup import to a custom entry file', async () => {
     const project = expoProject();
     const pkg = JSON.parse(project['package.json']);
