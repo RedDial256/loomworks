@@ -11,5 +11,29 @@
     "@react-native-async-storage/expo-with-async-storage": "^1.0.0",
     "babel-preset-expo": "~56.0.0 || ~57.0.0"
   },
-  "items": {}
+  "items": {
+    "theme": {
+      "kind": "theme",
+      "description": "Light and dark themes, design tokens and the Unistyles setup. Installed by `loom init`.",
+      "files": [
+        "theme/contract.ts",
+        "theme/dark.ts",
+        "theme/elevation.ts",
+        "theme/index.ts",
+        "theme/light.ts",
+        "theme/motion.ts",
+        "theme/palette.ts",
+        "theme/spacing.ts",
+        "theme/typography.ts",
+        "theme/unistyles.ts"
+      ],
+      "packages": {
+        "react-native-unistyles": "^3.5.2",
+        "react-native-nitro-modules": "^0.37.1",
+        "react-native-gesture-handler": "^3.3.0",
+        "@react-native-async-storage/async-storage": "^3.1.1",
+        "@react-native-async-storage/expo-with-async-storage": "^1.0.0"
+      }
+    }
+  }
 }

@@ -82,6 +82,14 @@ describe('parseManifest', () => {
       }),
     ],
     [
+      'theme item outside theme/',
+      manifest({ theme: { kind: 'theme', files: ['palette.ts'] } }),
+    ],
+    [
+      'component under theme/',
+      manifest({ box: { ...box, files: ['theme/Box.tsx'] } }),
+    ],
+    [
       'file owned by two items',
       manifest({
         box,

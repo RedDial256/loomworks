@@ -15,20 +15,19 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 
 | Item | State |
 |---|---|
-| T01 monorepo scaffold | Implemented and committed locally (`feat: t01`); issue #1 still open |
-| T02 Expo 56/57 spike | Done, ADR 0001 written; SDK 56 verified on iOS, SDK 57 build fails upstream (see #9); issue #2 still open |
-| Design tokens | Decided, ADR 0002 |
-| Product decisions | ADR 0003 |
-| T03 to T08 | Not started. T03 (CI) and T04 (manifest and embedding) have no open blockers |
+| T01 to T04 | Done and merged (#10, #11); issues closed |
+| T05 `loom init` + theme | Implemented on `feat/t05`. Verified on a fresh `create-expo-app` SDK 57 project: `tsc --noEmit` passes and `expo export --platform ios` bundles. Not launched on a device (SDK 57 iOS build blocked, #9) |
+| T06 to T08 | Not started (see below) |
 | Phases 2 to 5 | Outlined in the roadmap, not ticketed on purpose |
 
-Unless someone has already done it, the following are not on GitHub yet: `main` has not been pushed, and the ADRs, research files, handoff and roadmap are uncommitted. Check `git status` first. Close #1 and #2 once their work is pushed.
+Notes from T05:
+- A fresh SDK 57 template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). T08 must create it before typechecking.
+- `packages/ui` uses Vitest for pure-TS tests (theme contrast and contract). Component tests (T07) still follow ADR 0003 (`jest-expo` + RNTL).
 
 ## Recommended next steps
 
-1. T03 CI baseline and T04 manifest and embedding build (parallel).
-2. Then T05 `loom init` + theme (final per-role color values are decided there), T06, T07, T08.
-3. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
+1. T06, T07, T08.
+2. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
 
 ## Working conventions
 

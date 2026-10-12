@@ -4,15 +4,10 @@
   "description": "Loom CLI: adds components to your project.",
   "license": "MIT",
   "type": "module",
+  "bin": {
+    "loom": "./dist/bin.mjs"
+  },
   "main": "./dist/index.mjs",
-  "scripts": {
-    "build": "tsdown --config-loader unrun",
-    "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
   "types": "./dist/index.d.mts",
   "exports": {
     ".": {
@@ -23,10 +18,23 @@
   "files": [
     "dist"
   ],
+  "scripts": {
+    "build": "tsdown --config-loader unrun",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "diff": "^9.0.0",
+    "jsonc-parser": "^3.3.1",
+    "semver": "^7.8.5",
     "zod": "^4.6.6"
   },
   "devDependencies": {
+    "@types/semver": "^7.8.0",
     "tsdown": "^0.23.1",
     "unrun": "^0.3.1",
     "vitest": "^5.0.4"
