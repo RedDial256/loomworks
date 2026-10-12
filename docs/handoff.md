@@ -17,7 +17,8 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 |---|---|
 | T01 to T04 | Done and merged (#10, #11); issues closed |
 | T05 `loom init` + theme | Implemented on `feat/t05`. Verified on a fresh `create-expo-app` SDK 57 project: `tsc --noEmit` passes and `expo export --platform ios` bundles. Not launched on a device (SDK 57 iOS build blocked, #9) |
-| T06 to T08 | Not started (see below) |
+| T06 `loom add` + API | Implemented on `feat/t06` (branched from `feat/t05`). Conflict matrix covered by unit tests; flags exercised on the real app. The interactive prompt (overwrite / skip / diff) has not been tried in a real TTY. Updating the sandbox index is left to Phase 4: demos are copied when `sandbox` is set |
+| T07, T08 | Not started. T07 is unblocked once T05 lands |
 | Phases 2 to 5 | Outlined in the roadmap, not ticketed on purpose |
 
 Notes from T05:
@@ -26,7 +27,7 @@ Notes from T05:
 
 ## Recommended next steps
 
-1. T06, T07, T08.
+1. Review and open PRs for `feat/t05` and `feat/t06` (local commits only, nothing pushed); close #5 and #6 once merged. Then T07 and T08.
 2. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
 
 ## Working conventions

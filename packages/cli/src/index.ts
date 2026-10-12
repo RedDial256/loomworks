@@ -1,3 +1,9 @@
+export {
+  add,
+  type AddOptions,
+  type AddResult,
+  resolveItems,
+} from './commands/add';
 export { init, type InitOptions, type InitResult } from './commands/init';
 export {
   CONFIG_FILE,

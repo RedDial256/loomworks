@@ -8,7 +8,6 @@ import {
   defaultConfig,
   type LoomConfig,
   readConfig,
-  targetPath,
   writeConfig,
 } from '../project/config';
 import {
@@ -29,6 +28,7 @@ import {
 } from '../project/packages';
 import { createEmbeddedSource, type RegistrySource } from '../registry/source';
 import { LOOM_VERSION } from '../version';
+import { planItems } from './add';
 
 export const THEME_ITEM = 'theme';
 const UNISTYLES_PLUGIN = 'react-native-unistyles/plugin';
@@ -82,8 +82,9 @@ export async function init({
   const manifest = await source.getManifest();
   await checkExpo(cwd, pkg, manifest.minimums.expo);
 
-  const theme = manifest.items[THEME_ITEM];
-  if (!theme) throw new Error(`The registry has no "${THEME_ITEM}" item.`);
+  if (!manifest.items[THEME_ITEM]) {
+    throw new Error(`The registry has no "${THEME_ITEM}" item.`);
+  }
 
   const defaults = defaultConfig();
   const config = (await readConfig(cwd)) ?? {
@@ -94,16 +95,8 @@ export async function init({
     },
   };
 
-  const files = await writeFiles(
-    cwd,
-    await Promise.all(
-      theme.files.map(async (file) => ({
-        target: targetPath(config, file),
-        content: await source.getFile(file),
-      }))
-    ),
-    conflicts
-  );
+  const plan = await planItems(source, manifest, config, [THEME_ITEM]);
+  const files = await writeFiles(cwd, plan.files, conflicts);
 
   const configured: string[] = [];
   const notes: string[] = [];
@@ -121,7 +114,7 @@ export async function init({
   config.items[THEME_ITEM] = { version };
   await writeConfig(cwd, config);
 
-  const packages = missingPackages(pkg, theme.packages);
+  const packages = missingPackages(pkg, plan.packages);
   const needsPreset = !declaredRange(pkg, 'babel-preset-expo');
   if (install) {
     const pm = await detectPackageManager(cwd);
