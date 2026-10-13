@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import type { ColorFamily, ThemeColors } from './contract';
 import { dark } from './dark';
 import { light } from './light';
