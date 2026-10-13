@@ -1,0 +1,55 @@
+import {
+  Text as NativeText,
+  type TextProps as NativeTextProps,
+} from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
+
+import type { TypographyVariant } from '@/theme';
+
+const HEADINGS: TypographyVariant[] = ['h1', 'h2', 'h3', 'title'];
+
+export interface TextProps extends NativeTextProps {
+  /** Typography preset (ADR 0002). */
+  variant?: TypographyVariant;
+  /** Neutral color role; `text` when unset. */
+  tone?: 'muted' | 'disabled';
+}
+
+/**
+ * Themed text. Headings get the `header` role and cap font scaling at 1.5x;
+ * both can be overridden through props.
+ */
+export function Text({ variant = 'body', tone, style, ...rest }: TextProps) {
+  styles.useVariants({ variant, tone });
+  const heading = HEADINGS.includes(variant);
+  return (
+    <NativeText
+      accessibilityRole={heading ? 'header' : undefined}
+      maxFontSizeMultiplier={heading ? 1.5 : undefined}
+      {...rest}
+      style={[styles.text, style]}
+    />
+  );
+}
+
+const styles = StyleSheet.create((theme) => ({
+  text: {
+    variants: {
+      variant: {
+        h1: theme.typography.h1,
+        h2: theme.typography.h2,
+        h3: theme.typography.h3,
+        title: theme.typography.title,
+        body: theme.typography.body,
+        bodySmall: theme.typography.bodySmall,
+        label: theme.typography.label,
+        caption: theme.typography.caption,
+      },
+      tone: {
+        default: { color: theme.colors.text },
+        muted: { color: theme.colors.textMuted },
+        disabled: { color: theme.colors.textDisabled },
+      },
+    },
+  },
+}));

@@ -34,6 +34,22 @@
         "@react-native-async-storage/async-storage": "^3.1.1",
         "@react-native-async-storage/expo-with-async-storage": "^1.0.0"
       }
+    },
+    "box": {
+      "kind": "component",
+      "description": "Layout primitive: a View with theme spacing and surfaces.",
+      "files": ["components/box/Box.tsx"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
+    "text": {
+      "kind": "component",
+      "description": "Themed text with typography presets.",
+      "files": ["components/text/Text.tsx"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
     }
   }
 }
