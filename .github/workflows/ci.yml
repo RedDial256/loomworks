@@ -27,3 +27,18 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+
+  integration:
+    # Fresh Expo project -> loom init -> loom add box text -> tsc + lint (T08).
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @red_dial/loom build
+      - run: scripts/integration.sh 57 "$RUNNER_TEMP"
