@@ -40,6 +40,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 ## Component conventions
 
 - Open-ended: props extend the native props of the main element, defaults are overridable, and the user's `style` is always last (`[styles.container, style]`).
+- Each component keeps its public types (props and their unions) in a sibling `X.types.ts` (for example `Box.types.ts`); `X.tsx` holds the implementation and styles and imports the types from there. Both files are listed in the manifest.
 - Visual variants use native Unistyles variants (`useVariants`). Size variants are `'S' | 'M' | 'L'` (plus `'XS'` / `'XL'` when needed).
 - Imports between components and hooks are relative. The only alias is `@/theme`.
 - v1 components: `Box`, `Text`, `Card`, `Divider`, `Button`, `Pressable`, `Input`, `Switch`, `Spinner`, `Skeleton`. Hooks: `useThemeMode`, `useDebounce`, `useDisclosure`. Out of v1: `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists.

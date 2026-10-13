@@ -38,7 +38,7 @@
     "box": {
       "kind": "component",
       "description": "Layout primitive: a View with theme spacing and surfaces.",
-      "files": ["components/box/Box.tsx"],
+      "files": ["components/box/Box.tsx", "components/box/Box.types.ts"],
       "packages": {
         "react-native-unistyles": "^3.5.2"
       }
@@ -46,7 +46,7 @@
     "text": {
       "kind": "component",
       "description": "Themed text with typography presets.",
-      "files": ["components/text/Text.tsx"],
+      "files": ["components/text/Text.tsx", "components/text/Text.types.ts"],
       "packages": {
         "react-native-unistyles": "^3.5.2"
       }

@@ -1,12 +1,7 @@
-import { View, type ViewProps } from 'react-native';
+import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-export interface BoxProps extends ViewProps {
-  /** Inner spacing: `S` 8, `M` 16, `L` 24. */
-  padding?: 'none' | 'S' | 'M' | 'L';
-  /** Background from the surface ladder; transparent when unset. */
-  surface?: 'background' | 'surface' | 'raised' | 'sunken';
-}
+import type { BoxProps } from './Box.types';
 
 /** Layout primitive: a `View` with theme spacing and surfaces. */
 export function Box({ padding, surface, style, ...rest }: BoxProps) {

@@ -1,19 +1,11 @@
-import {
-  Text as NativeText,
-  type TextProps as NativeTextProps,
-} from 'react-native';
+import { Text as NativeText } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import type { TypographyVariant } from '@/theme';
 
-const HEADINGS: TypographyVariant[] = ['h1', 'h2', 'h3', 'title'];
+import type { TextProps } from './Text.types';
 
-export interface TextProps extends NativeTextProps {
-  /** Typography preset (ADR 0002). */
-  variant?: TypographyVariant;
-  /** Neutral color role; `text` when unset. */
-  tone?: 'muted' | 'disabled';
-}
+const HEADINGS: TypographyVariant[] = ['h1', 'h2', 'h3', 'title'];
 
 /**
  * Themed text. Headings get the `header` role and cap font scaling at 1.5x;
