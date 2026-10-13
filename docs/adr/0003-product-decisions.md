@@ -33,6 +33,8 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 - `loom init`: creates the light and dark themes with the typed `Theme` (ADR 0002), configures Unistyles, adds the `@/theme` alias to `tsconfig`, writes `loom.json`, installs dependencies (Unistyles, Gesture Handler, AsyncStorage).
 - `loom add <items>`: resolves item dependencies, copies files, installs npm deps, records installed versions in `loom.json`. On an existing file it asks per file (overwrite, skip, show diff). Flags `--overwrite` and `--skip-existing`; in non-interactive mode a conflict without a flag fails with a clear error.
 - No `update` command in v1: users re-run `add` and go through the conflict flow. `loom diff` and a remote registry come later.
+- `loom.json` (T05): `paths.ui` (default `src`) is the base for components, hooks and utils and keeps the registry layout (`components/…`, `hooks/…`), so relative imports between items always resolve; `paths.theme` (default `src/theme`) receives the theme and is the `@/theme` alias target; `items` records each installed item with the loom version. The Unistyles Babel plugin `root` is the top folder of `paths.ui` (the plugin rejects the project root).
+- The theme is a manifest item of kind `theme` (files under `theme/`), installed by `init`; it carries the init packages. `init` edits only what it can do safely and idempotently (`tsconfig` paths, `index.ts` entry and `main`, a new `babel.config.js`, `app.json` plugins, `expo.install.exclude`); an existing Babel config, a dynamic `app.config.*` and the root layout's `GestureHandlerRootView` are left as printed notes.
 - `loom.json` has the target folders and an optional `sandbox` path. Demos (`*.demo.tsx`, next to each component) are copied, and the sandbox index updated, only when `sandbox` is set. Test files are never copied.
 
 ## Component conventions
@@ -69,4 +71,3 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 ## Open points
 
 - Whether `@red_dial/loom-ui` (private) stays in the Changesets `fixed` group (currently included, keeps lockstep).
-- Final per-role color values for both themes (T05).

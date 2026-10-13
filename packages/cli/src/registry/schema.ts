@@ -17,7 +17,8 @@ const registryPath = z
   );
 
 const itemSchema = z.strictObject({
-  kind: z.enum(['component', 'hook', 'util']),
+  // `theme` items live under `theme/` and are copied to the theme folder (`@/theme`).
+  kind: z.enum(['component', 'hook', 'util', 'theme']),
   description: z.string().optional(),
   files: z.array(registryPath).min(1),
   demo: registryPath.optional(),
@@ -27,6 +28,7 @@ const itemSchema = z.strictObject({
 
 const isTestFile = (p: string) => /\.(test|spec)\.[cm]?[jt]sx?$/.test(p);
 const isDemoFile = (p: string) => /\.demo\.[cm]?[jt]sx?$/.test(p);
+export const isThemePath = (p: string) => p.startsWith('theme/');
 
 export const manifestSchema = z
   .strictObject({
@@ -58,7 +60,16 @@ export const manifestSchema = z
         owners.set(path, name);
       };
 
-      item.files.forEach((file, i) => check(file, ['items', name, 'files', i]));
+      item.files.forEach((file, i) => {
+        check(file, ['items', name, 'files', i]);
+        if (isThemePath(file) !== (item.kind === 'theme')) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['items', name, 'files', i],
+            message: 'files under theme/ belong to theme items only',
+          });
+        }
+      });
 
       if (item.demo !== undefined) {
         const where = ['items', name, 'demo'];

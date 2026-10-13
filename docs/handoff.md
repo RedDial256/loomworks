@@ -15,20 +15,21 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 
 | Item | State |
 |---|---|
-| T01 monorepo scaffold | Implemented and committed locally (`feat: t01`); issue #1 still open |
-| T02 Expo 56/57 spike | Done, ADR 0001 written; SDK 56 verified on iOS, SDK 57 build fails upstream (see #9); issue #2 still open |
-| Design tokens | Decided, ADR 0002 |
-| Product decisions | ADR 0003 |
-| T03 to T08 | Not started. T03 (CI) and T04 (manifest and embedding) have no open blockers |
+| T01 to T04 | Done and merged (#10, #11); issues closed |
+| T05 `loom init` + theme | Implemented on `feat/t05`. Verified on fresh `create-expo-app` projects: SDK 57 and SDK 56 pass `tsc --noEmit` and `expo export --platform ios`; the exact `@/theme` alias resolves in tsc and Metro; theme types are inferred in `StyleSheet.create` (an unknown role fails tsc). SDK 56 launched in the iPhone 17 Pro simulator (Release): theme applied, light/dark follow the system. SDK 57 not launched (#9); Android not built |
+| T06 `loom add` + API | Implemented on `feat/t06` (branched from `feat/t05`). Conflict matrix covered by unit tests; flags exercised on the real app. The interactive prompt (overwrite / skip / diff) has not been tried in a real TTY. Updating the sandbox index is left to Phase 4: demos are copied when `sandbox` is set |
+| T07, T08 | Not started. T07 is unblocked once T05 lands |
 | Phases 2 to 5 | Outlined in the roadmap, not ticketed on purpose |
 
-Unless someone has already done it, the following are not on GitHub yet: `main` has not been pushed, and the ADRs, research files, handoff and roadmap are uncommitted. Check `git status` first. Close #1 and #2 once their work is pushed.
+Notes from T05:
+- A fresh SDK 57 template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). T08 must create it before typechecking.
+- `pod install` from a non-interactive shell needs `LANG=en_US.UTF-8` (CocoaPods aborts otherwise).
+- `packages/ui` uses Vitest for pure-TS tests (theme contrast and contract). Component tests (T07) still follow ADR 0003 (`jest-expo` + RNTL).
 
 ## Recommended next steps
 
-1. T03 CI baseline and T04 manifest and embedding build (parallel).
-2. Then T05 `loom init` + theme (final per-role color values are decided there), T06, T07, T08.
-3. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
+1. Review and open PRs for `feat/t05` and `feat/t06` (local commits only, nothing pushed); close #5 and #6 once merged. Then T07 and T08.
+2. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
 
 ## Working conventions
 
