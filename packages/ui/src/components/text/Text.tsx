@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import type { TypographyVariant } from '@/theme';
 
+import { easyA11y } from '../../utils/a11y/easyA11y';
 import type { TextProps } from './Text.types';
 
 const HEADINGS: TypographyVariant[] = ['h1', 'h2', 'h3', 'title'];
@@ -11,12 +12,18 @@ const HEADINGS: TypographyVariant[] = ['h1', 'h2', 'h3', 'title'];
  * Themed text. Headings get the `header` role and cap font scaling at 1.5x;
  * both can be overridden through props.
  */
-export function Text({ variant = 'body', tone, style, ...rest }: TextProps) {
+export function Text({
+  variant = 'body',
+  tone,
+  a11y,
+  style,
+  ...rest
+}: TextProps) {
   styles.useVariants({ variant, tone });
   const heading = HEADINGS.includes(variant);
   return (
     <NativeText
-      accessibilityRole={heading ? 'header' : undefined}
+      {...easyA11y({ role: heading ? 'header' : undefined, ...a11y })}
       maxFontSizeMultiplier={heading ? 1.5 : undefined}
       {...rest}
       style={[styles.text, style]}

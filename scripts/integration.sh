@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration test: fresh Expo project -> loom init -> loom add box text -> tsc + lint.
+# Integration test: fresh Expo project -> loom init -> loom add box text (+ a11y) -> tsc + lint.
 # Usage: scripts/integration.sh [sdk] [workdir]   (build the CLI first: pnpm --filter @red_dial/loom build)
 set -euo pipefail
 
@@ -34,7 +34,7 @@ echo "::endgroup::"
 
 # Only the files loom wrote: the SDK 57 template itself fails `expo lint` (react-hooks/set-state-in-effect).
 echo "::group::expo lint"
-npx expo lint src/theme src/components/box src/components/text index.ts babel.config.js
+npx expo lint src/theme src/components/box src/components/text src/utils/a11y index.ts babel.config.js
 echo "::endgroup::"
 
 echo "Integration test passed (SDK $SDK) in $APP"
