@@ -102,6 +102,11 @@ Wraps `ActivityIndicator` with size variants (`S` / `M` / `L`) and a color role 
 - Tests with fake timers and for callback identity.
 - Blocked by: —
 
+**T16 Security audit in CI** `ci`
+CI job running [`rnsec`](https://github.com/adnxy/rnsec) (pinned to `1.3.0`) on the fresh Expo app built by the `integration` job and on the `packages/` sources. Fails on high-severity findings (exit code 1); the Markdown report is uploaded as a workflow artifact.
+- Job green on PRs; a planted secret on a throwaway branch makes it fail.
+- Blocked by: —
+
 ---
 
 ## Decision gate — Design system and tokens
@@ -112,5 +117,5 @@ Done: recorded in [ADR 0002](adr/0002-design-tokens.md), backed by three benchma
 
 - **Phase 3 — Interactive components:** `Pressable` and `Button` (Gesture Handler 3), `Input`, `Switch`.
 - **Phase 4 — Demos, template and scaffolder:** demo convention, template app (tabs + sandbox drawer), `weaver` with `--yes` and prompts.
-- **Phase 5 — Quality and release:** scaffold integration test, Expo 56 matrix and `engines` validation, release pipeline, docs, first alpha.
+- **Phase 5 — Quality and release:** accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, Expo 56 matrix and `engines` validation, release pipeline, docs, first alpha.
 - **Not in v1:** `loom diff`, remote registry, `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists, template mirror repo.
