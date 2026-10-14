@@ -60,4 +60,53 @@ describe('Text', () => {
       lineHeight: 40,
     });
   });
+
+  describe('a11y', () => {
+    it('is accessible by default', async () => {
+      await render(<Text>Hello</Text>);
+      expect(screen.getByText('Hello')).toHaveProp('accessible', true);
+    });
+
+    it('lets a11y override the heading role', async () => {
+      await render(
+        <Text variant="h1" a11y={{ role: 'text', label: 'Greeting' }}>
+          Hello
+        </Text>
+      );
+      expect(screen.queryByRole('header')).toBeNull();
+      expect(screen.getByRole('text', { name: 'Greeting' })).toBeOnTheScreen();
+    });
+
+    it('keeps the heading role when a11y has no role', async () => {
+      await render(
+        <Text variant="h2" a11y={{ busy: true }}>
+          Title
+        </Text>
+      );
+      expect(screen.getByRole('header', { name: 'Title' })).toBeBusy();
+    });
+
+    it('lets native props override a11y', async () => {
+      await render(
+        <Text a11y={{ role: 'button', label: 'A11y' }} accessibilityRole="link">
+          Hello
+        </Text>
+      );
+      expect(screen.getByRole('link')).toHaveProp('accessibilityLabel', 'A11y');
+    });
+
+    it('lets aria-* passed by the user win', async () => {
+      await render(
+        <Text
+          a11y={{ label: 'A11y', selected: false }}
+          aria-label="Aria"
+          aria-selected>
+          Hello
+        </Text>
+      );
+      const text = screen.getByText('Hello');
+      expect(text).toHaveAccessibleName('Aria');
+      expect(text).toBeSelected();
+    });
+  });
 });

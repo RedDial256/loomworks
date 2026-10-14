@@ -56,4 +56,74 @@ describe('Box', () => {
     );
     expect(screen.getByLabelText('Card')).toHaveProp('pointerEvents', 'none');
   });
+
+  describe('a11y', () => {
+    it('is not accessible by default', async () => {
+      await render(<Box testID="box" />);
+      expect(screen.getByTestId('box')).toHaveProp('accessible', false);
+      expect(screen.getByTestId('box')).toHaveProp(
+        'importantForAccessibility',
+        'no'
+      );
+    });
+
+    it('lets a11y override the component defaults', async () => {
+      await render(
+        <Box
+          a11y={{
+            id: 'card',
+            label: 'Card',
+            role: 'summary',
+            accessible: true,
+          }}
+        />
+      );
+      const box = screen.getByRole('summary', { name: 'Card' });
+      expect(box).toHaveProp('accessible', true);
+      expect(box).toHaveProp('nativeID', 'card');
+      expect(screen.getByTestId('card')).toBe(box);
+    });
+
+    it('lets native props override a11y', async () => {
+      await render(
+        <Box
+          testID="box"
+          a11y={{ label: 'Card', accessible: true, selected: true }}
+          accessible={false}
+          accessibilityLabel="Native"
+          accessibilityState={{ busy: true }}
+        />
+      );
+      const box = screen.getByTestId('box');
+      expect(box).toHaveProp('accessible', false);
+      expect(box).toHaveProp('accessibilityLabel', 'Native');
+      expect(box).toHaveProp('accessibilityState', { busy: true });
+    });
+
+    // jest mocks the host View, so this checks RNTL's `aria ?? legacy`
+    // reading, which mirrors React Native's View.js.
+    it('lets aria-* passed by the user win', async () => {
+      await render(
+        <Box
+          testID="box"
+          a11y={{ label: 'Card', accessible: true, disabled: false }}
+          aria-label="Aria card"
+          aria-disabled
+        />
+      );
+      const box = screen.getByTestId('box');
+      expect(box).toHaveAccessibleName('Aria card');
+      expect(box).toBeDisabled();
+    });
+
+    it('hides the element and its children', async () => {
+      await render(
+        <Box testID="box" a11y={{ hidden: true }}>
+          <Box testID="child" />
+        </Box>
+      );
+      expect(screen.queryByTestId('box')).toBeNull();
+      expect(screen.queryByTestId('child')).toBeNull();
+    });
+  });
 });

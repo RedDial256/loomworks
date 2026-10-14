@@ -35,10 +35,16 @@
         "@react-native-async-storage/expo-with-async-storage": "^1.0.0"
       }
     },
+    "a11y": {
+      "kind": "util",
+      "description": "easyA11y: maps a simplified a11y object to legacy accessibility props.",
+      "files": ["utils/a11y/easyA11y.ts", "utils/a11y/easyA11y.types.ts"]
+    },
     "box": {
       "kind": "component",
       "description": "Layout primitive: a View with theme spacing and surfaces.",
       "files": ["components/box/Box.tsx", "components/box/Box.types.ts"],
+      "dependencies": ["a11y"],
       "packages": {
         "react-native-unistyles": "^3.5.2"
       }
@@ -47,6 +53,7 @@
       "kind": "component",
       "description": "Themed text with typography presets.",
       "files": ["components/text/Text.tsx", "components/text/Text.types.ts"],
+      "dependencies": ["a11y"],
       "packages": {
         "react-native-unistyles": "^3.5.2"
       }

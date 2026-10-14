@@ -49,9 +49,13 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 
 ## Accessibility architecture (`easyA11y`)
 
-- A utility takes a simplified `a11y` object and returns native props. Keys: `label`, `hint`, `role`, `value`, `disabled`, `selected`, `checked`, `busy`, `expanded`, `hidden`, `live`.
-- Output uses only the legacy family: `accessible`, `accessibilityLabel`, `accessibilityHint`, `accessibilityRole`, `accessibilityState`, `accessibilityValue`, `accessibilityElementsHidden` with `importantForAccessibility`, `accessibilityLiveRegion`.
-- Three-tier cascade, weakest to strongest: the component's defaults, the `a11y` object passed by the user, and native props passed straight to the element (bypassing the utility). React Native gives `aria-*` precedence over the legacy props, so a user-supplied `aria-*` wins naturally.
+- A utility takes a simplified `a11y` object and returns native props. Keys: `id`, `label`, `hint`, `role`, `value`, `disabled`, `selected`, `checked`, `busy`, `expanded`, `accessible`, `hidden`, `modal`, `live`, `actions`.
+- Output uses only the legacy family: `nativeID` and `testID` (both from `id`), `accessible`, `importantForAccessibility`, `accessibilityElementsHidden`, `accessibilityLabel`, `accessibilityHint`, `accessibilityRole`, `accessibilityState`, `accessibilityValue`, `accessibilityLiveRegion`, `accessibilityViewIsModal`, `accessibilityActions` with `onAccessibilityAction`.
+- `role`, `value` and `live` use React Native's own types and pass through unchanged. State keys build `accessibilityState` with only the keys that are set.
+- `accessible` also drives `importantForAccessibility`: `hidden` wins (`'no-hide-descendants'`, and `accessible` becomes `false`), then `accessible` maps `true` to `'yes'` and `false` to `'no'`.
+- `actions` is a list of `{ name, label, action }`; the utility emits the action list and one handler that calls the matching `action`.
+- Cascade, weakest to strongest: the utility's defaults (`accessible: true`), the component's defaults (`Box` sets `accessible: false`; `Text` sets the heading role), the `a11y` object passed by the user, and native props passed straight to the element. The component and user objects are merged shallowly, so a user `actions` list replaces the component's; components with default actions export them so users can extend the list. Native props spread last replace whole objects (`accessibilityState`, `onAccessibilityAction`).
+- React Native gives `aria-*` precedence over the legacy props, so a user-supplied `aria-*` wins naturally, key by key. Two exceptions in React Native 0.86: `aria-hidden={false}` does not reset `importantForAccessibility` on Android (use `a11y={{ hidden: false }}`), and `aria-modal` is ignored by `View` and `Text`.
 
 ## Scaffolder (`weaver`)
 
