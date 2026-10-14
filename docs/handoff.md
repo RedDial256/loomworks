@@ -8,7 +8,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 
 ## Where things are
 
-- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number (T01 is #1 ... T08 is #8). #9 is the follow-up to the T02 spike.
+- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T15) is #17 to #23, milestone "Phase 2".
 - Local repo: `~/Desktop/projects/pers/loomworks`, branch `main`. The `origin` remote is SSH.
 
 ## State
@@ -18,9 +18,10 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 | T01 to T04 | Done and merged (#10, #11); issues closed |
 | T05 `loom init` + theme | Merged (#12, #13). Verified on fresh `create-expo-app` projects: SDK 57 and SDK 56 pass `tsc --noEmit` and `expo export --platform ios`; the exact `@/theme` alias resolves in tsc and Metro; theme types are inferred in `StyleSheet.create` (an unknown role fails tsc). SDK 56 launched in the iPhone 17 Pro simulator (Release): theme applied, light/dark follow the system. SDK 57 not launched (#9); Android not built |
 | T06 `loom add` + API | Merged (#13). Conflict matrix covered by unit tests; flags exercised on the real app. The interactive prompt (overwrite / skip / diff) has not been tried in a real TTY. Updating the sandbox index is left to Phase 4: demos are copied when `sandbox` is set |
-| T07 `Box` and `Text` | Merged (#15); the `X.types.ts` split landed with T08. `Box`: `padding` (`none`/`S`/`M`/`L`) and `surface` variants. `Text`: `variant` (presets, default `body`) and `tone` (`muted`/`disabled`, `text` when unset); headings get `accessibilityRole="header"` and `maxFontSizeMultiplier` 1.5. `loom add box text` verified on SDK 57 and 56 (tsc, iOS export) and launched on SDK 56 in both themes |
-| T08 integration test | `integration` CI job running `scripts/integration.sh`: fresh SDK 57 app (`create-expo-app@5.0.0`), `loom init`, `loom add box text`, `tsc --noEmit`, `expo lint` on the files loom wrote (the template itself fails `expo lint`). Runnable locally after building the CLI |
-| Phases 2 to 5 | Outlined in the roadmap, not ticketed on purpose |
+| T07 `Box` and `Text` | Merged (#15); the `X.types.ts` split landed with T08 (#16). `Box`: `padding` (`none`/`S`/`M`/`L`) and `surface` variants. `Text`: `variant` (presets, default `body`) and `tone` (`muted`/`disabled`, `text` when unset); headings get `accessibilityRole="header"` and `maxFontSizeMultiplier` 1.5. `loom add box text` verified on SDK 57 and 56 (tsc, iOS export) and launched on SDK 56 in both themes |
+| T08 integration test | Merged (#16). `integration` CI job running `scripts/integration.sh`: fresh SDK 57 app (`create-expo-app@5.0.0`), `loom init`, `loom add box text`, `tsc --noEmit`, `expo lint` on the files loom wrote (the template itself fails `expo lint`). Runnable locally after building the CLI |
+| Phase 2 (T09 to T15) | Ticketed: #17 to #23 with blocking links. T09, T10, T14 and T15 have no blockers |
+| Phases 3 to 5 | Outlined in the roadmap, not ticketed on purpose |
 
 Notes:
 - A fresh SDK 57 template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). `scripts/integration.sh` creates it.
@@ -29,7 +30,7 @@ Notes:
 
 ## Recommended next steps
 
-1. Merge the T08 PR. Phase 1 is then complete; next is ticketing Phase 2 from the roadmap.
+1. Phase 2: start with T09 (`easyA11y`), which unblocks T11 to T13; T10, T14 and T15 can go in parallel.
 2. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
 
 ## Working conventions
