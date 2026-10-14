@@ -8,7 +8,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 
 ## Where things are
 
-- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T15) is #17 to #23, milestone "Phase 2".
+- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T16) is #17 to #23 and #26, milestone "Phase 2".
 - Local repo: `~/Desktop/projects/pers/loomworks`, branch `main`. The `origin` remote is SSH.
 
 ## State
@@ -20,7 +20,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 | T06 `loom add` + API | Merged (#13). Conflict matrix covered by unit tests; flags exercised on the real app. The interactive prompt (overwrite / skip / diff) has not been tried in a real TTY. Updating the sandbox index is left to Phase 4: demos are copied when `sandbox` is set |
 | T07 `Box` and `Text` | Merged (#15); the `X.types.ts` split landed with T08 (#16). `Box`: `padding` (`none`/`S`/`M`/`L`) and `surface` variants. `Text`: `variant` (presets, default `body`) and `tone` (`muted`/`disabled`, `text` when unset); headings get `accessibilityRole="header"` and `maxFontSizeMultiplier` 1.5. `loom add box text` verified on SDK 57 and 56 (tsc, iOS export) and launched on SDK 56 in both themes |
 | T08 integration test | Merged (#16). `integration` CI job running `scripts/integration.sh`: fresh SDK 57 app (`create-expo-app@5.0.0`), `loom init`, `loom add box text`, `tsc --noEmit`, `expo lint` on the files loom wrote (the template itself fails `expo lint`). Runnable locally after building the CLI |
-| Phase 2 (T09 to T15) | Ticketed: #17 to #23 with blocking links. T09, T10, T14 and T15 have no blockers |
+| Phase 2 (T09 to T16) | Ticketed: #17 to #23 and #26 (T16) with blocking links. T09, T10, T14, T15 and T16 have no blockers |
 | Phases 3 to 5 | Outlined in the roadmap, not ticketed on purpose |
 
 Notes:
