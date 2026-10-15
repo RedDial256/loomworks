@@ -7,6 +7,8 @@
     "react-native-unistyles": "^3.5.2",
     "react-native-nitro-modules": "^0.37.1",
     "react-native-gesture-handler": "^3.3.0",
+    "react-native-reanimated": "^4.3.1",
+    "react-native-worklets": ">=0.8.3 <0.11",
     "@react-native-async-storage/async-storage": "^3.1.1",
     "@react-native-async-storage/expo-with-async-storage": "^1.0.0",
     "babel-preset-expo": "~56.0.0 || ~57.0.0"
@@ -39,6 +41,15 @@
       "kind": "util",
       "description": "easyA11y: maps a simplified a11y object to legacy accessibility props.",
       "files": ["utils/a11y/easyA11y.ts", "utils/a11y/easyA11y.types.ts"]
+    },
+    "reduced-motion": {
+      "kind": "hook",
+      "description": "useReducedMotion: reactive reduced-motion setting, plus resolveMotion for the none / fade / keep behaviors.",
+      "files": [
+        "hooks/reduced-motion/useReducedMotion.ts",
+        "hooks/reduced-motion/useReducedMotion.types.ts"
+      ],
+      "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
     },
     "box": {
       "kind": "component",

@@ -20,7 +20,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 
 ## Distribution
 
-- The CLI embeds the component source in its package, so the CLI version is the component version. The manifest (item to files, npm deps, item deps, optional demo, minimum versions) is source-agnostic so a remote registry can replace the embedded source later.
+- The CLI embeds the component source in its package, so the CLI version is the component version. The manifest (item to files, npm deps, SDK-pinned packages, item deps, optional demo, minimum versions) is source-agnostic so a remote registry can replace the embedded source later.
 - Release: lockstep versions via Changesets (`fixed` group), pre-release `alpha` until stable, GitHub Actions with the Changesets action and npm provenance.
 - Testing an old release means using the published artifacts (`npx @red_dial/loom@x.y.z`, `npm create @red_dial/weaver@x.y.z`) or checking out its tag.
 
@@ -31,7 +31,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 ## CLI behavior
 
 - `loom init`: creates the light and dark themes with the typed `Theme` (ADR 0002), configures Unistyles, adds the `@/theme` alias to `tsconfig`, writes `loom.json`, installs dependencies (Unistyles, Gesture Handler, AsyncStorage).
-- `loom add <items>`: resolves item dependencies, copies files, installs npm deps, records installed versions in `loom.json`. On an existing file it asks per file (overwrite, skip, show diff). Flags `--overwrite` and `--skip-existing`; in non-interactive mode a conflict without a flag fails with a clear error.
+- `loom add <items>`: resolves item dependencies, copies files, installs npm deps (`packages` with their ranges; `sdkPackages` such as Reanimated and Worklets through `expo install`, which picks the pair pinned for the project's SDK), records installed versions in `loom.json`. On an existing file it asks per file (overwrite, skip, show diff). Flags `--overwrite` and `--skip-existing`; in non-interactive mode a conflict without a flag fails with a clear error.
 - No `update` command in v1: users re-run `add` and go through the conflict flow. `loom diff` and a remote registry come later.
 - `loom.json` (T05): `paths.ui` (default `src`) is the base for components, hooks and utils and keeps the registry layout (`components/…`, `hooks/…`), so relative imports between items always resolve; `paths.theme` (default `src/theme`) receives the theme and is the `@/theme` alias target; `items` records each installed item with the loom version. The Unistyles Babel plugin `root` is the top folder of `paths.ui` (the plugin rejects the project root).
 - The theme is a manifest item of kind `theme` (files under `theme/`), installed by `init`; it carries the init packages. `init` edits only what it can do safely and idempotently (`tsconfig` paths, `index.ts` entry and `main`, a new `babel.config.js`, `app.json` plugins, `expo.install.exclude`); an existing Babel config, a dynamic `app.config.*` and the root layout's `GestureHandlerRootView` are left as printed notes.
@@ -43,7 +43,8 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 - Each component keeps its public types (props and their unions) in a sibling `X.types.ts` (for example `Box.types.ts`); `X.tsx` holds the implementation and styles and imports the types from there. Both files are listed in the manifest.
 - Visual variants use native Unistyles variants (`useVariants`). Size variants are `'S' | 'M' | 'L'` (plus `'XS'` / `'XL'` when needed).
 - Imports between components and hooks are relative. The only alias is `@/theme`.
-- v1 components: `Box`, `Text`, `Card`, `Divider`, `Button`, `Pressable`, `Input`, `Switch`, `Spinner`, `Skeleton`. Hooks: `useThemeMode`, `useDebounce`, `useDisclosure`. Out of v1: `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists.
+- v1 components: `Box`, `Text`, `Card`, `Divider`, `Button`, `Pressable`, `Input`, `Switch`, `Spinner`, `Skeleton`. Hooks: `useThemeMode`, `useReducedMotion`, `useDebounce`, `useDisclosure`. Out of v1: `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists.
+- Animations use Reanimated 4 (with `react-native-worklets`), declared as `sdkPackages` only by the items that animate (`useReducedMotion`, `Skeleton`, `Button`), so `init` does not install it. Reduced motion follows ADR 0002.
 - `Button` and `Pressable` use the Gesture Handler 3 `Pressable`. `Button`, `Text`, `Input` and `Switch` take a `loading` prop that renders a `Skeleton` and sets `a11y.busy`.
 - `useThemeMode`: `system | light | dark`, persisted in AsyncStorage, installed by `init`, built on Unistyles themes named `light` and `dark`.
 

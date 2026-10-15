@@ -33,6 +33,11 @@ const manifest = {
       dependencies: ['box', 'cn'],
       packages: { 'react-native-unistyles': '^3.5.2', extra: '^1.0.0' },
     },
+    motion: {
+      kind: 'hook',
+      files: ['hooks/motion/useMotion.ts'],
+      sdkPackages: ['react-native-reanimated', 'react-native-worklets'],
+    },
   },
 };
 
@@ -42,6 +47,7 @@ const registryFiles = {
   'components/box/Box.tsx': 'export const Box = 1;\n',
   'components/box/Box.demo.tsx': 'export const BoxDemo = 1;\n',
   'components/text/Text.tsx': 'export const Text = 1;\n',
+  'hooks/motion/useMotion.ts': 'export const useMotion = 1;\n',
 };
 
 const config = {
@@ -108,7 +114,7 @@ describe('resolveItems', () => {
 
   it('rejects unknown items and lists the available ones', () => {
     expect(() => resolveItems(parsed, ['box', 'ghost'])).toThrow(
-      'Unknown item(s): ghost. Available: box, cn, text, theme.'
+      'Unknown item(s): ghost. Available: box, cn, motion, text, theme.'
     );
   });
 });
@@ -148,6 +154,23 @@ describe('add', () => {
     });
     const { result } = await runAdd(['box']);
     expect(result.files.written).toEqual(['src/components/box/Box.demo.tsx']);
+  });
+
+  it('installs missing SDK-pinned packages with expo install', async () => {
+    await writeTree(cwd, {
+      'package.json': JSON.stringify({
+        dependencies: { 'react-native-reanimated': '~4.5.1' },
+      }),
+    });
+    const { result, calls } = await runAdd(['motion']);
+    expect(result.packages).toEqual(['react-native-worklets']);
+    expect(calls).toEqual(['npx expo install react-native-worklets']);
+
+    const { calls: both } = await runAdd(['motion', 'text']);
+    expect(both).toEqual([
+      'npm install react-native-unistyles@^3.5.2 extra@^1.0.0',
+      'npx expo install react-native-worklets',
+    ]);
   });
 
   it('does not install with install: false', async () => {

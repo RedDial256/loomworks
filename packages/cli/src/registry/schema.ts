@@ -24,6 +24,8 @@ const itemSchema = z.strictObject({
   demo: registryPath.optional(),
   dependencies: z.array(itemName).default([]),
   packages: z.record(z.string().min(1), z.string().min(1)).default({}),
+  // Versions pinned per Expo SDK (Reanimated, Worklets): installed with `expo install`.
+  sdkPackages: z.array(z.string().min(1)).default([]),
 });
 
 const isTestFile = (p: string) => /\.(test|spec)\.[cm]?[jt]sx?$/.test(p);
@@ -89,6 +91,16 @@ export const manifestSchema = z
         }
         check(item.demo, where);
       }
+
+      item.sdkPackages.forEach((pkg, i) => {
+        if (pkg in item.packages) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['items', name, 'sdkPackages', i],
+            message: `"${pkg}" is also listed in packages`,
+          });
+        }
+      });
 
       item.dependencies.forEach((dep, i) => {
         if (!(dep in manifest.items)) {

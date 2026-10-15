@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration test: fresh Expo project -> loom init -> loom add box text (+ a11y) -> tsc + lint.
+# Integration test: fresh Expo project -> loom init -> loom add box text reduced-motion (+ a11y) -> tsc + lint.
 # Usage: scripts/integration.sh [sdk] [workdir]   (build the CLI first: pnpm --filter @red_dial/loom build)
 set -euo pipefail
 
@@ -21,8 +21,8 @@ echo "::group::loom init"
 node "$LOOM" init
 echo "::endgroup::"
 
-echo "::group::loom add box text"
-node "$LOOM" add box text
+echo "::group::loom add box text reduced-motion"
+node "$LOOM" add box text reduced-motion
 echo "::endgroup::"
 
 # Expo writes this on the first `expo start`; the template does not typecheck without it.
@@ -34,7 +34,7 @@ echo "::endgroup::"
 
 # Only the files loom wrote: the SDK 57 template itself fails `expo lint` (react-hooks/set-state-in-effect).
 echo "::group::expo lint"
-npx expo lint src/theme src/components/box src/components/text src/utils/a11y index.ts babel.config.js
+npx expo lint src/theme src/components/box src/components/text src/utils/a11y src/hooks/reduced-motion index.ts babel.config.js
 echo "::endgroup::"
 
 echo "Integration test passed (SDK $SDK) in $APP"
