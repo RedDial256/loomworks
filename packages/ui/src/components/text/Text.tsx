@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import type { TypographyVariant } from '@/theme';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
+import { Skeleton } from '../skeleton/Skeleton';
 import type { TextProps } from './Text.types';
 
 const HEADINGS: TypographyVariant[] = ['h1', 'h2', 'h3', 'title'];
@@ -16,14 +17,25 @@ export function Text({
   variant = 'body',
   tone,
   a11y,
+  loading,
   style,
   ...rest
 }: TextProps) {
   styles.useVariants({ variant, tone });
   const heading = HEADINGS.includes(variant);
+  const role = heading ? 'header' : undefined;
+  if (loading) {
+    return (
+      <Skeleton
+        variant={variant}
+        testID={rest.testID}
+        a11y={{ role, label: 'Loading', hidden: false, ...a11y, busy: true }}
+      />
+    );
+  }
   return (
     <NativeText
-      {...easyA11y({ role: heading ? 'header' : undefined, ...a11y })}
+      {...easyA11y({ role, ...a11y })}
       maxFontSizeMultiplier={heading ? 1.5 : undefined}
       {...rest}
       style={[styles.text, style]}

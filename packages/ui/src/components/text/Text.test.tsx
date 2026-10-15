@@ -109,4 +109,36 @@ describe('Text', () => {
       expect(text).toBeSelected();
     });
   });
+
+  describe('loading', () => {
+    it('renders a skeleton line of the same preset instead of the text', async () => {
+      await render(
+        <Text testID="text" variant="title" loading>
+          Hello
+        </Text>
+      );
+      expect(screen.queryByText('Hello')).toBeNull();
+      expect(screen.getByTestId('text')).toHaveStyle({
+        height: typography.title.fontSize,
+        backgroundColor: light.colors.border,
+      });
+    });
+
+    it('is announced as busy and loading', async () => {
+      await render(<Text loading>Hello</Text>);
+      expect(screen.getByLabelText('Loading')).toBeBusy();
+    });
+
+    it('keeps the heading role and the user a11y, but stays busy', async () => {
+      await render(
+        <Text
+          variant="h1"
+          loading
+          a11y={{ label: 'Loading title', busy: false }}>
+          Title
+        </Text>
+      );
+      expect(screen.getByRole('header', { name: 'Loading title' })).toBeBusy();
+    });
+  });
 });
