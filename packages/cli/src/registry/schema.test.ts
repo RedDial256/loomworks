@@ -28,6 +28,7 @@ describe('parseManifest', () => {
 
     expect(parsed.items.box?.dependencies).toEqual([]);
     expect(parsed.items.box?.packages).toEqual({});
+    expect(parsed.items.box?.sdkPackages).toEqual([]);
     expect(manifestFiles(parsed)).toEqual([
       'components/box/Box.tsx',
       'components/text/Text.tsx',
@@ -67,6 +68,16 @@ describe('parseManifest', () => {
           ...box,
           files: ['components/box/Box.demo.tsx'],
           demo: 'components/box/Box.demo.tsx',
+        },
+      }),
+    ],
+    [
+      'package in packages and sdkPackages',
+      manifest({
+        box: {
+          ...box,
+          packages: { 'react-native-reanimated': '^4.3.1' },
+          sdkPackages: ['react-native-reanimated'],
         },
       }),
     ],

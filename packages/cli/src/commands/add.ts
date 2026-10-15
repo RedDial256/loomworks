@@ -17,7 +17,9 @@ import {
 import { readJson } from '../project/json';
 import {
   addCommand,
+  declaredRange,
   detectPackageManager,
+  expoInstallCommand,
   missingPackages,
   type PackageJson,
   type RunCommand,
@@ -42,7 +44,7 @@ export interface AddResult {
   /** Requested items and their dependencies, dependencies first. */
   items: string[];
   files: WriteReport;
-  /** Package specs installed, or that would be installed with `install: false`. */
+  /** Package specs and SDK-pinned names installed, or that would be installed with `install: false`. */
   packages: string[];
 }
 
@@ -73,14 +75,21 @@ export async function add({
     () => ({})
   );
   const packages = missingPackages(pkg, plan.packages);
+  const sdkPackages = plan.sdkPackages.filter(
+    (name) => !declaredRange(pkg, name)
+  );
 
   for (const name of resolved) config.items[name] = { version };
   await writeConfig(cwd, config);
 
-  if (install && packages.length) {
-    await run(...addCommand(await detectPackageManager(cwd), packages), cwd);
+  if (install && (packages.length || sdkPackages.length)) {
+    const pm = await detectPackageManager(cwd);
+    if (packages.length) await run(...addCommand(pm, packages), cwd);
+    if (sdkPackages.length) {
+      await run(...expoInstallCommand(pm, sdkPackages), cwd);
+    }
   }
-  return { items: resolved, files, packages };
+  return { items: resolved, files, packages: [...packages, ...sdkPackages] };
 }
 
 /** The requested items plus their dependencies, in install order (dependencies first). */
@@ -110,9 +119,14 @@ export async function planItems(
   manifest: Manifest,
   config: LoomConfig,
   names: string[]
-): Promise<{ files: PlannedFile[]; packages: Record<string, string> }> {
+): Promise<{
+  files: PlannedFile[];
+  packages: Record<string, string>;
+  sdkPackages: string[];
+}> {
   const files: PlannedFile[] = [];
   const packages: Record<string, string> = {};
+  const sdkPackages = new Set<string>();
 
   for (const name of names) {
     const item = manifest.items[name];
@@ -128,6 +142,7 @@ export async function planItems(
     for (const [pkg, range] of Object.entries(item.packages)) {
       packages[pkg] ??= range;
     }
+    item.sdkPackages.forEach((pkg) => sdkPackages.add(pkg));
   }
-  return { files, packages };
+  return { files, packages, sdkPackages: [...sdkPackages] };
 }
