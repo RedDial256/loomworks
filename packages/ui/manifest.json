@@ -44,7 +44,7 @@
     },
     "reduced-motion": {
       "kind": "hook",
-      "description": "useReducedMotion: reactive reduced-motion setting, plus resolveMotion for the none / fade / keep behaviors.",
+      "description": "useReducedMotion and useMotion: reactive reduced-motion setting resolved into the none / fade / keep behaviors, plus Reanimated easings from the theme.",
       "files": [
         "hooks/reduced-motion/useReducedMotion.ts",
         "hooks/reduced-motion/useReducedMotion.types.ts"
@@ -60,11 +60,24 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
+    "skeleton": {
+      "kind": "component",
+      "description": "Loading placeholder with an opacity pulse; a static block under reduced motion.",
+      "files": [
+        "components/skeleton/Skeleton.tsx",
+        "components/skeleton/Skeleton.types.ts"
+      ],
+      "dependencies": ["a11y", "reduced-motion"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      },
+      "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
+    },
     "text": {
       "kind": "component",
-      "description": "Themed text with typography presets.",
+      "description": "Themed text with typography presets and a loading skeleton.",
       "files": ["components/text/Text.tsx", "components/text/Text.types.ts"],
-      "dependencies": ["a11y"],
+      "dependencies": ["a11y", "skeleton"],
       "packages": {
         "react-native-unistyles": "^3.5.2"
       }

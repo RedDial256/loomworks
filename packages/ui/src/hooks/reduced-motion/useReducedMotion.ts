@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import {
+  Easing,
   ReduceMotion,
   useReducedMotion as useReducedMotionAtLaunch,
 } from 'react-native-reanimated';
@@ -8,6 +9,12 @@ import {
 import { motion, type ReducedMotionBehavior } from '@/theme';
 
 import type { ResolvedMotion } from './useReducedMotion.types';
+
+/** Reanimated easings built once from the theme's `motion.easing` control points. */
+export const easings = {
+  standard: Easing.bezier(...motion.easing.standard.bezier),
+  gentle: Easing.bezier(...motion.easing.gentle.bezier),
+};
 
 // One app-wide listener; `undefined` until the system answers.
 let current: boolean | undefined;
@@ -51,11 +58,22 @@ export function useReducedMotion(): boolean {
   return useSyncExternalStore(subscribe, getSnapshot) ?? atLaunch;
 }
 
-/** Resolves an animation's reduced-motion behavior (ADR 0002) into what to run. */
+/** `resolveMotion` with the live reduced-motion setting; what components use. */
+export function useMotion(
+  behavior: ReducedMotionBehavior,
+  duration: number
+): ResolvedMotion {
+  return resolveMotion(behavior, duration, useReducedMotion());
+}
+
+/**
+ * Resolves an animation's reduced-motion behavior (ADR 0002) into what to run.
+ * Pure: for code outside React that already knows the setting, and tests.
+ */
 export function resolveMotion(
   behavior: ReducedMotionBehavior,
-  reduced: boolean,
-  duration: number
+  duration: number,
+  reduced: boolean
 ): ResolvedMotion {
   const reduceMotion = ReduceMotion.Never;
   if (!reduced || behavior === 'keep') {

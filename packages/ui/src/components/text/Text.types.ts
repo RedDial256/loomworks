@@ -11,4 +11,6 @@ export interface TextProps extends NativeTextProps {
   tone?: 'muted' | 'disabled';
   /** Simplified accessibility props; native props still win. Headings default to the `header` role. */
   a11y?: A11y;
+  /** Renders a `Skeleton` line of the same preset, announced as busy ("Loading" unless `a11y.label` is set). */
+  loading?: boolean;
 }
