@@ -5,7 +5,9 @@ export type { SkeletonProps } from './components/skeleton/Skeleton.types';
 export { Text } from './components/text/Text';
 export type { TextProps } from './components/text/Text.types';
 export {
+  easings,
   resolveMotion,
+  useMotion,
   useReducedMotion,
 } from './hooks/reduced-motion/useReducedMotion';
 export type {

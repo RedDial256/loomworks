@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import Animated, {
   cancelAnimation,
-  Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -9,11 +8,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { motion, radii, typography } from '@/theme';
+import { radii, typography } from '@/theme';
 
 import {
-  resolveMotion,
-  useReducedMotion,
+  easings,
+  useMotion,
 } from '../../hooks/reduced-motion/useReducedMotion';
 import { easyA11y } from '../../utils/a11y/easyA11y';
 import type { SkeletonProps } from './Skeleton.types';
@@ -21,10 +20,12 @@ import type { SkeletonProps } from './Skeleton.types';
 /** Half a pulse cycle, in ms. */
 export const PULSE_DURATION = 1000;
 const PULSE_OPACITY = 0.5;
+/** Fixed opacity under reduced motion, about the middle of the pulse. */
+export const STATIC_OPACITY = 0.75;
 
 /**
- * Loading placeholder with an opacity pulse. The pulse is essential motion
- * (`keep`), so it still runs under reduced motion.
+ * Loading placeholder with an opacity pulse. The pulse is decorative (`none`):
+ * under reduced motion the block stays static.
  */
 export function Skeleton({
   width = '100%',
@@ -35,18 +36,23 @@ export function Skeleton({
   style,
   ...rest
 }: SkeletonProps) {
-  const { duration, reduceMotion } = resolveMotion(
-    'keep',
-    useReducedMotion(),
-    PULSE_DURATION
-  );
-  const opacity = useSharedValue(1);
+  const { mode, duration, reduceMotion } = useMotion('none', PULSE_DURATION);
+  const opacity = useSharedValue(mode === 'static' ? STATIC_OPACITY : 1);
 
   useEffect(() => {
-    const easing = Easing.bezier(...motion.easing.gentle.bezier);
+    if (mode === 'static') {
+      opacity.set(STATIC_OPACITY);
+      return;
+    }
+    // Restart from full opacity, also after leaving reduced motion mid-session.
+    opacity.set(1);
     opacity.set(
       withRepeat(
-        withTiming(PULSE_OPACITY, { duration, easing, reduceMotion }),
+        withTiming(PULSE_OPACITY, {
+          duration,
+          easing: easings.gentle,
+          reduceMotion,
+        }),
         -1,
         true,
         undefined,
@@ -54,7 +60,7 @@ export function Skeleton({
       )
     );
     return () => cancelAnimation(opacity);
-  }, [opacity, duration, reduceMotion]);
+  }, [opacity, mode, duration, reduceMotion]);
 
   const pulse = useAnimatedStyle(() => ({ opacity: opacity.get() }));
   const { fontSize, lineHeight } = typography[variant];

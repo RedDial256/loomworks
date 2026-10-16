@@ -44,7 +44,7 @@
     },
     "reduced-motion": {
       "kind": "hook",
-      "description": "useReducedMotion: reactive reduced-motion setting, plus resolveMotion for the none / fade / keep behaviors.",
+      "description": "useReducedMotion and useMotion: reactive reduced-motion setting resolved into the none / fade / keep behaviors, plus Reanimated easings from the theme.",
       "files": [
         "hooks/reduced-motion/useReducedMotion.ts",
         "hooks/reduced-motion/useReducedMotion.types.ts"
@@ -62,7 +62,7 @@
     },
     "skeleton": {
       "kind": "component",
-      "description": "Loading placeholder with an opacity pulse that keeps running under reduced motion.",
+      "description": "Loading placeholder with an opacity pulse; a static block under reduced motion.",
       "files": [
         "components/skeleton/Skeleton.tsx",
         "components/skeleton/Skeleton.types.ts"

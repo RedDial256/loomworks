@@ -1,11 +1,11 @@
-import { render, renderHook, screen } from '@testing-library/react-native';
+import { act, render, renderHook, screen } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
 import { withRepeat, withTiming } from 'react-native-reanimated';
 
 import { light, radii, typography } from '@/theme';
 
 import { useReducedMotion } from '../../hooks/reduced-motion/useReducedMotion';
-import { PULSE_DURATION, Skeleton } from './Skeleton';
+import { PULSE_DURATION, Skeleton, STATIC_OPACITY } from './Skeleton';
 
 jest.mock('react-native-reanimated', () => {
   const actual = jest.requireActual('react-native-reanimated');
@@ -23,8 +23,19 @@ const custom = '#ff0000';
 const getSkeleton = () =>
   screen.getByTestId('skeleton', { includeHiddenElements: true });
 
-// The whole file runs with reduced motion on (the hook's listener starts on the first render).
-jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(true);
+// The hook's listener starts on the first render; keep its change handler to toggle the setting.
+let setReducedMotion: (enabled: boolean) => void = () => {};
+jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
+jest
+  .spyOn(AccessibilityInfo, 'addEventListener')
+  .mockImplementation((event, handler) => {
+    if ((event as string) === 'reduceMotionChanged') {
+      setReducedMotion = handler as unknown as typeof setReducedMotion;
+    }
+    return { remove: jest.fn() } as unknown as ReturnType<
+      typeof AccessibilityInfo.addEventListener
+    >;
+  });
 
 beforeEach(() => jest.clearAllMocks());
 
@@ -88,15 +99,14 @@ describe('Skeleton', () => {
     );
   });
 
-  it('keeps pulsing under reduced motion', async () => {
+  it('pulses without reduced motion', async () => {
     await render(<Skeleton />);
-    const { result } = await renderHook(() => useReducedMotion());
-    expect(result.current).toBe(true);
-
-    const config = { duration: PULSE_DURATION, reduceMotion: 'never' };
     expect(withTiming).toHaveBeenLastCalledWith(
       0.5,
-      expect.objectContaining(config)
+      expect.objectContaining({
+        duration: PULSE_DURATION,
+        reduceMotion: 'never',
+      })
     );
     expect(withRepeat).toHaveBeenLastCalledWith(
       expect.anything(),
@@ -105,5 +115,18 @@ describe('Skeleton', () => {
       undefined,
       'never'
     );
+  });
+
+  // Last: the reduced-motion setting is app-wide once turned on.
+  it('stays a static block under reduced motion', async () => {
+    const { result } = await renderHook(() => useReducedMotion());
+    await act(async () => setReducedMotion(true));
+    expect(result.current).toBe(true);
+    jest.clearAllMocks();
+
+    await render(<Skeleton testID="skeleton" />);
+    expect(withRepeat).not.toHaveBeenCalled();
+    expect(withTiming).not.toHaveBeenCalled();
+    expect(getSkeleton()).toHaveStyle({ opacity: STATIC_OPACITY });
   });
 });

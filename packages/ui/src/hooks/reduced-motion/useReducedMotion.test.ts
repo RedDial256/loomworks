@@ -1,9 +1,13 @@
 import { ReduceMotion } from 'react-native-reanimated';
 
-import { resolveMotion } from './useReducedMotion';
+import { motion } from '@/theme';
+
+import { easings, resolveMotion } from './useReducedMotion';
 
 let mockAtLaunch = false;
 jest.mock('react-native-reanimated', () => ({
+  // Returns its control points, so tests can see which curve was built.
+  Easing: { bezier: (...points: number[]) => points },
   ReduceMotion: { System: 'system', Always: 'always', Never: 'never' },
   useReducedMotion: () => mockAtLaunch,
 }));
@@ -33,7 +37,7 @@ function setup(atLaunch = false) {
   rntl =
     require('@testing-library/react-native/pure') as typeof import('@testing-library/react-native/pure');
   const { act: rntlAct, renderHook } = rntl;
-  const { useReducedMotion } =
+  const { useMotion, useReducedMotion } =
     require('./useReducedMotion') as typeof import('./useReducedMotion');
   const act = (fn: () => void) => rntlAct(async () => fn());
   return {
@@ -42,6 +46,7 @@ function setup(atLaunch = false) {
     answer: (enabled: boolean) => act(() => answer(enabled)),
     emit: (enabled: boolean) => act(() => emit(enabled)),
     render: () => renderHook(() => useReducedMotion()),
+    renderMotion: () => renderHook(() => useMotion('fade', 200)),
   };
 }
 /* eslint-enable @typescript-eslint/no-require-imports */
@@ -92,6 +97,26 @@ describe('useReducedMotion', () => {
   });
 });
 
+describe('useMotion', () => {
+  it('resolves with the live setting', async () => {
+    const { renderMotion, answer, emit } = setup(false);
+    const { result } = await renderMotion();
+    await answer(false);
+    expect(result.current).toMatchObject({ mode: 'full', duration: 200 });
+    await emit(true);
+    expect(result.current).toMatchObject({ mode: 'fade', duration: 150 });
+  });
+});
+
+describe('easings', () => {
+  it('are built from the theme control points', () => {
+    expect(easings).toEqual({
+      standard: motion.easing.standard.bezier,
+      gentle: motion.easing.gentle.bezier,
+    });
+  });
+});
+
 describe('resolveMotion', () => {
   it.each([
     ['none', false, { mode: 'full', duration: 200 }],
@@ -101,7 +126,7 @@ describe('resolveMotion', () => {
     ['fade', true, { mode: 'fade', duration: 150 }],
     ['keep', true, { mode: 'full', duration: 200 }],
   ] as const)('resolves %s with reduced %s', (behavior, reduced, expected) => {
-    expect(resolveMotion(behavior, reduced, 200)).toEqual({
+    expect(resolveMotion(behavior, 200, reduced)).toEqual({
       ...expected,
       reduceMotion: ReduceMotion.Never,
     });
