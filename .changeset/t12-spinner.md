@@ -1,5 +1,5 @@
 ---
-'@red_dial/loom-ui': minor
+'@red_dial/loom': minor
 ---
 
 Add `Spinner`: a themed `ActivityIndicator` with `S` / `M` / `L` sizes, a color role and progressbar accessibility.
