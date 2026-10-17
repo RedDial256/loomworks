@@ -60,6 +60,27 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
+    "card": {
+      "kind": "component",
+      "description": "Raised surface built on Box: lg radius and an elevation level, with the dark-mode tint and hairline.",
+      "files": ["components/card/Card.tsx", "components/card/Card.types.ts"],
+      "dependencies": ["box"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
+    "divider": {
+      "kind": "component",
+      "description": "Horizontal or vertical hairline separator, hidden from screen readers.",
+      "files": [
+        "components/divider/Divider.tsx",
+        "components/divider/Divider.types.ts"
+      ],
+      "dependencies": ["a11y"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
     "skeleton": {
       "kind": "component",
       "description": "Loading placeholder with an opacity pulse; a static block under reduced motion.",
