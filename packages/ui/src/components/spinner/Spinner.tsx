@@ -1,0 +1,78 @@
+import { ActivityIndicator } from 'react-native';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+
+import type { ColorRole } from '@/theme';
+
+import { easyA11y } from '../../utils/a11y/easyA11y';
+import type { SpinnerColor, SpinnerProps, SpinnerSize } from './Spinner.types';
+
+const LARGE = 36;
+
+/**
+ * iOS only has `small` (20) and `large` (36); numeric sizes are Android only.
+ * `L` scales `large` up to the touch target, so both platforms match.
+ */
+export const SPINNER_SIZES = {
+  S: { native: 'small', diameter: 20, scale: 1 },
+  M: { native: 'large', diameter: LARGE, scale: 1 },
+  L: { native: 'large', diameter: 48, scale: 48 / LARGE },
+} as const satisfies Record<
+  SpinnerSize,
+  { native: 'small' | 'large'; diameter: number; scale: number }
+>;
+
+/** Themed `ActivityIndicator` that keeps spinning under reduced motion. */
+export function Spinner({
+  size = 'M',
+  color = 'primary',
+  animating = true,
+  a11y,
+  style,
+  ...rest
+}: SpinnerProps) {
+  const { theme } = useUnistyles();
+  styles.useVariants({ size });
+  return (
+    <ActivityIndicator
+      {...easyA11y({
+        role: 'progressbar',
+        label: 'Loading',
+        busy: animating,
+        ...a11y,
+      })}
+      {...rest}
+      animating={animating}
+      size={SPINNER_SIZES[size].native}
+      color={resolveColor(theme.colors, color)}
+      style={[styles.spinner, style]}
+    />
+  );
+}
+
+function resolveColor(
+  colors: Record<ColorRole, string>,
+  color: SpinnerColor
+): string {
+  return color in colors ? colors[color as ColorRole] : color;
+}
+
+const { diameter, scale } = SPINNER_SIZES.L;
+
+const styles = StyleSheet.create({
+  spinner: {
+    variants: {
+      size: {
+        S: {},
+        M: {},
+        // `transform` does not change layout: reserve the scaled diameter.
+        L: {
+          width: diameter,
+          height: diameter,
+          alignItems: 'center',
+          justifyContent: 'center',
+          transform: [{ scale }],
+        },
+      },
+    },
+  },
+});
