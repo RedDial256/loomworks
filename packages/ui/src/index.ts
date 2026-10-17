@@ -2,6 +2,12 @@ export { Box } from './components/box/Box';
 export type { BoxProps } from './components/box/Box.types';
 export { Skeleton } from './components/skeleton/Skeleton';
 export type { SkeletonProps } from './components/skeleton/Skeleton.types';
+export { Spinner, SPINNER_SIZES } from './components/spinner/Spinner';
+export type {
+  SpinnerColor,
+  SpinnerProps,
+  SpinnerSize,
+} from './components/spinner/Spinner.types';
 export { Text } from './components/text/Text';
 export type { TextProps } from './components/text/Text.types';
 export {
