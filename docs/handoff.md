@@ -43,10 +43,22 @@ Notes:
 - Decisions are one at a time with a recommendation, and facts that can be looked up are looked up rather than asked.
 - Prefer primary sources for any benchmark, and mark what could not be verified.
 
+## Parallel work (worktrees)
+
+Several tickets can be developed at the same time, each by its own agent in its own git worktree.
+
+- One ticket = one worktree = one branch (`feat/tNN-<slug>`). Desktop sessions with the worktree option and `claude -w <name>` create worktrees in `.claude/worktrees/` (gitignored).
+- New worktrees branch from `origin/main`. Start in parallel only tickets whose "Blocked by" tickets are merged; for a dependent ticket, branch from the blocker's branch with `git worktree add .claude/worktrees/<name> -b feat/tNN-<slug> <blocker-branch>`.
+- Setup: `pnpm bootstrap` (or `scripts/worktree-setup.sh`) installs dependencies and builds the CLI; it is idempotent. pnpm's shared store makes per-worktree installs fast.
+- Shared files: feature branches do not edit the State table above or `roadmap.md`; update them on `main` after merging, to avoid conflicts between parallel branches. Each ticket adds its own changeset file.
+- `pnpm-lock.yaml` conflict: take `main`'s version and run `pnpm install` to regenerate it.
+- Shared machine resources: one iOS simulator and the Metro port (8081). Only one agent runs the app at a time, or pass `--port`.
+- Clean up after merging: `git worktree remove <path>` and delete the branch.
+
 ## Commands
 
-- `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm format:check`, `pnpm changeset`.
-- Node 22, pnpm 10 (pinned in `packageManager`).
+- `pnpm bootstrap`, `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm format:check`, `pnpm changeset`.
+- Node 22 (`.nvmrc`; nvm defaults to 18 on this machine), pnpm 10 (pinned in `packageManager`).
 
 ## Machine notes
 
