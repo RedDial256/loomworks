@@ -14,7 +14,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style, plus a
 ## Development
 
 ```sh
-pnpm install
+pnpm bootstrap   # install + build the CLI (idempotent, also for git worktrees)
 pnpm lint
 pnpm typecheck
 pnpm format

@@ -8,6 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "bootstrap": "scripts/worktree-setup.sh",
     "lint": "eslint .",
     "typecheck": "pnpm -r --if-present typecheck",
     "build": "pnpm -r --if-present build",
