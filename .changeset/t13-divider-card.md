@@ -1,5 +1,5 @@
 ---
-'@red_dial/loom-ui': minor
+'@red_dial/loom': minor
 ---
 
 Add the `Divider` and `Card` components.

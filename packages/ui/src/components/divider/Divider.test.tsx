@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react-native';
 
-import { light } from '@/theme';
+import { light, spacing } from '@/theme';
 
 import { Divider } from './Divider';
 
@@ -27,6 +27,41 @@ describe('Divider', () => {
     expect(getDivider()).not.toHaveStyle({ height: 1 });
   });
 
+  it('has no spacing or inset as a hairline', async () => {
+    await render(<Divider testID="divider" />);
+    expect(getDivider()).toHaveStyle({
+      marginVertical: 0,
+      marginHorizontal: 0,
+    });
+  });
+
+  it.each([
+    ['thin', 1, spacing.xs],
+    ['small', 2, spacing.md],
+  ] as const)(
+    'applies the %s preset on the horizontal axes',
+    async (variant, thickness, space) => {
+      await render(<Divider testID="divider" variant={variant} />);
+      expect(getDivider()).toHaveStyle({
+        height: thickness,
+        marginVertical: space,
+        marginHorizontal: space,
+      });
+    }
+  );
+
+  it('swaps the preset axes when vertical', async () => {
+    await render(
+      <Divider testID="divider" orientation="vertical" variant="small" />
+    );
+    expect(getDivider()).toHaveStyle({
+      width: 2,
+      marginHorizontal: spacing.md,
+      marginVertical: spacing.md,
+    });
+    expect(getDivider()).not.toHaveStyle({ height: 2 });
+  });
+
   it.each([
     ['border', light.colors.border],
     ['borderStrong', light.colors.borderStrong],
@@ -40,13 +75,15 @@ describe('Divider', () => {
       <Divider
         testID="divider"
         tone="borderStrong"
-        style={{ height: 2, backgroundColor: custom, marginVertical: 8 }}
+        variant="small"
+        style={{ height: 3, backgroundColor: custom, marginVertical: 4 }}
       />
     );
     expect(getDivider()).toHaveStyle({
-      height: 2,
+      height: 3,
       backgroundColor: custom,
-      marginVertical: 8,
+      marginVertical: 4,
+      marginHorizontal: spacing.md,
     });
   });
 
