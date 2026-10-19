@@ -94,6 +94,18 @@
       },
       "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
     },
+    "spinner": {
+      "kind": "component",
+      "description": "Themed ActivityIndicator with S / M / L sizes and a color role; keeps spinning under reduced motion.",
+      "files": [
+        "components/spinner/Spinner.tsx",
+        "components/spinner/Spinner.types.ts"
+      ],
+      "dependencies": ["a11y"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
     "text": {
       "kind": "component",
       "description": "Themed text with typography presets and a loading skeleton.",
