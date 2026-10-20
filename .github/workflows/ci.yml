@@ -42,3 +42,35 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @red_dial/loom build
       - run: scripts/integration.sh 57 "$RUNNER_TEMP"
+      # The security job scans this app; npm audit only needs package.json and the lockfile.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: integration-app
+          path: |
+            ${{ runner.temp }}/app
+            !${{ runner.temp }}/app/node_modules
+          retention-days: 3
+
+  security:
+    # rnsec on packages/ and the integration app, compared with security/rnsec-baseline.json (T16).
+    needs: integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: integration-app
+          path: ${{ runner.temp }}/app
+      - run: pnpm security --app "$RUNNER_TEMP/app" --reports rnsec-reports
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rnsec-reports
+          path: rnsec-reports

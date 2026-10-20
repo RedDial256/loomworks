@@ -58,6 +58,7 @@ Several tickets can be developed at the same time, each by its own agent in its 
 ## Commands
 
 - `pnpm bootstrap`, `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm format:check`, `pnpm changeset`.
+- `pnpm security [--app <dir>]`: rnsec on `packages/` and an Expo app (built with `integration.sh` when `--app` is missing), compared with `security/rnsec-baseline.json`; new HIGH findings fail. `pnpm security:baseline` accepts the current findings; commit the baseline in the PR that needs it.
 - Node 22 (`.nvmrc`; nvm defaults to 18 on this machine), pnpm 10 (pinned in `packageManager`).
 
 ## Machine notes
