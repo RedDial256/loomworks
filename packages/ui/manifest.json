@@ -120,10 +120,7 @@
     "debounce": {
       "kind": "hook",
       "description": "useDebounce: returns a value once it has stopped changing for a delay.",
-      "files": [
-        "hooks/debounce/useDebounce.ts",
-        "hooks/debounce/useDebounce.types.ts"
-      ]
+      "files": ["hooks/debounce/useDebounce.ts"]
     },
     "disclosure": {
       "kind": "hook",
