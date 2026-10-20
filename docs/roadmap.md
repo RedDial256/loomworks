@@ -116,6 +116,7 @@ Done: recorded in [ADR 0002](adr/0002-design-tokens.md), backed by three benchma
 ## Later phases (outline, not ticketed yet)
 
 - **Phase 3 — Interactive components:** `Pressable` and `Button` (Gesture Handler 3), `Input`, `Switch`.
+  - `useTimeout(callback, delay)` hook: owns one `setTimeout` for `callback` and always clears it on unmount. Exposes `set` (starts or restarts it), `clear`, and a ref to the current timer. Optionally takes an existing timer at start, which it then owns and clears. Calls the latest `callback` without restarting the timer. The timer type is `ReturnType<typeof setTimeout>`, not `NodeJS.Timeout` (React Native's `setTimeout` returns a number).
 - **Phase 4 — Demos, template and scaffolder:** demo convention, template app (tabs + sandbox drawer), `weaver` with `--yes` and prompts.
 - **Phase 5 — Quality and release:** accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, Expo 56 matrix and `engines` validation, release pipeline, docs, first alpha.
 - **Not in v1:** `loom diff`, remote registry, `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists, template mirror repo.
