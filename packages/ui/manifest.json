@@ -116,6 +116,22 @@
       "packages": {
         "react-native-unistyles": "^3.5.2"
       }
+    },
+    "debounce": {
+      "kind": "hook",
+      "description": "useDebounce: returns a value once it has stopped changing for a delay.",
+      "files": [
+        "hooks/debounce/useDebounce.ts",
+        "hooks/debounce/useDebounce.types.ts"
+      ]
+    },
+    "disclosure": {
+      "kind": "hook",
+      "description": "useDisclosure: open / closed state with stable open, close and toggle callbacks.",
+      "files": [
+        "hooks/disclosure/useDisclosure.ts",
+        "hooks/disclosure/useDisclosure.types.ts"
+      ]
     }
   }
 }
