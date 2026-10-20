@@ -20,3 +20,10 @@ export {
   type TypographyPreset,
   type TypographyVariant,
 } from './typography';
+export {
+  restoreThemeMode,
+  setThemeMode,
+  THEME_MODE_KEY,
+  useThemeMode,
+} from './useThemeMode';
+export type { ThemeMode, UseThemeModeResult } from './useThemeMode.types';

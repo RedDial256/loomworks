@@ -16,7 +16,7 @@
   "items": {
     "theme": {
       "kind": "theme",
-      "description": "Light and dark themes, design tokens and the Unistyles setup. Installed by `loom init`.",
+      "description": "Light and dark themes, design tokens, the Unistyles setup and useThemeMode (system / light / dark, persisted in AsyncStorage). Installed by `loom init`.",
       "files": [
         "theme/contract.ts",
         "theme/dark.ts",
@@ -27,7 +27,9 @@
         "theme/palette.ts",
         "theme/spacing.ts",
         "theme/typography.ts",
-        "theme/unistyles.ts"
+        "theme/unistyles.ts",
+        "theme/useThemeMode.ts",
+        "theme/useThemeMode.types.ts"
       ],
       "packages": {
         "react-native-unistyles": "^3.5.2",
