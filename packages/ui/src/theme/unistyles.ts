@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { dark } from './dark';
 import { light } from './light';
+import { restoreThemeMode } from './useThemeMode';
 
 const themes = { light, dark };
 
@@ -22,6 +23,11 @@ declare module 'react-native-unistyles' {
 StyleSheet.configure({
   themes,
   breakpoints,
-  // Follows the system color scheme; `useThemeMode` adds a manual override later.
+  // Follows the system color scheme until `useThemeMode` applies a stored or chosen mode.
   settings: { adaptiveThemes: true },
 });
+
+// AsyncStorage has no synchronous read, so `initialTheme` cannot apply the stored
+// mode: start the read here, as early as possible, and await
+// `restoreThemeMode()` before hiding the splash screen.
+void restoreThemeMode();

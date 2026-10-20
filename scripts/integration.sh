@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration test: fresh Expo project -> loom init -> loom add box text spinner divider card (+ a11y, skeleton, reduced-motion) -> tsc + lint.
+# Integration test: fresh Expo project -> loom init (theme + useThemeMode) -> loom add box text spinner divider card (+ a11y, skeleton, reduced-motion) -> tsc + lint.
 # Usage: scripts/integration.sh [sdk] [workdir]   (build the CLI first: pnpm --filter @red_dial/loom build)
 set -euo pipefail
 
