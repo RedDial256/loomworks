@@ -1,5 +1,13 @@
 export { Box } from './components/box/Box';
 export type { BoxProps } from './components/box/Box.types';
+export { Card } from './components/card/Card';
+export type { CardProps } from './components/card/Card.types';
+export { Divider } from './components/divider/Divider';
+export type {
+  DividerOrientation,
+  DividerProps,
+  DividerVariant,
+} from './components/divider/Divider.types';
 export { Skeleton } from './components/skeleton/Skeleton';
 export type { SkeletonProps } from './components/skeleton/Skeleton.types';
 export { Spinner, SPINNER_SIZES } from './components/spinner/Spinner';
