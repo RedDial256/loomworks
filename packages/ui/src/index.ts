@@ -18,6 +18,9 @@ export type {
 } from './components/spinner/Spinner.types';
 export { Text } from './components/text/Text';
 export type { TextProps } from './components/text/Text.types';
+export { useDebounce } from './hooks/debounce/useDebounce';
+export { useDisclosure } from './hooks/disclosure/useDisclosure';
+export type { UseDisclosureResult } from './hooks/disclosure/useDisclosure.types';
 export {
   easings,
   resolveMotion,
