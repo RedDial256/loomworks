@@ -126,7 +126,7 @@ On the kit `Pressable`. Variants `solid` / `subtle` / `outline` / `ghost` / `lin
 - Blocked by: T17
 
 **T20 `useBoolean`** `pkg:ui` (#40)
-`useBoolean(initial)` with a required `initial`, returning `value`, `set`, `toggle`, `setTo` (cached handler per value) and `reset`, all stable. Replaces and removes `useDisclosure`.
+`useBoolean(initial)` with a required `initial`, returning `value`, `set`, `toggle`, `setter` (cached handler per value) and `reset`, all stable. Replaces and removes `useDisclosure`.
 - Blocked by: —
 
 **T21 `Input`** `pkg:ui` (#41)

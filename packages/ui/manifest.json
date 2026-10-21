@@ -142,12 +142,12 @@
         "hooks/timeout/useTimeout.types.ts"
       ]
     },
-    "disclosure": {
+    "boolean": {
       "kind": "hook",
-      "description": "useDisclosure: open / closed state with stable open, close and toggle callbacks.",
+      "description": "useBoolean: boolean state with stable set, toggle, setter (cached handler per value) and reset.",
       "files": [
-        "hooks/disclosure/useDisclosure.ts",
-        "hooks/disclosure/useDisclosure.types.ts"
+        "hooks/boolean/useBoolean.ts",
+        "hooks/boolean/useBoolean.types.ts"
       ]
     }
   }
