@@ -8,6 +8,11 @@ export type {
   DividerProps,
   DividerVariant,
 } from './components/divider/Divider.types';
+export { Pressable, touchHitSlop } from './components/pressable/Pressable';
+export type {
+  PressableProps,
+  VisualSize,
+} from './components/pressable/Pressable.types';
 export { Skeleton } from './components/skeleton/Skeleton';
 export type { SkeletonProps } from './components/skeleton/Skeleton.types';
 export { Spinner, SPINNER_SIZES } from './components/spinner/Spinner';
