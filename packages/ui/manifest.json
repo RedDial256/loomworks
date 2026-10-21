@@ -117,6 +117,18 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
+    "pressable": {
+      "kind": "component",
+      "description": "Touch enabler over the Gesture Handler Pressable: pressed state for style and children, a11y, disabled, and a hitSlop helper that reaches the minimum touch target.",
+      "files": [
+        "components/pressable/Pressable.tsx",
+        "components/pressable/Pressable.types.ts"
+      ],
+      "dependencies": ["a11y"],
+      "packages": {
+        "react-native-gesture-handler": "^3.3.0"
+      }
+    },
     "debounce": {
       "kind": "hook",
       "description": "useDebounce: returns a value once it has stopped changing for a delay.",
