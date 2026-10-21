@@ -14,7 +14,7 @@ Support: `loom` on Expo 56 + 57, template on Expo 57 only.
 Labels: `pkg:ui`, `pkg:loom`, `pkg:weaver`, `template`, `ci`, `docs`, `spike`.
 
 Order follows tracer bullets: one thin slice end-to-end first (Phase 1), then widen.
-Phases 0 to 2 are ticketed; later phases are outlined at the end.
+Phases 0 to 3 are ticketed; later phases are outlined at the end.
 
 ---
 
@@ -109,14 +109,48 @@ CI job running [`rnsec`](https://github.com/adnxy/rnsec) (pinned to `1.3.0`) on 
 
 ---
 
+## Phase 3 — Interactive components
+
+Same convention as Phase 2. Tickets #37 to #43, milestone "Phase 3 — Interactive components".
+
+**T17 `Pressable`** `pkg:ui` (#37)
+Touch enabler over the Gesture Handler 3 `Pressable`: no styling or animation, `pressed` state passed to `style`/`children`, `a11y`, `disabled`, and a helper deriving `hitSlop` from a visual size.
+- Blocked by: —
+
+**T18 `useTimeout` hook** `pkg:ui` (#38)
+Owns one `setTimeout` for `callback` and always clears it on unmount. Exposes `set` (starts or restarts it), `clear`, and a ref to the current timer. Optionally adopts an existing timer at start. Calls the latest `callback` without restarting the timer. Timer type `ReturnType<typeof setTimeout>`.
+- Blocked by: —
+
+**T19 `Button`** `pkg:ui` (#39)
+On the kit `Pressable`. Variants `solid` / `subtle` / `outline` / `ghost` / `link` / `text`, `color` family, sizes `S` (32 + `hitSlop`) / `M` (48) / `L` (56). Scale press feedback (`fade` under reduced motion; opacity for `link`/`text`). `loading` renders a `Skeleton`; `pending` shows a `Spinner`, keeps the width and blocks presses.
+- Blocked by: T17
+
+**T20 `useBoolean`** `pkg:ui` (#40)
+`useBoolean(initial)` with a required `initial`, returning `value`, `set`, `toggle`, `setTo` (cached handler per value) and `reset`, all stable. Replaces and removes `useDisclosure`.
+- Blocked by: —
+
+**T21 `Input`** `pkg:ui` (#41)
+Styled `TextInput`: `type` (`text`, `email`, `password`, `number`, `decimal`, `phone`, `url`, `search`), `label`, `placeholder`, `hint`, `error`, `required`, controlled and uncontrolled, ref (`get`, `set`, `reset`, `focus`, `blur`, `clear`, `validate`), `loading`.
+- Blocked by: —
+
+**T22 `Input` validation** `pkg:ui` (#42)
+Synchronous, library-agnostic: any Standard Schema plus a `validate` callback. Validates on blur; while there is an error, on change with a 300 ms debounce.
+- Blocked by: T21
+
+**T23 `Switch`** `pkg:ui` (#43)
+Native `Switch` with theme colors, controlled only (no ref), `label` row and `loading`.
+- Blocked by: —
+
+---
+
 ## Decision gate — Design system and tokens
 
 Done: recorded in [ADR 0002](adr/0002-design-tokens.md), backed by three benchmarks in `docs/research/`. Remaining: per-role color values in T05 and a visual pass once Phase 1 components exist.
 
 ## Later phases (outline, not ticketed yet)
 
-- **Phase 3 — Interactive components:** `Pressable` and `Button` (Gesture Handler 3), `Input`, `Switch`.
-  - `useTimeout(callback, delay)` hook: owns one `setTimeout` for `callback` and always clears it on unmount. Exposes `set` (starts or restarts it), `clear`, and a ref to the current timer. Optionally takes an existing timer at start, which it then owns and clears. Calls the latest `callback` without restarting the timer. The timer type is `ReturnType<typeof setTimeout>`, not `NodeJS.Timeout` (React Native's `setTimeout` returns a number).
 - **Phase 4 — Demos, template and scaffolder:** demo convention, template app (tabs + sandbox drawer), `weaver` with `--yes` and prompts.
+  - `Input`, second iteration: date and time, as its own component or inside `Input` to reuse its logic.
+  - `Background`: fills a background with colors or gradients. Two forms (variants or separate components): a wrapper that is the parent and wraps its children, and a child that fills its parent completely. Borders (radius, clipping) need testing. Technology and libraries still to discuss.
 - **Phase 5 — Quality and release:** accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, Expo 56 matrix and `engines` validation, release pipeline, docs, first alpha.
 - **Not in v1:** `loom diff`, remote registry, `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists, template mirror repo.

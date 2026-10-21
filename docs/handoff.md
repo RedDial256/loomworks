@@ -8,7 +8,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 
 ## Where things are
 
-- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T16) is #17 to #23 and #26, milestone "Phase 2".
+- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T16) is #17 to #23 and #26, milestone "Phase 2". Phase 3 (T17 to T23) is #37 to #43, milestone "Phase 3 — Interactive components".
 - Local repo: `~/Desktop/projects/pers/loomworks`, branch `main`. The `origin` remote is SSH.
 
 ## State
@@ -21,7 +21,8 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 | T07 `Box` and `Text` | Merged (#15); the `X.types.ts` split landed with T08 (#16). `Box`: `padding` (`none`/`S`/`M`/`L`) and `surface` variants. `Text`: `variant` (presets, default `body`) and `tone` (`muted`/`disabled`, `text` when unset); headings get `accessibilityRole="header"` and `maxFontSizeMultiplier` 1.5. `loom add box text` verified on SDK 57 and 56 (tsc, iOS export) and launched on SDK 56 in both themes |
 | T08 integration test | Merged (#16). `integration` CI job running `scripts/integration.sh`: fresh SDK 57 app (`create-expo-app@5.0.0`), `loom init`, `loom add box text`, `tsc --noEmit`, `expo lint` on the files loom wrote (the template itself fails `expo lint`). Runnable locally after building the CLI |
 | Phase 2 (T09 to T16) | Ticketed: #17 to #23 and #26 (T16) with blocking links. T09, T10, T14, T15 and T16 have no blockers |
-| Phases 3 to 5 | Outlined in the roadmap, not ticketed on purpose |
+| Phase 3 (T17 to T23) | Ticketed: #37 to #43. Only T19 (`Button`, blocked by T17) and T22 (`Input` validation, blocked by T21) have blockers |
+| Phases 4 and 5 | Outlined in the roadmap, not ticketed on purpose |
 
 Notes:
 - A fresh SDK 57 template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). `scripts/integration.sh` creates it.
@@ -30,7 +31,7 @@ Notes:
 
 ## Recommended next steps
 
-1. Phase 2: start with T09 (`easyA11y`), which unblocks T11 to T13; T10, T14 and T15 can go in parallel.
+1. Finish T16 (#26). Phase 3: T17, T18, T20, T21 and T23 can go in parallel; T19 waits for T17 and T22 for T21.
 2. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
 
 ## Working conventions
@@ -39,7 +40,7 @@ Notes:
 - Ask before committing, pushing, creating branches or PRs, or publishing. Do not commit agent working notes (Claude Code files such as `.claude/`, `CLAUDE.md`, memory files).
 - Ignore `pnpm-lock.yaml` unless a `package.json` dependency changed; then stage only the related lines.
 - Never read `.env` files.
-- Git identity: the personal one (set automatically by the git config include for `~/Desktop/projects/pers/`). GitHub CLI is authenticated as `RedDial256` with the SSH protocol. A commit made from another folder would use the work identity.
+- Git identity: the personal one (set automatically by the git config include for `~/Desktop/projects/pers/`). GitHub CLI has two accounts and the active one is the work account, which cannot write to this repository: run write commands with `GH_TOKEN=$(gh auth token --user RedDial256)`. A commit made from another folder would use the work identity.
 - Decisions are one at a time with a recommendation, and facts that can be looked up are looked up rather than asked.
 - Prefer primary sources for any benchmark, and mark what could not be verified.
 
