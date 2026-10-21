@@ -129,6 +129,26 @@
         "react-native-gesture-handler": "^3.3.0"
       }
     },
+    "button": {
+      "kind": "component",
+      "description": "Button over Pressable with solid, subtle, outline, ghost, link and text variants, color families, S / M / L sizes, press feedback, and loading and pending states.",
+      "files": [
+        "components/button/Button.tsx",
+        "components/button/Button.types.ts"
+      ],
+      "dependencies": [
+        "a11y",
+        "pressable",
+        "reduced-motion",
+        "skeleton",
+        "spinner",
+        "text"
+      ],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      },
+      "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
+    },
     "debounce": {
       "kind": "hook",
       "description": "useDebounce: returns a value once it has stopped changing for a delay.",

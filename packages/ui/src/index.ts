@@ -1,5 +1,11 @@
 export { Box } from './components/box/Box';
 export type { BoxProps } from './components/box/Box.types';
+export { Button, buttonColors } from './components/button/Button';
+export type {
+  ButtonProps,
+  ButtonSize,
+  ButtonVariant,
+} from './components/button/Button.types';
 export { Card } from './components/card/Card';
 export type { CardProps } from './components/card/Card.types';
 export { Divider } from './components/divider/Divider';
