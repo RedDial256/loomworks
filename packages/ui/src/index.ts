@@ -37,6 +37,10 @@ export type {
   ResolvedMotion,
 } from './hooks/reduced-motion/useReducedMotion.types';
 export { useTimeout } from './hooks/timeout/useTimeout';
-export type { Timer, UseTimeoutResult } from './hooks/timeout/useTimeout.types';
+export type {
+  TimeoutParam,
+  Timer,
+  UseTimeoutResult,
+} from './hooks/timeout/useTimeout.types';
 export { easyA11y } from './utils/a11y/easyA11y';
 export type { A11y, A11yAction, A11yProps } from './utils/a11y/easyA11y.types';
