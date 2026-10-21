@@ -21,8 +21,6 @@ export type { TextProps } from './components/text/Text.types';
 export { useDebounce } from './hooks/debounce/useDebounce';
 export { useDisclosure } from './hooks/disclosure/useDisclosure';
 export type { UseDisclosureResult } from './hooks/disclosure/useDisclosure.types';
-export { useTimeout } from './hooks/timeout/useTimeout';
-export type { Timer, UseTimeoutResult } from './hooks/timeout/useTimeout.types';
 export {
   easings,
   resolveMotion,
@@ -33,5 +31,7 @@ export type {
   MotionMode,
   ResolvedMotion,
 } from './hooks/reduced-motion/useReducedMotion.types';
+export { useTimeout } from './hooks/timeout/useTimeout';
+export type { Timer, UseTimeoutResult } from './hooks/timeout/useTimeout.types';
 export { easyA11y } from './utils/a11y/easyA11y';
 export type { A11y, A11yAction, A11yProps } from './utils/a11y/easyA11y.types';
