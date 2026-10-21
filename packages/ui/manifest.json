@@ -122,6 +122,14 @@
       "description": "useDebounce: returns a value once it has stopped changing for a delay.",
       "files": ["hooks/debounce/useDebounce.ts"]
     },
+    "timeout": {
+      "kind": "hook",
+      "description": "useTimeout: owns one setTimeout, cleared on unmount, with set, clear and a ref to the timer.",
+      "files": [
+        "hooks/timeout/useTimeout.ts",
+        "hooks/timeout/useTimeout.types.ts"
+      ]
+    },
     "disclosure": {
       "kind": "hook",
       "description": "useDisclosure: open / closed state with stable open, close and toggle callbacks.",

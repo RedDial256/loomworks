@@ -21,6 +21,8 @@ export type { TextProps } from './components/text/Text.types';
 export { useDebounce } from './hooks/debounce/useDebounce';
 export { useDisclosure } from './hooks/disclosure/useDisclosure';
 export type { UseDisclosureResult } from './hooks/disclosure/useDisclosure.types';
+export { useTimeout } from './hooks/timeout/useTimeout';
+export type { Timer, UseTimeoutResult } from './hooks/timeout/useTimeout.types';
 export {
   easings,
   resolveMotion,
