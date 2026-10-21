@@ -43,9 +43,13 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 - Each component keeps its public types (props and their unions) in a sibling `X.types.ts` (for example `Box.types.ts`); `X.tsx` holds the implementation and styles and imports the types from there. Both files are listed in the manifest.
 - Visual variants use native Unistyles variants (`useVariants`). Size variants are `'S' | 'M' | 'L'` (plus `'XS'` / `'XL'` when needed).
 - Imports between components and hooks are relative. The only alias is `@/theme`.
-- v1 components: `Box`, `Text`, `Card`, `Divider`, `Button`, `Pressable`, `Input`, `Switch`, `Spinner`, `Skeleton`. Hooks: `useThemeMode`, `useReducedMotion`, `useDebounce`, `useDisclosure`. Out of v1: `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists.
+- v1 components: `Box`, `Text`, `Card`, `Divider`, `Button`, `Pressable`, `Input`, `Switch`, `Spinner`, `Skeleton`. Hooks: `useThemeMode`, `useReducedMotion`, `useDebounce`, `useBoolean` (replaces `useDisclosure`), `useTimeout`. Out of v1: `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists.
 - Animations use Reanimated 4 (with `react-native-worklets`), declared as `sdkPackages` only by the items that animate (`useReducedMotion`, `Skeleton`, `Button`), so `init` does not install it. Reduced motion follows ADR 0002.
 - `Button` and `Pressable` use the Gesture Handler 3 `Pressable`. `Button`, `Text`, `Input` and `Switch` take a `loading` prop that renders a `Skeleton` and sets `a11y.busy`.
+- `Pressable` is a touch enabler with no styling or animation of its own; it passes the `pressed` state to `style` and `children` and exports a helper that derives `hitSlop` from a visual size.
+- `Button`: variants `solid`, `subtle`, `outline`, `ghost`, `link` and `text`, a `color` family, sizes `S` / `M` / `L`. `S` (visual 32, `hitSlop` up to `touchTarget.min`) is an accepted exception to the ADR 0002 rule of a real `minHeight` of 48 for buttons. Besides `loading` (content not ready), `pending` (action in progress) shows a `Spinner` in place of the label, keeps the width and blocks presses. An inline `Link` built on `Text` was considered and dropped.
+- `Input`: a `type` prop sets keyboard, autocomplete and capitalization together; `label`, `hint` (below the field, replaced by the error), `required`, controlled and uncontrolled modes, and a ref with `get`, `set`, `reset`, `focus`, `blur`, `clear`, `validate`. Validation is synchronous and library-agnostic: any Standard Schema plus a `validate` callback; on blur, then on change with a 300 ms debounce while there is an error. Date and time inputs wait for Phase 4.
+- `Switch` wraps React Native's `Switch` and is controlled only (the native switch reverts when `value` is not updated); parents hold its state with `useBoolean`.
 - `useThemeMode`: `system | light | dark`, persisted in AsyncStorage, installed by `init`, built on Unistyles themes named `light` and `dark`.
 
 ## Accessibility architecture (`easyA11y`)
@@ -72,7 +76,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 
 ## Process
 
-- Issues and milestones on GitHub; Phases 0 and 1 are ticketed, later phases are outlined in `docs/roadmap.md`.
+- Issues and milestones on GitHub; Phases 0 to 3 are ticketed, later phases are outlined in `docs/roadmap.md`.
 
 ## Open points
 
