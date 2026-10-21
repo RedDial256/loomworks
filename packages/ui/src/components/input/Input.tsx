@@ -1,4 +1,4 @@
-import { useImperativeHandle, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -102,8 +102,11 @@ export function Input({
   const [ownError, setOwnError] = useState<string>();
 
   const value = controlled ?? uncontrolled;
+  // Read by the ref methods, so `get` and `validate` see a `set` before the next render.
   const valueRef = useRef(value);
-  valueRef.current = value;
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
   const shown = error ?? ownError;
   const invalid = shown !== undefined;
   styles.useVariants({ focused, invalid });
