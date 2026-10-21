@@ -11,7 +11,6 @@ export type {
 export { Pressable, touchHitSlop } from './components/pressable/Pressable';
 export type {
   PressableProps,
-  PressableState,
   VisualSize,
 } from './components/pressable/Pressable.types';
 export { Skeleton } from './components/skeleton/Skeleton';
