@@ -122,12 +122,12 @@
       "description": "useDebounce: returns a value once it has stopped changing for a delay.",
       "files": ["hooks/debounce/useDebounce.ts"]
     },
-    "disclosure": {
+    "boolean": {
       "kind": "hook",
-      "description": "useDisclosure: open / closed state with stable open, close and toggle callbacks.",
+      "description": "useBoolean: boolean state with stable set, toggle, setTo (cached handler per value) and reset.",
       "files": [
-        "hooks/disclosure/useDisclosure.ts",
-        "hooks/disclosure/useDisclosure.types.ts"
+        "hooks/boolean/useBoolean.ts",
+        "hooks/boolean/useBoolean.types.ts"
       ]
     }
   }
