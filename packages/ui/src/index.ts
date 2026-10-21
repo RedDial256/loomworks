@@ -8,6 +8,12 @@ export type {
   DividerProps,
   DividerVariant,
 } from './components/divider/Divider.types';
+export { Input } from './components/input/Input';
+export type {
+  InputProps,
+  InputRef,
+  InputType,
+} from './components/input/Input.types';
 export { Skeleton } from './components/skeleton/Skeleton';
 export type { SkeletonProps } from './components/skeleton/Skeleton.types';
 export { Spinner, SPINNER_SIZES } from './components/spinner/Spinner';

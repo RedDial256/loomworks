@@ -1,0 +1,235 @@
+import { useImperativeHandle, useRef, useState } from 'react';
+import { TextInput, View } from 'react-native';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+
+import { easyA11y } from '../../utils/a11y/easyA11y';
+import { Skeleton } from '../skeleton/Skeleton';
+import { Text } from '../text/Text';
+import type { InputProps, InputType } from './Input.types';
+
+type TypeProps = Pick<
+  InputProps,
+  | 'keyboardType'
+  | 'inputMode'
+  | 'autoComplete'
+  | 'textContentType'
+  | 'secureTextEntry'
+  | 'autoCapitalize'
+  | 'autoCorrect'
+  | 'returnKeyType'
+>;
+
+/** Props each `type` sets together; any of them can be overridden by the user. */
+export const TYPE_PROPS: Record<InputType, TypeProps> = {
+  text: { autoCapitalize: 'sentences' },
+  email: {
+    keyboardType: 'email-address',
+    inputMode: 'email',
+    autoComplete: 'email',
+    textContentType: 'emailAddress',
+    autoCapitalize: 'none',
+    autoCorrect: false,
+  },
+  password: {
+    autoComplete: 'current-password',
+    textContentType: 'password',
+    secureTextEntry: true,
+    autoCapitalize: 'none',
+    autoCorrect: false,
+  },
+  number: {
+    keyboardType: 'number-pad',
+    inputMode: 'numeric',
+    autoCapitalize: 'none',
+  },
+  decimal: {
+    keyboardType: 'decimal-pad',
+    inputMode: 'decimal',
+    autoCapitalize: 'none',
+  },
+  phone: {
+    keyboardType: 'phone-pad',
+    inputMode: 'tel',
+    autoComplete: 'tel',
+    textContentType: 'telephoneNumber',
+    autoCapitalize: 'none',
+  },
+  url: {
+    keyboardType: 'url',
+    inputMode: 'url',
+    autoComplete: 'url',
+    textContentType: 'URL',
+    autoCapitalize: 'none',
+    autoCorrect: false,
+  },
+  search: {
+    inputMode: 'search',
+    returnKeyType: 'search',
+    autoCapitalize: 'none',
+    autoCorrect: false,
+  },
+};
+
+const DEFAULT_REQUIRED_MESSAGE = 'Required';
+
+/**
+ * Styled `TextInput` with label, hint and error, controlled or uncontrolled,
+ * and an imperative ref. Validation beyond `required` arrives with T22.
+ */
+export function Input({
+  type = 'text',
+  label,
+  hint,
+  error,
+  required,
+  requiredMessage = DEFAULT_REQUIRED_MESSAGE,
+  loading,
+  a11y,
+  value: controlled,
+  defaultValue = '',
+  onChangeText,
+  onFocus,
+  onBlur,
+  editable,
+  style,
+  ref,
+  ...rest
+}: InputProps) {
+  const { theme } = useUnistyles();
+  const inputRef = useRef<TextInput>(null);
+  const [uncontrolled, setUncontrolled] = useState(defaultValue);
+  const [focused, setFocused] = useState(false);
+  const [ownError, setOwnError] = useState<string>();
+
+  const value = controlled ?? uncontrolled;
+  const valueRef = useRef(value);
+  valueRef.current = value;
+  const shown = error ?? ownError;
+  const invalid = shown !== undefined;
+  styles.useVariants({ focused, invalid });
+
+  const check = (next: string) =>
+    required && next === '' ? requiredMessage : undefined;
+
+  const change = (next: string) => {
+    valueRef.current = next;
+    if (controlled === undefined) setUncontrolled(next);
+    // A stale "Required" would outlive the fix, so re-check while it shows.
+    if (ownError !== undefined) setOwnError(check(next));
+    onChangeText?.(next);
+  };
+
+  useImperativeHandle(ref, () => ({
+    get: () => valueRef.current,
+    set: change,
+    reset: () => {
+      change(defaultValue);
+      setOwnError(undefined);
+    },
+    focus: () => inputRef.current?.focus(),
+    blur: () => inputRef.current?.blur(),
+    clear: () => change(''),
+    validate: () => {
+      const message = check(valueRef.current);
+      setOwnError(message);
+      return message === undefined;
+    },
+  }));
+
+  const name = label && required ? `${label}, required` : label;
+  const labelNode = label ? (
+    <Text variant="label" a11y={{ hidden: true }}>
+      {label}
+      {required && (
+        <Text variant="label" a11y={{ hidden: true }} style={styles.asterisk}>
+          {' *'}
+        </Text>
+      )}
+    </Text>
+  ) : null;
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        {labelNode}
+        <Skeleton
+          height={theme.touchTarget.min}
+          radius="md"
+          a11y={{
+            label: name ? `Loading ${name}` : 'Loading',
+            hidden: false,
+            busy: true,
+          }}
+        />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {labelNode}
+      <TextInput
+        ref={inputRef}
+        {...TYPE_PROPS[type]}
+        placeholderTextColor={theme.colors.textMuted}
+        {...easyA11y({
+          label: name,
+          hint: shown ?? hint,
+          disabled: editable === false,
+          ...a11y,
+        })}
+        {...rest}
+        value={value}
+        editable={editable}
+        onChangeText={change}
+        onFocus={(event) => {
+          setFocused(true);
+          onFocus?.(event);
+        }}
+        onBlur={(event) => {
+          setFocused(false);
+          onBlur?.(event);
+        }}
+        style={[styles.field, style]}
+      />
+      {invalid ? (
+        <Text
+          variant="caption"
+          style={styles.error}
+          a11y={{ role: 'alert', live: 'assertive' }}>
+          {shown}
+        </Text>
+      ) : hint ? (
+        <Text variant="caption" tone="muted" a11y={{ hidden: true }}>
+          {hint}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create((theme) => ({
+  container: { gap: theme.spacing['2xs'] },
+  field: {
+    minHeight: theme.touchTarget.min,
+    paddingHorizontal: theme.spacing.sm,
+    borderWidth: 1,
+    borderRadius: theme.radii.md,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.text,
+    ...theme.typography.body,
+    variants: {
+      focused: {
+        true: { borderColor: theme.colors.focusRing },
+        false: {},
+      },
+      invalid: {
+        true: { borderColor: theme.colors.danger },
+        false: {},
+      },
+    },
+  },
+  asterisk: { color: theme.colors.danger },
+  error: { color: theme.colors.danger },
+}));
