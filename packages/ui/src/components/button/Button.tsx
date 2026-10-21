@@ -147,6 +147,8 @@ export function Button({
     [fades]
   );
 
+  // Not a fresh literal: the `hovered` key exists only in some React Native versions.
+  const state = { pressed, hovered: false };
   const blocked = disabled || pending;
   const typo = typography[LABELS[size]];
 
@@ -206,7 +208,7 @@ export function Button({
         { backgroundColor: background, borderColor: border },
         pressedStyle,
         // The animated component cannot take a function style, so resolve it here.
-        typeof style === 'function' ? style({ pressed }) : style,
+        typeof style === 'function' ? style(state) : style,
       ]}>
       <Text
         variant={LABELS[size]}
