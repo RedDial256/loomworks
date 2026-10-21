@@ -16,6 +16,8 @@ export type {
   SpinnerProps,
   SpinnerSize,
 } from './components/spinner/Spinner.types';
+export { Switch } from './components/switch/Switch';
+export type { SwitchProps } from './components/switch/Switch.types';
 export { Text } from './components/text/Text';
 export type { TextProps } from './components/text/Text.types';
 export { useDebounce } from './hooks/debounce/useDebounce';
