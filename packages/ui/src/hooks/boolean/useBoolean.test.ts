@@ -24,19 +24,19 @@ describe('useBoolean', () => {
     expect(result.current.value).toBe(false);
   });
 
-  it('setTo returns a handler that sets the value', async () => {
+  it('setter returns a handler that sets the value', async () => {
     const { result } = await renderHook(() => useBoolean(false));
-    await act(async () => result.current.setTo(true)());
+    await act(async () => result.current.setter(true)());
     expect(result.current.value).toBe(true);
-    await act(async () => result.current.setTo(false)());
+    await act(async () => result.current.setter(false)());
     expect(result.current.value).toBe(false);
   });
 
-  it('caches the setTo handler per value', async () => {
+  it('caches the setter handler per value', async () => {
     const { result } = await renderHook(() => useBoolean(false));
-    expect(result.current.setTo(true)).toBe(result.current.setTo(true));
-    expect(result.current.setTo(false)).toBe(result.current.setTo(false));
-    expect(result.current.setTo(true)).not.toBe(result.current.setTo(false));
+    expect(result.current.setter(true)).toBe(result.current.setter(true));
+    expect(result.current.setter(false)).toBe(result.current.setter(false));
+    expect(result.current.setter(true)).not.toBe(result.current.setter(false));
   });
 
   it('resets to the initial value', async () => {
@@ -61,14 +61,14 @@ describe('useBoolean', () => {
   it('keeps every function across renders', async () => {
     const { result } = await renderHook(() => useBoolean(false));
     const { set, toggle, reset } = result.current;
-    const setTrue = result.current.setTo(true);
-    const setFalse = result.current.setTo(false);
+    const setTrue = result.current.setter(true);
+    const setFalse = result.current.setter(false);
     await act(async () => result.current.toggle());
     expect(result.current.value).toBe(true);
     expect(result.current.set).toBe(set);
     expect(result.current.toggle).toBe(toggle);
     expect(result.current.reset).toBe(reset);
-    expect(result.current.setTo(true)).toBe(setTrue);
-    expect(result.current.setTo(false)).toBe(setFalse);
+    expect(result.current.setter(true)).toBe(setTrue);
+    expect(result.current.setter(false)).toBe(setFalse);
   });
 });

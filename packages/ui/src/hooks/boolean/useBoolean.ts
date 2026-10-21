@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import type { UseBooleanResult } from './useBoolean.types';
 
@@ -8,12 +8,11 @@ export function useBoolean(initial: boolean): UseBooleanResult {
   const initialRef = useRef(initial);
   const toggle = useCallback(() => set((current) => !current), []);
   const reset = useCallback(() => set(initialRef.current), []);
-  const setTo = useMemo(() => {
-    const handlers = {
-      true: () => set(true),
-      false: () => set(false),
-    };
-    return (next: boolean) => (next ? handlers.true : handlers.false);
-  }, []);
-  return { value, set, toggle, setTo, reset };
+  const setTrue = useCallback(() => set(true), []);
+  const setFalse = useCallback(() => set(false), []);
+  const setter = useCallback(
+    (next: boolean) => (next ? setTrue : setFalse),
+    [setTrue, setFalse]
+  );
+  return { value, set, toggle, setter, reset };
 }

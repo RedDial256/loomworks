@@ -124,7 +124,7 @@
     },
     "boolean": {
       "kind": "hook",
-      "description": "useBoolean: boolean state with stable set, toggle, setTo (cached handler per value) and reset.",
+      "description": "useBoolean: boolean state with stable set, toggle, setter (cached handler per value) and reset.",
       "files": [
         "hooks/boolean/useBoolean.ts",
         "hooks/boolean/useBoolean.types.ts"
