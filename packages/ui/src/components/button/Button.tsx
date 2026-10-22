@@ -158,39 +158,24 @@ export const Button: FC<ButtonProps> = ({
   onPressOut,
   ...rest
 }) => {
+  const [pressed, setPressed] = useState(false);
+
   const { theme } = useUnistyles();
   const { mode, duration, reduceMotion } = useMotion(
     'fade',
     motion.duration.fast
   );
-  const feedback = useSharedValue(0);
-  const [pressed, setPressed] = useState(false);
+
   const bare = BARE.includes(variant);
   const fades = bare || mode === 'fade';
   styles.useVariants({ size: bare ? 'bare' : size });
 
+  const feedback = useSharedValue(0);
   const pressedStyle = useAnimatedStyle(() => {
     const progress = feedback.get();
     if (fades) return { opacity: 1 - progress * (1 - PRESSED_OPACITY) };
     return { transform: [{ scale: 1 - progress * (1 - PRESSED_SCALE) }] };
   }, [fades]);
-
-  if (loading) {
-    return (
-      <Skeleton
-        height={loadingHeight(bare, size)}
-        radius="md"
-        a11y={{ label: 'Loading', hidden: false, ...a11y, busy: true }}
-      />
-    );
-  }
-
-  const { background, content, border } = buttonColors(
-    theme.colors,
-    variant,
-    color,
-    disabled
-  );
 
   const animate = (target: 0 | 1) => {
     let next: number = target;
@@ -213,6 +198,23 @@ export const Button: FC<ButtonProps> = ({
     animate(0);
     onPressOut?.(event);
   };
+
+  if (loading) {
+    return (
+      <Skeleton
+        height={loadingHeight(bare, size)}
+        radius="md"
+        a11y={{ label: 'Loading', hidden: false, ...a11y, busy: true }}
+      />
+    );
+  }
+
+  const { background, content, border } = buttonColors(
+    theme.colors,
+    variant,
+    color,
+    disabled
+  );
 
   // Not a fresh literal: the `hovered` key exists only in some React Native versions.
   const state = { pressed, hovered: false };
