@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import type {
+  PressableEvent,
+  PressableStateCallbackType,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -19,6 +23,7 @@ import {
 import { useMotion } from '../../hooks/reduced-motion/useReducedMotion';
 import { capitalize } from '../../utils/capitalize/capitalize';
 import { Pressable, touchHitSlop } from '../pressable/Pressable';
+import type { Insets } from '../pressable/Pressable.types';
 import { Skeleton } from '../skeleton/Skeleton';
 import { Spinner } from '../spinner/Spinner';
 import type { SpinnerColor } from '../spinner/Spinner.types';
@@ -107,6 +112,33 @@ export function buttonColors(
   }
 }
 
+/** `hitSlop` that brings a button up to the touch target; `undefined` when it already reaches it. */
+function buttonHitSlop(bare: boolean, size: ButtonSize): Insets | undefined {
+  if (bare) {
+    return touchHitSlop({
+      width: touchTarget.min,
+      height: typography[LABELS[size]].lineHeight,
+    });
+  }
+  if (size === 'S') return touchHitSlop(SMALL_HEIGHT);
+  return undefined;
+}
+
+/** The animated component cannot take a function style, so it is resolved here. */
+function resolveStyle(
+  style: ButtonProps['style'],
+  state: PressableStateCallbackType
+) {
+  if (typeof style === 'function') return style(state);
+  return style;
+}
+
+/** Skeleton height standing in for the button. */
+function loadingHeight(bare: boolean, size: ButtonSize): number {
+  if (bare) return typography[LABELS[size]].lineHeight;
+  return BUTTON_HEIGHTS[size];
+}
+
 /**
  * Button over the kit `Pressable`. It decides the press feedback: a spring
  * scale (opacity for `link` and `text`), a fade under reduced motion.
@@ -134,26 +166,19 @@ export function Button({
   const feedback = useSharedValue(0);
   const [pressed, setPressed] = useState(false);
   const bare = BARE.includes(variant);
+  const fades = bare || mode === 'fade';
   styles.useVariants({ size: bare ? 'bare' : size });
 
-  const fades = bare || mode === 'fade';
-  const pressedStyle = useAnimatedStyle(
-    () =>
-      fades
-        ? { opacity: 1 - feedback.get() * (1 - PRESSED_OPACITY) }
-        : { transform: [{ scale: 1 - feedback.get() * (1 - PRESSED_SCALE) }] },
-    [fades]
-  );
-
-  // Not a fresh literal: the `hovered` key exists only in some React Native versions.
-  const state = { pressed, hovered: false };
-  const blocked = disabled || pending;
-  const typo = typography[LABELS[size]];
+  const pressedStyle = useAnimatedStyle(() => {
+    const progress = feedback.get();
+    if (fades) return { opacity: 1 - progress * (1 - PRESSED_OPACITY) };
+    return { transform: [{ scale: 1 - progress * (1 - PRESSED_SCALE) }] };
+  }, [fades]);
 
   if (loading) {
     return (
       <Skeleton
-        height={bare ? typo.lineHeight : BUTTON_HEIGHTS[size]}
+        height={loadingHeight(bare, size)}
         radius="md"
         a11y={{ label: 'Loading', hidden: false, ...a11y, busy: true }}
       />
@@ -167,55 +192,57 @@ export function Button({
     disabled
   );
 
-  const animate = (pressed: boolean) => {
-    const target = pressed ? 1 : 0;
-    feedback.set(
-      mode === 'static'
-        ? target
-        : fades
-          ? withTiming(target, { duration, reduceMotion })
-          : withSpring(target, { ...motion.spring.snappy, reduceMotion })
-    );
-  };
+  function animate(target: 0 | 1) {
+    if (mode === 'static') {
+      feedback.set(target);
+    } else if (fades) {
+      feedback.set(withTiming(target, { duration, reduceMotion }));
+    } else {
+      feedback.set(
+        withSpring(target, { ...motion.spring.snappy, reduceMotion })
+      );
+    }
+  }
+
+  function handlePressIn(event: PressableEvent) {
+    setPressed(true);
+    animate(1);
+    onPressIn?.(event);
+  }
+
+  function handlePressOut(event: PressableEvent) {
+    setPressed(false);
+    animate(0);
+    onPressOut?.(event);
+  }
+
+  // Not a fresh literal: the `hovered` key exists only in some React Native versions.
+  const state = { pressed, hovered: false };
+  const buttonStyle = [
+    styles.button,
+    { backgroundColor: background, borderColor: border },
+    pressedStyle,
+    resolveStyle(style, state),
+  ];
+  const labelStyle = [
+    styles.label,
+    { color: content },
+    variant === 'link' && styles.underline,
+    pending && styles.hidden,
+  ];
 
   return (
     <AnimatedPressable
       {...rest}
       a11y={{ role: 'button', busy: pending || undefined, ...a11y }}
-      disabled={blocked}
-      hitSlop={
-        hitSlop ??
-        (bare
-          ? touchHitSlop({ width: touchTarget.min, height: typo.lineHeight })
-          : size === 'S'
-            ? touchHitSlop(SMALL_HEIGHT)
-            : undefined)
-      }
-      onPressIn={(event) => {
-        setPressed(true);
-        animate(true);
-        onPressIn?.(event);
-      }}
-      onPressOut={(event) => {
-        setPressed(false);
-        animate(false);
-        onPressOut?.(event);
-      }}
-      style={[
-        styles.button,
-        { backgroundColor: background, borderColor: border },
-        pressedStyle,
-        // The animated component cannot take a function style, so resolve it here.
-        typeof style === 'function' ? style(state) : style,
-      ]}>
+      disabled={disabled || pending}
+      hitSlop={hitSlop ?? buttonHitSlop(bare, size)}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={buttonStyle}>
       <Text
         variant={LABELS[size]}
-        style={[
-          styles.label,
-          { color: content },
-          variant === 'link' && styles.underline,
-          pending && styles.hidden,
-        ]}
+        style={labelStyle}
         a11y={{ hidden: pending }}>
         {children}
       </Text>
