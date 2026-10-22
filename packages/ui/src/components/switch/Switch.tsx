@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { type FC, useCallback } from 'react';
 import { Pressable, Switch as NativeSwitch, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -7,12 +7,12 @@ import { type ThemeColors, touchTarget } from '@/theme';
 import { easyA11y } from '../../utils/a11y/easyA11y';
 import { Skeleton } from '../skeleton/Skeleton';
 import { Text } from '../text/Text';
-import type { SwitchProps } from './Switch.types';
+import type { SwitchProps, ThemedSwitchProps } from './Switch.types';
 
 /** Intrinsic size of the native switch, close to both platforms. */
 const TRACK = { width: 51, height: 31 } as const;
 
-function switchColors(colors: ThemeColors, disabled: boolean) {
+const switchColors = (colors: ThemeColors, disabled: boolean) => {
   if (disabled) {
     return {
       off: colors.surfaceSunken,
@@ -25,25 +25,27 @@ function switchColors(colors: ThemeColors, disabled: boolean) {
     on: colors.primary,
     thumb: colors.onPrimary,
   };
-}
+};
 
 /** `testID` of the native switch, derived so tests can reach it when the row owns the `testID`. */
-function nativeTestID(testID?: string) {
+const nativeTestID = (testID?: string) => {
   if (testID === undefined) return undefined;
   return `${testID}-native`;
-}
+};
 
 /**
  * Themed native `Switch`, controlled only. With a `label` the whole row is
  * pressable and the row, not the switch, is the accessible element.
  */
-export function Switch(props: SwitchProps) {
+const Switch: FC<SwitchProps> = (props) => {
   if (props.loading) return <SwitchLoading {...props} />;
   if (props.label) return <SwitchRow {...props} />;
   return <SwitchBare {...props} />;
-}
+};
 
-function SwitchLoading({ label, a11y, style, testID }: SwitchProps) {
+export { Switch };
+
+const SwitchLoading: FC<SwitchProps> = ({ label, a11y, style, testID }) => {
   const skeleton = (
     <Skeleton
       width={TRACK.width}
@@ -71,16 +73,16 @@ function SwitchLoading({ label, a11y, style, testID }: SwitchProps) {
       {skeleton}
     </View>
   );
-}
+};
 
-function SwitchBare({
+const SwitchBare: FC<SwitchProps> = ({
   value,
   onValueChange,
   disabled = false,
   a11y,
   style,
   testID,
-}: SwitchProps) {
+}) => {
   const a11yProps = easyA11y({
     role: 'switch',
     checked: value,
@@ -98,9 +100,9 @@ function SwitchBare({
       />
     </View>
   );
-}
+};
 
-function SwitchRow({
+const SwitchRow: FC<SwitchProps> = ({
   value,
   onValueChange,
   label,
@@ -108,7 +110,7 @@ function SwitchRow({
   a11y,
   style,
   testID,
-}: SwitchProps) {
+}) => {
   const a11yProps = easyA11y({
     role: 'switch',
     label,
@@ -141,23 +143,15 @@ function SwitchRow({
       />
     </Pressable>
   );
-}
-
-type ThemedSwitchProps = Pick<
-  SwitchProps,
-  'value' | 'onValueChange' | 'testID'
-> & {
-  disabled: boolean;
-  a11yProps: ReturnType<typeof easyA11y>;
 };
 
-function ThemedSwitch({
+const ThemedSwitch: FC<ThemedSwitchProps> = ({
   value,
   onValueChange,
   disabled,
   testID,
   a11yProps,
-}: ThemedSwitchProps) {
+}) => {
   const { theme } = useUnistyles();
   const { off, on, thumb } = switchColors(theme.colors, disabled);
   return (
@@ -172,7 +166,7 @@ function ThemedSwitch({
       {...a11yProps}
     />
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
