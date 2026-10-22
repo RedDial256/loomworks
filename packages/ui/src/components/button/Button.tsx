@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type FC, useState } from 'react';
 import type {
   PressableEvent,
   PressableStateCallbackType,
@@ -55,12 +55,12 @@ interface ButtonColors {
 }
 
 /** Colors of a variant × family, in the theme's roles. */
-export function buttonColors(
+export const buttonColors = (
   colors: Record<ColorRole, string>,
   variant: ButtonVariant,
   family: ColorFamily,
   disabled: boolean
-): ButtonColors {
+): ButtonColors => {
   const on = capitalize(family);
   const solid = colors[family];
   const onSolid = colors[`on${on}` as ColorRole];
@@ -110,10 +110,10 @@ export function buttonColors(
         border: 'transparent',
       };
   }
-}
+};
 
 /** `hitSlop` that brings a button up to the touch target; `undefined` when it already reaches it. */
-function buttonHitSlop(bare: boolean, size: ButtonSize): Insets | undefined {
+const buttonHitSlop = (bare: boolean, size: ButtonSize): Insets | undefined => {
   if (bare) {
     return touchHitSlop({
       width: touchTarget.min,
@@ -122,28 +122,28 @@ function buttonHitSlop(bare: boolean, size: ButtonSize): Insets | undefined {
   }
   if (size === 'S') return touchHitSlop(SMALL_HEIGHT);
   return undefined;
-}
+};
 
 /** The animated component cannot take a function style, so it is resolved here. */
-function resolveStyle(
+const resolveStyle = (
   style: ButtonProps['style'],
   state: PressableStateCallbackType
-) {
+) => {
   if (typeof style === 'function') return style(state);
   return style;
-}
+};
 
 /** Skeleton height standing in for the button. */
-function loadingHeight(bare: boolean, size: ButtonSize): number {
+const loadingHeight = (bare: boolean, size: ButtonSize): number => {
   if (bare) return typography[LABELS[size]].lineHeight;
   return BUTTON_HEIGHTS[size];
-}
+};
 
 /**
  * Button over the kit `Pressable`. It decides the press feedback: a spring
  * scale (opacity for `link` and `text`), a fade under reduced motion.
  */
-export function Button({
+export const Button: FC<ButtonProps> = ({
   children,
   variant = 'solid',
   color = 'primary',
@@ -157,7 +157,7 @@ export function Button({
   onPressIn,
   onPressOut,
   ...rest
-}: ButtonProps) {
+}) => {
   const { theme } = useUnistyles();
   const { mode, duration, reduceMotion } = useMotion(
     'fade',
@@ -192,29 +192,27 @@ export function Button({
     disabled
   );
 
-  function animate(target: 0 | 1) {
-    if (mode === 'static') {
-      feedback.set(target);
-    } else if (fades) {
-      feedback.set(withTiming(target, { duration, reduceMotion }));
-    } else {
-      feedback.set(
-        withSpring(target, { ...motion.spring.snappy, reduceMotion })
-      );
+  const animate = (target: 0 | 1) => {
+    let next: number = target;
+    if (mode !== 'static' && fades) {
+      next = withTiming(target, { duration, reduceMotion });
+    } else if (mode !== 'static') {
+      next = withSpring(target, { ...motion.spring.snappy, reduceMotion });
     }
-  }
+    feedback.set(next);
+  };
 
-  function handlePressIn(event: PressableEvent) {
+  const handlePressIn = (event: PressableEvent) => {
     setPressed(true);
     animate(1);
     onPressIn?.(event);
-  }
+  };
 
-  function handlePressOut(event: PressableEvent) {
+  const handlePressOut = (event: PressableEvent) => {
     setPressed(false);
     animate(0);
     onPressOut?.(event);
-  }
+  };
 
   // Not a fresh literal: the `hovered` key exists only in some React Native versions.
   const state = { pressed, hovered: false };
@@ -256,7 +254,7 @@ export function Button({
       )}
     </AnimatedPressable>
   );
-}
+};
 
 const styles = StyleSheet.create((theme) => ({
   button: {
