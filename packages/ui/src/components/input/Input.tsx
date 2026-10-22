@@ -135,16 +135,6 @@ export const Input: FC<InputProps> = ({
     onChangeText?.(next);
   };
 
-  const handleFocus: TextInputProps['onFocus'] = (event) => {
-    setFocused(true);
-    onFocus?.(event);
-  };
-
-  const handleBlur: TextInputProps['onBlur'] = (event) => {
-    setFocused(false);
-    onBlur?.(event);
-  };
-
   useEffect(() => {
     valueRef.current = value;
   }, [value]);
@@ -167,6 +157,16 @@ export const Input: FC<InputProps> = ({
       </View>
     );
   }
+
+  const handleFocus: TextInputProps['onFocus'] = (event) => {
+    setFocused(true);
+    onFocus?.(event);
+  };
+
+  const handleBlur: TextInputProps['onBlur'] = (event) => {
+    setFocused(false);
+    onBlur?.(event);
+  };
 
   return (
     <View style={styles.container}>
