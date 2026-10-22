@@ -177,6 +177,16 @@ export const Button: FC<ButtonProps> = ({
     return { transform: [{ scale: 1 - progress * (1 - PRESSED_SCALE) }] };
   }, [fades]);
 
+  if (loading) {
+    return (
+      <Skeleton
+        height={loadingHeight(bare, size)}
+        radius="md"
+        a11y={{ label: 'Loading', hidden: false, ...a11y, busy: true }}
+      />
+    );
+  }
+
   const animate = (target: 0 | 1) => {
     let next: number = target;
     if (mode !== 'static' && fades) {
@@ -198,16 +208,6 @@ export const Button: FC<ButtonProps> = ({
     animate(0);
     onPressOut?.(event);
   };
-
-  if (loading) {
-    return (
-      <Skeleton
-        height={loadingHeight(bare, size)}
-        radius="md"
-        a11y={{ label: 'Loading', hidden: false, ...a11y, busy: true }}
-      />
-    );
-  }
 
   const { background, content, border } = buttonColors(
     theme.colors,
