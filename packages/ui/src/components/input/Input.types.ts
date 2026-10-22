@@ -48,3 +48,20 @@ export interface InputProps extends Omit<TextInputProps, 'ref'> {
   a11y?: A11y;
   ref?: Ref<InputRef>;
 }
+
+/** Props each `type` sets together. */
+export type InputTypeProps = Pick<
+  InputProps,
+  | 'keyboardType'
+  | 'inputMode'
+  | 'autoComplete'
+  | 'textContentType'
+  | 'secureTextEntry'
+  | 'autoCapitalize'
+  | 'autoCorrect'
+  | 'returnKeyType'
+>;
+
+export type InputLabelProps = Pick<InputProps, 'label' | 'required'>;
+
+export type InputMessageProps = Pick<InputProps, 'error' | 'hint'>;

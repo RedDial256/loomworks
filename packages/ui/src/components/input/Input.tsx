@@ -1,32 +1,22 @@
-import {
-  type FC,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
-import { TextInput, type TextInputProps, View } from 'react-native';
+import type { FC } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import type { TextInputProps } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
 import { Skeleton } from '../skeleton/Skeleton';
 import { Text } from '../text/Text';
-import type { InputProps, InputType } from './Input.types';
-
-type TypeProps = Pick<
+import type {
+  InputLabelProps,
+  InputMessageProps,
   InputProps,
-  | 'keyboardType'
-  | 'inputMode'
-  | 'autoComplete'
-  | 'textContentType'
-  | 'secureTextEntry'
-  | 'autoCapitalize'
-  | 'autoCorrect'
-  | 'returnKeyType'
->;
+  InputType,
+  InputTypeProps,
+} from './Input.types';
 
 /** Props each `type` sets together; any of them can be overridden by the user. */
-export const TYPE_PROPS: Record<InputType, TypeProps> = {
+export const TYPE_PROPS: Record<InputType, InputTypeProps> = {
   text: { autoCapitalize: 'sentences' },
   email: {
     keyboardType: 'email-address',
@@ -101,34 +91,19 @@ export const Input: FC<InputProps> = ({
   ref,
   ...rest
 }) => {
-  const { theme } = useUnistyles();
-  const inputRef = useRef<TextInput>(null);
   const [uncontrolled, setUncontrolled] = useState(defaultValue);
   const [focused, setFocused] = useState(false);
   const [ownError, setOwnError] = useState<string>();
 
+  const inputRef = useRef<TextInput>(null);
   const value = controlled ?? uncontrolled;
   // Read by the ref methods, so `get` and `validate` see a `set` before the next render.
   const valueRef = useRef(value);
-  useEffect(() => {
-    valueRef.current = value;
-  }, [value]);
+
+  const { theme } = useUnistyles();
   const shown = error ?? ownError;
   const invalid = shown !== undefined;
   styles.useVariants({ focused, invalid });
-
-  const check = (next: string) => {
-    if (required && next === '') return requiredMessage;
-    return undefined;
-  };
-
-  const change = (next: string) => {
-    valueRef.current = next;
-    if (controlled === undefined) setUncontrolled(next);
-    // A stale "Required" would outlive the fix, so re-check while it shows.
-    if (ownError !== undefined) setOwnError(check(next));
-    onChangeText?.(next);
-  };
 
   useImperativeHandle(ref, () => ({
     get: () => valueRef.current,
@@ -147,6 +122,19 @@ export const Input: FC<InputProps> = ({
     },
   }));
 
+  const check = (next: string) => {
+    if (required && next === '') return requiredMessage;
+    return undefined;
+  };
+
+  const change = (next: string) => {
+    valueRef.current = next;
+    if (controlled === undefined) setUncontrolled(next);
+    // A stale "Required" would outlive the fix, so re-check while it shows.
+    if (ownError !== undefined) setOwnError(check(next));
+    onChangeText?.(next);
+  };
+
   const handleFocus: TextInputProps['onFocus'] = (event) => {
     setFocused(true);
     onFocus?.(event);
@@ -156,6 +144,10 @@ export const Input: FC<InputProps> = ({
     setFocused(false);
     onBlur?.(event);
   };
+
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   const name = label && required ? `${label}, required` : label;
 
@@ -202,10 +194,7 @@ export const Input: FC<InputProps> = ({
   );
 };
 
-const Label: FC<Pick<InputProps, 'label' | 'required'>> = ({
-  label,
-  required,
-}) => {
+const Label: FC<InputLabelProps> = ({ label, required }) => {
   if (!label) return null;
   return (
     <Text variant="label" a11y={{ hidden: true }}>
@@ -220,7 +209,7 @@ const Label: FC<Pick<InputProps, 'label' | 'required'>> = ({
 };
 
 /** The error replaces the hint; the hint is read through the field's accessibility hint. */
-const Message: FC<Pick<InputProps, 'error' | 'hint'>> = ({ error, hint }) => {
+const Message: FC<InputMessageProps> = ({ error, hint }) => {
   if (error !== undefined) {
     return (
       <Text
