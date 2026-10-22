@@ -17,6 +17,7 @@ import {
 } from '@/theme';
 
 import { useMotion } from '../../hooks/reduced-motion/useReducedMotion';
+import { capitalize } from '../../utils/capitalize/capitalize';
 import { Pressable, touchHitSlop } from '../pressable/Pressable';
 import { Skeleton } from '../skeleton/Skeleton';
 import { Spinner } from '../spinner/Spinner';
@@ -105,9 +106,6 @@ export function buttonColors(
       };
   }
 }
-
-const capitalize = (value: string) =>
-  value.charAt(0).toUpperCase() + value.slice(1);
 
 /**
  * Button over the kit `Pressable`. It decides the press feedback: a spring

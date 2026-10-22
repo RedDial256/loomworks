@@ -44,3 +44,4 @@ export type {
 } from './hooks/reduced-motion/useReducedMotion.types';
 export { easyA11y } from './utils/a11y/easyA11y';
 export type { A11y, A11yAction, A11yProps } from './utils/a11y/easyA11y.types';
+export { capitalize } from './utils/capitalize/capitalize';
