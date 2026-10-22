@@ -151,7 +151,7 @@ export function Input({
     onBlur?.(event);
   };
 
-  const name = accessibleName(label, required);
+  const name = label && required ? `${label}, required` : label;
 
   if (loading) {
     return (
@@ -160,7 +160,11 @@ export function Input({
         <Skeleton
           height={theme.touchTarget.min}
           radius="md"
-          a11y={{ label: loadingLabel(name), hidden: false, busy: true }}
+          a11y={{
+            label: name ? `Loading ${name}` : 'Loading',
+            hidden: false,
+            busy: true,
+          }}
         />
       </View>
     );
@@ -190,16 +194,6 @@ export function Input({
       <Message error={shown} hint={hint} />
     </View>
   );
-}
-
-function accessibleName(label?: string, required?: boolean) {
-  if (label && required) return `${label}, required`;
-  return label;
-}
-
-function loadingLabel(name?: string) {
-  if (name) return `Loading ${name}`;
-  return 'Loading';
 }
 
 function Label({ label, required }: Pick<InputProps, 'label' | 'required'>) {
