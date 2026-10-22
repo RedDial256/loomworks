@@ -1,8 +1,10 @@
-import { type FC, useCallback } from 'react';
+import type { FC } from 'react';
+import { useCallback } from 'react';
 import { Pressable, Switch as NativeSwitch, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
-import { type ThemeColors, touchTarget } from '@/theme';
+import type { ThemeColors } from '@/theme';
+import { touchTarget } from '@/theme';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
 import { Skeleton } from '../skeleton/Skeleton';
