@@ -105,6 +105,19 @@ export const Input: FC<InputProps> = ({
   const invalid = shown !== undefined;
   styles.useVariants({ focused, invalid });
 
+  const check = (next: string) => {
+    if (required && next === '') return requiredMessage;
+    return undefined;
+  };
+
+  const change = (next: string) => {
+    valueRef.current = next;
+    if (controlled === undefined) setUncontrolled(next);
+    // A stale "Required" would outlive the fix, so re-check while it shows.
+    if (ownError !== undefined) setOwnError(check(next));
+    onChangeText?.(next);
+  };
+
   useImperativeHandle(ref, () => ({
     get: () => valueRef.current,
     set: change,
@@ -121,19 +134,6 @@ export const Input: FC<InputProps> = ({
       return message === undefined;
     },
   }));
-
-  const check = (next: string) => {
-    if (required && next === '') return requiredMessage;
-    return undefined;
-  };
-
-  const change = (next: string) => {
-    valueRef.current = next;
-    if (controlled === undefined) setUncontrolled(next);
-    // A stale "Required" would outlive the fix, so re-check while it shows.
-    if (ownError !== undefined) setOwnError(check(next));
-    onChangeText?.(next);
-  };
 
   useEffect(() => {
     valueRef.current = value;
