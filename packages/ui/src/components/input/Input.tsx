@@ -1,5 +1,5 @@
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput, type TextInputProps, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
@@ -111,8 +111,10 @@ export function Input({
   const invalid = shown !== undefined;
   styles.useVariants({ focused, invalid });
 
-  const check = (next: string) =>
-    required && next === '' ? requiredMessage : undefined;
+  const check = (next: string) => {
+    if (required && next === '') return requiredMessage;
+    return undefined;
+  };
 
   const change = (next: string) => {
     valueRef.current = next;
@@ -139,30 +141,26 @@ export function Input({
     },
   }));
 
-  const name = label && required ? `${label}, required` : label;
-  const labelNode = label ? (
-    <Text variant="label" a11y={{ hidden: true }}>
-      {label}
-      {required && (
-        <Text variant="label" a11y={{ hidden: true }} style={styles.asterisk}>
-          {' *'}
-        </Text>
-      )}
-    </Text>
-  ) : null;
+  const handleFocus: TextInputProps['onFocus'] = (event) => {
+    setFocused(true);
+    onFocus?.(event);
+  };
+
+  const handleBlur: TextInputProps['onBlur'] = (event) => {
+    setFocused(false);
+    onBlur?.(event);
+  };
+
+  const name = accessibleName(label, required);
 
   if (loading) {
     return (
       <View style={styles.container}>
-        {labelNode}
+        <Label label={label} required={required} />
         <Skeleton
           height={theme.touchTarget.min}
           radius="md"
-          a11y={{
-            label: name ? `Loading ${name}` : 'Loading',
-            hidden: false,
-            busy: true,
-          }}
+          a11y={{ label: loadingLabel(name), hidden: false, busy: true }}
         />
       </View>
     );
@@ -170,7 +168,7 @@ export function Input({
 
   return (
     <View style={styles.container}>
-      {labelNode}
+      <Label label={label} required={required} />
       <TextInput
         ref={inputRef}
         {...TYPE_PROPS[type]}
@@ -185,29 +183,56 @@ export function Input({
         value={value}
         editable={editable}
         onChangeText={change}
-        onFocus={(event) => {
-          setFocused(true);
-          onFocus?.(event);
-        }}
-        onBlur={(event) => {
-          setFocused(false);
-          onBlur?.(event);
-        }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         style={[styles.field, style]}
       />
-      {invalid ? (
-        <Text
-          variant="caption"
-          style={styles.error}
-          a11y={{ role: 'alert', live: 'assertive' }}>
-          {shown}
-        </Text>
-      ) : hint ? (
-        <Text variant="caption" tone="muted" a11y={{ hidden: true }}>
-          {hint}
-        </Text>
-      ) : null}
+      <Message error={shown} hint={hint} />
     </View>
+  );
+}
+
+function accessibleName(label?: string, required?: boolean) {
+  if (label && required) return `${label}, required`;
+  return label;
+}
+
+function loadingLabel(name?: string) {
+  if (name) return `Loading ${name}`;
+  return 'Loading';
+}
+
+function Label({ label, required }: Pick<InputProps, 'label' | 'required'>) {
+  if (!label) return null;
+  return (
+    <Text variant="label" a11y={{ hidden: true }}>
+      {label}
+      {required && (
+        <Text variant="label" a11y={{ hidden: true }} style={styles.asterisk}>
+          {' *'}
+        </Text>
+      )}
+    </Text>
+  );
+}
+
+/** The error replaces the hint; the hint is read through the field's accessibility hint. */
+function Message({ error, hint }: Pick<InputProps, 'error' | 'hint'>) {
+  if (error !== undefined) {
+    return (
+      <Text
+        variant="caption"
+        style={styles.error}
+        a11y={{ role: 'alert', live: 'assertive' }}>
+        {error}
+      </Text>
+    );
+  }
+  if (!hint) return null;
+  return (
+    <Text variant="caption" tone="muted" a11y={{ hidden: true }}>
+      {hint}
+    </Text>
   );
 }
 
