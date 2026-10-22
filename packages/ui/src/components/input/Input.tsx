@@ -1,4 +1,10 @@
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+  type FC,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { TextInput, type TextInputProps, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -76,7 +82,7 @@ const DEFAULT_REQUIRED_MESSAGE = 'Required';
  * Styled `TextInput` with label, hint and error, controlled or uncontrolled,
  * and an imperative ref. Validation beyond `required` arrives with T22.
  */
-export function Input({
+export const Input: FC<InputProps> = ({
   type = 'text',
   label,
   hint,
@@ -94,7 +100,7 @@ export function Input({
   style,
   ref,
   ...rest
-}: InputProps) {
+}) => {
   const { theme } = useUnistyles();
   const inputRef = useRef<TextInput>(null);
   const [uncontrolled, setUncontrolled] = useState(defaultValue);
@@ -194,9 +200,12 @@ export function Input({
       <Message error={shown} hint={hint} />
     </View>
   );
-}
+};
 
-function Label({ label, required }: Pick<InputProps, 'label' | 'required'>) {
+const Label: FC<Pick<InputProps, 'label' | 'required'>> = ({
+  label,
+  required,
+}) => {
   if (!label) return null;
   return (
     <Text variant="label" a11y={{ hidden: true }}>
@@ -208,10 +217,10 @@ function Label({ label, required }: Pick<InputProps, 'label' | 'required'>) {
       )}
     </Text>
   );
-}
+};
 
 /** The error replaces the hint; the hint is read through the field's accessibility hint. */
-function Message({ error, hint }: Pick<InputProps, 'error' | 'hint'>) {
+const Message: FC<Pick<InputProps, 'error' | 'hint'>> = ({ error, hint }) => {
   if (error !== undefined) {
     return (
       <Text
@@ -228,7 +237,7 @@ function Message({ error, hint }: Pick<InputProps, 'error' | 'hint'>) {
       {hint}
     </Text>
   );
-}
+};
 
 const styles = StyleSheet.create((theme) => ({
   container: { gap: theme.spacing['2xs'] },
