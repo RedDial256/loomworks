@@ -1,7 +1,6 @@
 import { spawn } from 'node:child_process';
 import { access } from 'node:fs/promises';
 import { join } from 'node:path';
-
 import semver from 'semver';
 
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun';
@@ -37,9 +36,9 @@ const lockfiles: [string, PackageManager][] = [
 ];
 
 /** Lockfile first, then the agent that launched loom, then npm. */
-export async function detectPackageManager(
+export const detectPackageManager = async (
   cwd: string
-): Promise<PackageManager> {
+): Promise<PackageManager> => {
   for (const [file, pm] of lockfiles) {
     if (
       await access(join(cwd, file)).then(
@@ -54,20 +53,20 @@ export async function detectPackageManager(
   return agent === 'pnpm' || agent === 'yarn' || agent === 'bun'
     ? agent
     : 'npm';
-}
+};
 
-export function addCommand(
+export const addCommand = (
   pm: PackageManager,
   specs: string[]
-): [string, string[]] {
+): [string, string[]] => {
   return [pm, [pm === 'npm' ? 'install' : 'add', ...specs]];
-}
+};
 
 /** `expo install` resolves the version Expo pins for the project's SDK. */
-export function expoInstallCommand(
+export const expoInstallCommand = (
   pm: PackageManager,
   names: string[]
-): [string, string[]] {
+): [string, string[]] => {
   const exec: Record<PackageManager, string[]> = {
     npm: ['npx'],
     pnpm: ['pnpm', 'exec'],
@@ -76,7 +75,7 @@ export function expoInstallCommand(
   };
   const [command, ...prefix] = exec[pm] as [string, ...string[]];
   return [command, [...prefix, 'expo', 'install', ...names]];
-}
+};
 
 export interface PackageJson {
   main?: string;
@@ -91,10 +90,10 @@ export const declaredRange = (pkg: PackageJson, name: string) =>
  * Packages to install as `name@range`: missing ones, and ones whose declared range
  * starts below the required range. Non-semver specs (workspace:, git, file:) are trusted.
  */
-export function missingPackages(
+export const missingPackages = (
   pkg: PackageJson,
   required: Record<string, string>
-): string[] {
+): string[] => {
   return Object.entries(required)
     .filter(([name, range]) => {
       const declared = declaredRange(pkg, name);
@@ -105,4 +104,4 @@ export function missingPackages(
       return min !== null && !semver.satisfies(min, range);
     })
     .map(([name, range]) => `${name}@${range}`);
-}
+};

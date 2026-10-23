@@ -1,4 +1,5 @@
 import type { Insets } from 'react-native';
+
 import type { PressableProps as GesturePressableProps } from 'react-native-gesture-handler';
 
 import type { A11y } from '../../utils/a11y/easyA11y.types';

@@ -1,6 +1,7 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { createRef } from 'react';
 import { TextInput } from 'react-native';
+
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import { light } from '@/theme';
 

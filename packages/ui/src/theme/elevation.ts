@@ -17,10 +17,10 @@ const levels = {
 } as const;
 
 /** Builds the shadow per level; dark themes pass `opacityScale` 0.5. */
-export function createElevation(
+export const createElevation = (
   shadowColor: string,
   opacityScale = 1
-): Record<ElevationLevel, ShadowStyle> {
+): Record<ElevationLevel, ShadowStyle> => {
   const style = (level: ElevationLevel): ShadowStyle => {
     const { elevation, height, shadowRadius, shadowOpacity } = levels[level];
     return {
@@ -37,4 +37,4 @@ export function createElevation(
     md: style('md'),
     lg: style('lg'),
   };
-}
+};

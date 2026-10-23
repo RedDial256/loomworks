@@ -1,6 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, posix } from 'node:path';
-
 import { z } from 'zod';
 
 import { isThemePath } from '../registry/schema';
@@ -40,7 +39,9 @@ export const defaultConfig = (): LoomConfig => ({
   items: {},
 });
 
-export async function readConfig(cwd: string): Promise<LoomConfig | undefined> {
+export const readConfig = async (
+  cwd: string
+): Promise<LoomConfig | undefined> => {
   let raw: string;
   try {
     raw = await readFile(join(cwd, CONFIG_FILE), 'utf8');
@@ -54,21 +55,24 @@ export async function readConfig(cwd: string): Promise<LoomConfig | undefined> {
     );
   }
   return result.data;
-}
+};
 
-export async function writeConfig(cwd: string, config: LoomConfig) {
+export const writeConfig = async (cwd: string, config: LoomConfig) => {
   await writeFile(
     join(cwd, CONFIG_FILE),
     `${JSON.stringify(config, null, 2)}\n`
   );
-}
+};
 
 /** Project-relative target of a registry file. */
-export function targetPath(config: LoomConfig, registryPath: string): string {
+export const targetPath = (
+  config: LoomConfig,
+  registryPath: string
+): string => {
   return isThemePath(registryPath)
     ? posix.join(config.paths.theme, registryPath.slice('theme/'.length))
     : posix.join(config.paths.ui, registryPath);
-}
+};
 
 /** The Unistyles Babel plugin `root`: the top folder holding loom's styled files. */
 export const babelRoot = (config: LoomConfig) =>

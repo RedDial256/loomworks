@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { easyA11y } from '../../../utils/a11y/easyA11y';
 import type { SwitchProps } from '../Switch.types';
 import { styles } from '../Switch.utils';
+
 import { ThemedSwitch } from './ThemedSwitch';
 
 export const SwitchBare: FC<SwitchProps> = ({

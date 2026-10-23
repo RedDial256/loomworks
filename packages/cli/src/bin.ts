@@ -1,8 +1,7 @@
 #!/usr/bin/env node
+import { intro, log, outro } from '@clack/prompts';
 import { resolve } from 'node:path';
 import { parseArgs } from 'node:util';
-
-import { intro, log, outro } from '@clack/prompts';
 
 import { add } from './commands/add';
 import { init } from './commands/init';
@@ -25,7 +24,7 @@ Options:
   -v, --version           Show the version
 `;
 
-async function main() {
+const main = async () => {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
     allowNegative: true,
@@ -80,21 +79,21 @@ async function main() {
     default:
       throw new Error(`Unknown command "${command}".\n\n${HELP}`);
   }
-}
+};
 
-function printFiles({ written, unchanged, skipped }: WriteReport) {
+const printFiles = ({ written, unchanged, skipped }: WriteReport) => {
   if (written.length) log.success(`Wrote ${written.length} file(s)`);
   if (unchanged.length) {
     log.info(`${unchanged.length} file(s) already up to date`);
   }
   for (const file of skipped) log.warn(`Skipped ${file}`);
-}
+};
 
-function printPackages(packages: string[], installed: boolean) {
+const printPackages = (packages: string[], installed: boolean) => {
   if (!packages.length) return;
   if (installed) log.success(`Installed ${packages.join(' ')}`);
   else log.warn(`Install skipped. Missing packages: ${packages.join(' ')}`);
-}
+};
 
 main().catch((error: unknown) => {
   log.error(error instanceof Error ? error.message : String(error));

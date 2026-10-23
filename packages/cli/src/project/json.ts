@@ -1,5 +1,3 @@
-import { readFile, writeFile } from 'node:fs/promises';
-
 import {
   applyEdits,
   type JSONPath,
@@ -7,14 +5,15 @@ import {
   parse,
   type ParseError,
 } from 'jsonc-parser';
+import { readFile, writeFile } from 'node:fs/promises';
 
 export type JsonEdit = [path: JSONPath, value: unknown];
 
 /** Applies edits to a JSON or JSONC file, keeping comments and formatting. Returns whether it changed. */
-export async function editJsonFile(
+export const editJsonFile = async (
   file: string,
   edits: (data: Record<string, unknown>) => JsonEdit[]
-): Promise<boolean> {
+): Promise<boolean> => {
   const text = await readFile(file, 'utf8');
   const errors: ParseError[] = [];
   const data = parse(text, errors, { allowTrailingComma: true }) as unknown;
@@ -34,14 +33,14 @@ export async function editJsonFile(
   if (next === text) return false;
   await writeFile(file, next);
   return true;
-}
+};
 
-export async function readJson<T = Record<string, unknown>>(
+export const readJson = async <T = Record<string, unknown>>(
   file: string
-): Promise<T> {
+): Promise<T> => {
   return parse(await readFile(file, 'utf8')) as T;
-}
+};
 
-function detectIndent(text: string): number {
+const detectIndent = (text: string): number => {
   return /^( +)\S/m.exec(text)?.[1]?.length ?? 2;
-}
+};

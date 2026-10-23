@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { AccessibilityInfo } from 'react-native';
+
 import {
   Easing,
   ReduceMotion,
@@ -21,13 +22,13 @@ let current: boolean | undefined;
 let started = false;
 const listeners = new Set<() => void>();
 
-function update(enabled: boolean) {
+const update = (enabled: boolean) => {
   if (enabled === current) return;
   current = enabled;
   listeners.forEach((listener) => listener());
-}
+};
 
-function start() {
+const start = () => {
   if (started) return;
   started = true;
   let changed = false;
@@ -39,42 +40,42 @@ function start() {
   void AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
     if (!changed) update(enabled);
   });
-}
+};
 
-function subscribe(listener: () => void) {
+const subscribe = (listener: () => void) => {
   start();
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
   };
-}
+};
 
 const getSnapshot = () => current;
 
 /** Whether the system asks for reduced motion; rerenders when the setting changes. */
-export function useReducedMotion(): boolean {
+export const useReducedMotion = (): boolean => {
   // Reanimated reads the setting synchronously at launch, so the first render is right.
   const atLaunch = useReducedMotionAtLaunch();
   return useSyncExternalStore(subscribe, getSnapshot) ?? atLaunch;
-}
+};
 
 /** `resolveMotion` with the live reduced-motion setting; what components use. */
-export function useMotion(
+export const useMotion = (
   behavior: ReducedMotionBehavior,
   duration: number
-): ResolvedMotion {
+): ResolvedMotion => {
   return resolveMotion(behavior, duration, useReducedMotion());
-}
+};
 
 /**
  * Resolves an animation's reduced-motion behavior (ADR 0002) into what to run.
  * Pure: for code outside React that already knows the setting, and tests.
  */
-export function resolveMotion(
+export const resolveMotion = (
   behavior: ReducedMotionBehavior,
   duration: number,
   reduced: boolean
-): ResolvedMotion {
+): ResolvedMotion => {
   const reduceMotion = ReduceMotion.Never;
   if (!reduced || behavior === 'keep') {
     return { mode: 'full', duration, reduceMotion };
@@ -83,4 +84,4 @@ export function resolveMotion(
     return { mode: 'fade', duration: motion.reducedMotionFade, reduceMotion };
   }
   return { mode: 'static', duration: 0, reduceMotion };
-}
+};

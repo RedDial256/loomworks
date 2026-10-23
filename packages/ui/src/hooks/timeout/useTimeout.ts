@@ -7,7 +7,7 @@ import type { TimeoutParam, Timer, UseTimeoutResult } from './useTimeout.types';
  * pending; an `initial` timer, or one passed to `set`, is adopted and cleared
  * like one started here.
  */
-export function useTimeout(initial?: Timer | null): UseTimeoutResult {
+export const useTimeout = (initial?: Timer | null): UseTimeoutResult => {
   const ref = useRef<Timer | null>(initial ?? null);
 
   const clear = useCallback(() => {
@@ -35,4 +35,4 @@ export function useTimeout(initial?: Timer | null): UseTimeoutResult {
   useEffect(() => clear, [clear]);
 
   return [set, clear, ref];
-}
+};

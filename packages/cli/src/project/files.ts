@@ -29,12 +29,15 @@ export interface WriteReport {
 }
 
 export class ConflictError extends Error {
-  constructor(readonly files: string[]) {
+  readonly files: string[];
+
+  constructor(files: string[]) {
     super(
       `These files already exist with different content:\n${files.map((f) => `  ${f}`).join('\n')}\n` +
         'Re-run with --overwrite to replace them or --skip-existing to keep them.'
     );
     this.name = 'ConflictError';
+    this.files = files;
   }
 }
 
@@ -42,11 +45,11 @@ export class ConflictError extends Error {
  * Writes files, resolving conflicts (existing file, different content) by flag or prompt.
  * Every conflict is decided before anything is written; identical files are left alone.
  */
-export async function writeFiles(
+export const writeFiles = async (
   cwd: string,
   files: PlannedFile[],
   { overwrite, skipExisting, resolveConflict }: ConflictOptions = {}
-): Promise<WriteReport> {
+): Promise<WriteReport> => {
   if (overwrite && skipExisting) {
     throw new Error('Use either --overwrite or --skip-existing, not both.');
   }
@@ -70,12 +73,16 @@ export async function writeFiles(
     throw new ConflictError(conflicts.map((c) => c.target));
   }
 
+  const chooseConflict = async (
+    conflict: Conflict
+  ): Promise<ConflictChoice> => {
+    if (overwrite) return 'overwrite';
+    if (skipExisting) return 'skip';
+    return resolveConflict!(conflict);
+  };
+
   for (const conflict of conflicts) {
-    const choice: ConflictChoice = overwrite
-      ? 'overwrite'
-      : skipExisting
-        ? 'skip'
-        : await resolveConflict!(conflict);
+    const choice = await chooseConflict(conflict);
     if (choice === 'overwrite') {
       toWrite.push({ target: conflict.target, content: conflict.incoming });
     } else report.skipped.push(conflict.target);
@@ -88,4 +95,4 @@ export async function writeFiles(
     report.written.push(file.target);
   }
   return report;
-}
+};

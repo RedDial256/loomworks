@@ -1,6 +1,5 @@
 import { access, readFile, writeFile } from 'node:fs/promises';
 import { join, posix } from 'node:path';
-
 import semver from 'semver';
 
 import {
@@ -28,6 +27,7 @@ import {
 } from '../project/packages';
 import { createEmbeddedSource, type RegistrySource } from '../registry/source';
 import { LOOM_VERSION } from '../version';
+
 import { planItems } from './add';
 
 export const THEME_ITEM = 'theme';
@@ -63,7 +63,7 @@ export interface InitResult {
 }
 
 /** Sets up loom in an Expo project: theme, Unistyles, `@/theme` alias, `loom.json`, dependencies. */
-export async function init({
+export const init = async ({
   cwd,
   source = createEmbeddedSource(),
   install = true,
@@ -71,7 +71,7 @@ export async function init({
   paths,
   version = LOOM_VERSION,
   ...conflicts
-}: InitOptions): Promise<InitResult> {
+}: InitOptions): Promise<InitResult> => {
   const pkgFile = join(cwd, 'package.json');
   if (!(await exists(pkgFile))) {
     throw new Error(
@@ -137,9 +137,14 @@ export async function init({
     packages: needsPreset ? ['babel-preset-expo', ...packages] : packages,
     notes,
   };
-}
+};
 
-async function checkExpo(cwd: string, pkg: PackageJson, range?: string) {
+const minimumVersion = (range: string) => {
+  if (!semver.validRange(range)) return undefined;
+  return semver.minVersion(range)?.version;
+};
+
+const checkExpo = async (cwd: string, pkg: PackageJson, range?: string) => {
   const declared = declaredRange(pkg, 'expo');
   if (!declared) {
     throw new Error(
@@ -152,19 +157,15 @@ async function checkExpo(cwd: string, pkg: PackageJson, range?: string) {
     (p) => p.version,
     () => undefined
   );
-  const version =
-    installed ??
-    (semver.validRange(declared)
-      ? semver.minVersion(declared)?.version
-      : undefined);
+  const version = installed ?? minimumVersion(declared);
   if (range && version && !semver.satisfies(version, range)) {
     throw new Error(
       `Expo ${version} is not supported; loom needs expo ${range}.`
     );
   }
-}
+};
 
-async function configureTsconfig(cwd: string, config: LoomConfig) {
+const configureTsconfig = async (cwd: string, config: LoomConfig) => {
   const file = join(cwd, 'tsconfig.json');
   const alias = [`./${config.paths.theme}`];
   if (!(await exists(file))) {
@@ -189,14 +190,14 @@ async function configureTsconfig(cwd: string, config: LoomConfig) {
       ? []
       : [[['compilerOptions', 'paths', '@/theme'], alias]];
   });
-}
+};
 
 /** Imports the Unistyles setup from the app entry, right after `expo-router/entry` (ADR 0001). */
-async function configureEntry(
+const configureEntry = async (
   cwd: string,
   pkg: PackageJson,
   config: LoomConfig
-) {
+) => {
   const setup = `${config.paths.theme}/unistyles`;
   const usesRouter = !!declaredRange(pkg, 'expo-router');
 
@@ -218,9 +219,9 @@ async function configureEntry(
   const entry = pkg.main && (await findLocalFile(cwd, pkg.main));
   if (entry) return appendImport(cwd, entry, setup);
   return `Import ./${setup} from your app entry, after the router entry, before any component.`;
-}
+};
 
-async function appendImport(cwd: string, entry: string, setup: string) {
+const appendImport = async (cwd: string, entry: string, setup: string) => {
   const file = join(cwd, entry);
   const text = await readFile(file, 'utf8');
   if (text.includes(setup)) return false;
@@ -231,9 +232,9 @@ async function appendImport(cwd: string, entry: string, setup: string) {
     `${text.replace(/\n*$/, '\n')}import '${specifier}';\n`
   );
   return true;
-}
+};
 
-async function configureBabel(cwd: string, config: LoomConfig) {
+const configureBabel = async (cwd: string, config: LoomConfig) => {
   const existing = await firstExisting(cwd, [
     'babel.config.js',
     'babel.config.cjs',
@@ -263,9 +264,9 @@ async function configureBabel(cwd: string, config: LoomConfig) {
     return false;
   }
   return `Add ['${UNISTYLES_PLUGIN}', { root: '${root}' }] to the plugins in ${existing}.`;
-}
+};
 
-async function configureAppJson(cwd: string) {
+const configureAppJson = async (cwd: string) => {
   const file = join(cwd, 'app.json');
   const dynamic = await firstExisting(cwd, ['app.config.ts', 'app.config.js']);
   if (!(await exists(file))) {
@@ -292,9 +293,9 @@ async function configureAppJson(cwd: string) {
     return `app.json gained the "${ASYNC_STORAGE_PLUGIN}" plugin; check that ${dynamic} keeps it.`;
   }
   return changed;
-}
+};
 
-async function configurePackageJson(file: string) {
+const configurePackageJson = async (file: string) => {
   return editJsonFile(file, (data) => {
     const current =
       (data.expo as { install?: { exclude?: string[] } } | undefined)?.install
@@ -309,21 +310,21 @@ async function configurePackageJson(file: string) {
         ]
       : [];
   });
-}
+};
 
-async function findLocalFile(cwd: string, main: string) {
+const findLocalFile = async (cwd: string, main: string) => {
   return firstExisting(
     cwd,
     ['', '.ts', '.tsx', '.js', '.jsx'].map((ext) => `${main}${ext}`)
   );
-}
+};
 
-async function firstExisting(cwd: string, names: string[]) {
+const firstExisting = async (cwd: string, names: string[]) => {
   for (const name of names) {
     if (await exists(join(cwd, name))) return name;
   }
   return undefined;
-}
+};
 
 const exists = (path: string) =>
   access(path).then(

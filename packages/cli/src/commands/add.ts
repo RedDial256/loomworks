@@ -49,7 +49,7 @@ export interface AddResult {
 }
 
 /** Copies items (and their dependencies) into the project, installs their packages and records them in `loom.json`. */
-export async function add({
+export const add = async ({
   cwd,
   items,
   source = createEmbeddedSource(),
@@ -57,7 +57,7 @@ export async function add({
   run = runCommand,
   version = LOOM_VERSION,
   ...conflicts
-}: AddOptions): Promise<AddResult> {
+}: AddOptions): Promise<AddResult> => {
   if (!items.length) throw new Error('Name at least one item to add.');
   const config = await readConfig(cwd);
   if (!config) {
@@ -90,10 +90,10 @@ export async function add({
     }
   }
   return { items: resolved, files, packages: [...packages, ...sdkPackages] };
-}
+};
 
 /** The requested items plus their dependencies, in install order (dependencies first). */
-export function resolveItems(manifest: Manifest, names: string[]): string[] {
+export const resolveItems = (manifest: Manifest, names: string[]): string[] => {
   const unknown = names.filter((name) => !(name in manifest.items));
   if (unknown.length) {
     const available = Object.keys(manifest.items).sort().join(', ');
@@ -111,10 +111,10 @@ export function resolveItems(manifest: Manifest, names: string[]): string[] {
   };
   names.forEach(visit);
   return order;
-}
+};
 
 /** Files to write and packages to require for already resolved items. Demos only when a sandbox is set. */
-export async function planItems(
+export const planItems = async (
   source: RegistrySource,
   manifest: Manifest,
   config: LoomConfig,
@@ -123,7 +123,7 @@ export async function planItems(
   files: PlannedFile[];
   packages: Record<string, string>;
   sdkPackages: string[];
-}> {
+}> => {
   const files: PlannedFile[] = [];
   const packages: Record<string, string> = {};
   const sdkPackages = new Set<string>();
@@ -145,4 +145,4 @@ export async function planItems(
     item.sdkPackages.forEach((pkg) => sdkPackages.add(pkg));
   }
   return { files, packages, sdkPackages: [...sdkPackages] };
-}
+};
