@@ -1,5 +1,4 @@
 import { rm } from 'node:fs/promises';
-
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type Conflict, ConflictError } from '../project/files';
@@ -12,6 +11,7 @@ import {
   tempDir,
   writeTree,
 } from '../test/fixtures';
+
 import { add, resolveItems } from './add';
 
 const manifest = {

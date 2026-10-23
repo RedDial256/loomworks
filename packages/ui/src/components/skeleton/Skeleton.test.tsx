@@ -1,10 +1,12 @@
-import { act, render, renderHook, screen } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
+
+import { act, render, renderHook, screen } from '@testing-library/react-native';
 import { withRepeat, withTiming } from 'react-native-reanimated';
 
 import { light, radii, typography } from '@/theme';
 
 import { useReducedMotion } from '../../hooks/reduced-motion/useReducedMotion';
+
 import { PULSE_DURATION, Skeleton, STATIC_OPACITY } from './Skeleton';
 
 jest.mock('react-native-reanimated', () => {

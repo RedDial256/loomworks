@@ -1,15 +1,24 @@
+import type { FC } from 'react';
 import { View } from 'react-native';
+
 import { StyleSheet } from 'react-native-unistyles';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
 import type { A11y } from '../../utils/a11y/easyA11y.types';
+
 import type { BoxProps } from './Box.types';
 
 // Layout containers stay out of the way; opt in to group children.
 const A11Y_DEFAULTS: A11y = { accessible: false };
 
 /** Layout primitive: a `View` with theme spacing and surfaces. */
-export function Box({ padding, surface, a11y, style, ...rest }: BoxProps) {
+export const Box: FC<BoxProps> = ({
+  padding,
+  surface,
+  a11y,
+  style,
+  ...rest
+}) => {
   styles.useVariants({ padding, surface });
   return (
     <View
@@ -18,7 +27,7 @@ export function Box({ padding, surface, a11y, style, ...rest }: BoxProps) {
       style={[styles.box, style]}
     />
   );
-}
+};
 
 const styles = StyleSheet.create((theme) => ({
   box: {

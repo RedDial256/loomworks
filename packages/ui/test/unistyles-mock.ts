@@ -6,7 +6,7 @@ type Style = Record<string, unknown>;
 type Selection = Record<string, string | boolean | undefined>;
 type Definition = Style | ((...args: unknown[]) => Style);
 
-function resolve(definition: Style, selected: Selection): Style {
+const resolve = (definition: Style, selected: Selection): Style => {
   const { variants, compoundVariants, ...base } = definition as {
     variants?: Record<string, Record<string, Style>>;
     compoundVariants?: (Selection & { styles: Style })[];
@@ -26,7 +26,7 @@ function resolve(definition: Style, selected: Selection): Style {
     if (matches) Object.assign(out, styles);
   }
   return out;
-}
+};
 
 export const StyleSheet = {
   create(

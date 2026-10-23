@@ -4,9 +4,9 @@ import { createTwoFilesPatch } from 'diff';
 import type { Conflict, ConflictChoice } from './project/files';
 
 /** Interactive per-file conflict prompt: overwrite, skip, or show the diff and ask again. */
-export async function promptConflict(
+export const promptConflict = async (
   conflict: Conflict
-): Promise<ConflictChoice> {
+): Promise<ConflictChoice> => {
   for (;;) {
     const choice = await select({
       message: `${conflict.target} already exists and differs.`,
@@ -27,7 +27,7 @@ export async function promptConflict(
       )
     );
   }
-}
+};
 
 export const isInteractive = () =>
   !!process.stdin.isTTY && !!process.stdout.isTTY && !process.env.CI;

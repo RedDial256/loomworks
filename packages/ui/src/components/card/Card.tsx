@@ -1,7 +1,10 @@
+import type { FC } from 'react';
 import { View } from 'react-native';
+
 import { StyleSheet } from 'react-native-unistyles';
 
 import { Box } from '../box/Box';
+
 import type { CardProps } from './Card.types';
 
 /** 1 px hairline (ADR 0002); transparent in light, so the layout is the same in both themes. */
@@ -11,12 +14,12 @@ const HAIRLINE = 1;
  * Raised surface built on `Box`. In dark mode the elevation adds a tonal
  * overlay (a child view, since a view has one background) and a hairline.
  */
-export function Card({
+export const Card: FC<CardProps> = ({
   elevation = 'sm',
   children,
   style,
   ...rest
-}: CardProps) {
+}) => {
   styles.useVariants({ elevation });
   return (
     <Box surface="raised" {...rest} style={[styles.card, style]}>
@@ -26,7 +29,7 @@ export function Card({
       {children}
     </Box>
   );
-}
+};
 
 const styles = StyleSheet.create((theme) => ({
   card: {

@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
+
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 const touch = { x: 5, y: 5, absoluteX: 5, absoluteY: 5 };
 const layout = {

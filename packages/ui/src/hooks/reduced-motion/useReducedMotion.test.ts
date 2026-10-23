@@ -16,7 +16,7 @@ let rntl: typeof import('@testing-library/react-native/pure') | undefined;
 
 /* eslint-disable @typescript-eslint/no-require-imports -- re-required after jest.resetModules */
 /** Fresh module state per test, with the system query and change event under control. */
-function setup(atLaunch = false) {
+const setup = (atLaunch = false) => {
   jest.resetModules();
   mockAtLaunch = atLaunch;
   const { AccessibilityInfo } =
@@ -48,7 +48,7 @@ function setup(atLaunch = false) {
     render: () => renderHook(() => useReducedMotion()),
     renderMotion: () => renderHook(() => useMotion('fade', 200)),
   };
-}
+};
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 afterEach(() => rntl?.cleanup());

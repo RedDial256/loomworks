@@ -24,6 +24,152 @@ const ROOT = resolve(import.meta.dirname, '..');
 const BASELINE = join(ROOT, 'security/rnsec-baseline.json');
 const NPM_RULE = 'NPM_VULNERABLE_DEPENDENCY';
 
+const buildApp = () => {
+  const workdir = mkdtempSync(join(tmpdir(), 'loom-security-'));
+  console.log(`No --app: building one in ${workdir}`);
+  run(join(ROOT, 'scripts/integration.sh'), ['57', workdir], {
+    stdio: 'inherit',
+  });
+  return join(workdir, 'app');
+};
+
+const scanTarget = ({ name, dir }) => {
+  let findings = scan(name, dir);
+  // rnsec runs `npm audit` with a 10 s timeout and silently skips it on timeout.
+  const expectsNpm = baseline.some(
+    (f) => f.target === name && f.ruleId === NPM_RULE
+  );
+  const hasNpm = () => findings.some((f) => f.ruleId === NPM_RULE);
+  if (expectsNpm && !hasNpm()) {
+    findings = scan(name, dir);
+  }
+  if (expectsNpm && !hasNpm()) {
+    warnings.push(
+      `${name}: npm audit returned no findings (rnsec times out after 10 s); dependency findings were not checked.`
+    );
+    // Keep the baseline entries so they are not reported as resolved.
+    findings.push(
+      ...baseline
+        .filter((f) => f.target === name && f.ruleId === NPM_RULE)
+        .map((f) => ({ ...f, unchecked: true }))
+    );
+  }
+  return findings;
+};
+
+const scan = (name, dir) => {
+  const json = join(reports, `${name}.json`);
+  const md = join(reports, `${name}.md`);
+  const html = join(reports, `${name}.html`);
+  // A stale report would hide a failed scan.
+  rmSync(json, { force: true });
+  // Exit code 1 means HIGH findings or an error: rely on the JSON report instead.
+  run(
+    'pnpm',
+    [
+      'exec',
+      'rnsec',
+      'scan',
+      '--path',
+      dir,
+      '--output',
+      json,
+      '--md',
+      md,
+      '--html',
+      html,
+      '--silent',
+    ],
+    {
+      cwd: ROOT,
+      allowFailure: true,
+    }
+  );
+  if (!existsSync(json)) {
+    throw new Error(`rnsec wrote no report for ${name} (${dir}).`);
+  }
+  const { findings } = JSON.parse(readFileSync(json, 'utf8'));
+  return findings.map((f) => {
+    const file = relative(dir, f.filePath);
+    // The line is left out of the key: it moves with unrelated edits.
+    return {
+      key: [name, f.ruleId, file, f.description].join(' | '),
+      target: name,
+      ruleId: f.ruleId,
+      severity: f.severity,
+      file,
+      description: f.description,
+    };
+  });
+};
+
+const run = (cmd, args, { allowFailure = false, ...options } = {}) => {
+  const result = spawnSync(cmd, args, { stdio: 'ignore', ...options });
+  if (result.error) throw result.error;
+  if (result.status !== 0 && !allowFailure) {
+    throw new Error(`${cmd} ${args.join(' ')} exited with ${result.status}`);
+  }
+};
+
+const rnsecVersion = () => {
+  const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+  return pkg.devDependencies.rnsec;
+};
+
+const report = () => {
+  const ci = !!process.env.GITHUB_ACTIONS;
+  const line = (f) =>
+    `${f.severity} ${f.ruleId} in ${f.target}/${f.file}: ${f.description}`;
+  const annotate = (level, text) =>
+    console.log(ci ? `::${level} title=rnsec::${text}` : `${level}: ${text}`);
+
+  newHigh.forEach((f) => annotate('error', `New: ${line(f)}`));
+  added
+    .filter((f) => f.severity !== 'HIGH')
+    .forEach((f) => annotate('warning', `New: ${line(f)}`));
+  resolved.forEach((f) =>
+    annotate('warning', `Resolved, remove from the baseline: ${line(f)}`)
+  );
+  warnings.forEach((w) => annotate('warning', w));
+
+  const summary = [
+    '## Security audit (rnsec)',
+    '',
+    `${current.length} finding(s), ${added.length} new (${newHigh.length} HIGH), ${resolved.length} resolved against the baseline.`,
+    ...(newHigh.length
+      ? [
+          '',
+          'New HIGH findings fail this job. Fix them, or accept them with `pnpm security:baseline` in this PR.',
+        ]
+      : []),
+    ...section('New', added),
+    ...section('Resolved (run `pnpm security:baseline`)', resolved),
+    ...(warnings.length
+      ? ['', '### Warnings', '', ...warnings.map((w) => `- ${w}`)]
+      : []),
+    '',
+  ].join('\n');
+  console.log(`\n${summary}`);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+  }
+};
+
+const section = (title, findings) => {
+  if (!findings.length) return [];
+  return [
+    '',
+    `### ${title}`,
+    '',
+    '| Severity | Rule | File | Description |',
+    '| --- | --- | --- | --- |',
+    ...findings.map(
+      (f) =>
+        `| ${f.severity} | ${f.ruleId} | ${f.target}/${f.file} | ${f.description} |`
+    ),
+  ];
+};
+
 const { values } = parseArgs({
   options: {
     app: { type: 'string' },
@@ -69,149 +215,3 @@ const newHigh = added.filter((f) => f.severity === 'HIGH');
 
 report();
 process.exit(newHigh.length ? 1 : 0);
-
-function buildApp() {
-  const workdir = mkdtempSync(join(tmpdir(), 'loom-security-'));
-  console.log(`No --app: building one in ${workdir}`);
-  run(join(ROOT, 'scripts/integration.sh'), ['57', workdir], {
-    stdio: 'inherit',
-  });
-  return join(workdir, 'app');
-}
-
-function scanTarget({ name, dir }) {
-  let findings = scan(name, dir);
-  // rnsec runs `npm audit` with a 10 s timeout and silently skips it on timeout.
-  const expectsNpm = baseline.some(
-    (f) => f.target === name && f.ruleId === NPM_RULE
-  );
-  const hasNpm = () => findings.some((f) => f.ruleId === NPM_RULE);
-  if (expectsNpm && !hasNpm()) {
-    findings = scan(name, dir);
-  }
-  if (expectsNpm && !hasNpm()) {
-    warnings.push(
-      `${name}: npm audit returned no findings (rnsec times out after 10 s); dependency findings were not checked.`
-    );
-    // Keep the baseline entries so they are not reported as resolved.
-    findings.push(
-      ...baseline
-        .filter((f) => f.target === name && f.ruleId === NPM_RULE)
-        .map((f) => ({ ...f, unchecked: true }))
-    );
-  }
-  return findings;
-}
-
-function scan(name, dir) {
-  const json = join(reports, `${name}.json`);
-  const md = join(reports, `${name}.md`);
-  const html = join(reports, `${name}.html`);
-  // A stale report would hide a failed scan.
-  rmSync(json, { force: true });
-  // Exit code 1 means HIGH findings or an error: rely on the JSON report instead.
-  run(
-    'pnpm',
-    [
-      'exec',
-      'rnsec',
-      'scan',
-      '--path',
-      dir,
-      '--output',
-      json,
-      '--md',
-      md,
-      '--html',
-      html,
-      '--silent',
-    ],
-    {
-      cwd: ROOT,
-      allowFailure: true,
-    }
-  );
-  if (!existsSync(json)) {
-    throw new Error(`rnsec wrote no report for ${name} (${dir}).`);
-  }
-  const { findings } = JSON.parse(readFileSync(json, 'utf8'));
-  return findings.map((f) => {
-    const file = relative(dir, f.filePath);
-    // The line is left out of the key: it moves with unrelated edits.
-    return {
-      key: [name, f.ruleId, file, f.description].join(' | '),
-      target: name,
-      ruleId: f.ruleId,
-      severity: f.severity,
-      file,
-      description: f.description,
-    };
-  });
-}
-
-function run(cmd, args, { allowFailure = false, ...options } = {}) {
-  const result = spawnSync(cmd, args, { stdio: 'ignore', ...options });
-  if (result.error) throw result.error;
-  if (result.status !== 0 && !allowFailure) {
-    throw new Error(`${cmd} ${args.join(' ')} exited with ${result.status}`);
-  }
-}
-
-function rnsecVersion() {
-  const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
-  return pkg.devDependencies.rnsec;
-}
-
-function report() {
-  const ci = !!process.env.GITHUB_ACTIONS;
-  const line = (f) =>
-    `${f.severity} ${f.ruleId} in ${f.target}/${f.file}: ${f.description}`;
-  const annotate = (level, text) =>
-    console.log(ci ? `::${level} title=rnsec::${text}` : `${level}: ${text}`);
-
-  newHigh.forEach((f) => annotate('error', `New: ${line(f)}`));
-  added
-    .filter((f) => f.severity !== 'HIGH')
-    .forEach((f) => annotate('warning', `New: ${line(f)}`));
-  resolved.forEach((f) =>
-    annotate('warning', `Resolved, remove from the baseline: ${line(f)}`)
-  );
-  warnings.forEach((w) => annotate('warning', w));
-
-  const summary = [
-    '## Security audit (rnsec)',
-    '',
-    `${current.length} finding(s), ${added.length} new (${newHigh.length} HIGH), ${resolved.length} resolved against the baseline.`,
-    ...(newHigh.length
-      ? [
-          '',
-          'New HIGH findings fail this job. Fix them, or accept them with `pnpm security:baseline` in this PR.',
-        ]
-      : []),
-    ...section('New', added),
-    ...section('Resolved (run `pnpm security:baseline`)', resolved),
-    ...(warnings.length
-      ? ['', '### Warnings', '', ...warnings.map((w) => `- ${w}`)]
-      : []),
-    '',
-  ].join('\n');
-  console.log(`\n${summary}`);
-  if (process.env.GITHUB_STEP_SUMMARY) {
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
-  }
-}
-
-function section(title, findings) {
-  if (!findings.length) return [];
-  return [
-    '',
-    `### ${title}`,
-    '',
-    '| Severity | Rule | File | Description |',
-    '| --- | --- | --- | --- |',
-    ...findings.map(
-      (f) =>
-        `| ${f.severity} | ${f.ruleId} | ${f.target}/${f.file} | ${f.description} |`
-    ),
-  ];
-}

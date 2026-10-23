@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+
 import { StyleSheet } from 'react-native-unistyles';
 
 import { Text } from '../../text/Text';

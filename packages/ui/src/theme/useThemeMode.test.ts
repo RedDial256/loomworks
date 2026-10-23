@@ -1,6 +1,7 @@
+import * as React from 'react';
+
 import type * as AsyncStorageModule from '@react-native-async-storage/async-storage';
 import * as rtl from '@testing-library/react-native';
-import * as React from 'react';
 import type * as Unistyles from 'react-native-unistyles';
 
 import type * as ThemeMode from './useThemeMode';

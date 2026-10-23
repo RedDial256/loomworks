@@ -18,10 +18,10 @@ interface EmbedOptions {
 }
 
 /** Validates the UI manifest and copies exactly the files it references into `outDir`. */
-export async function embedRegistry({
+export const embedRegistry = async ({
   uiRoot,
   outDir,
-}: EmbedOptions): Promise<string[]> {
+}: EmbedOptions): Promise<string[]> => {
   const manifest = parseManifest(
     JSON.parse(await readFile(join(uiRoot, 'manifest.json'), 'utf8'))
   );
@@ -48,4 +48,4 @@ export async function embedRegistry({
   );
 
   return paths;
-}
+};

@@ -1,9 +1,12 @@
+import type { FC } from 'react';
 import { ActivityIndicator } from 'react-native';
+
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { type ColorRole, touchTarget } from '@/theme';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
+
 import type { SpinnerColor, SpinnerProps, SpinnerSize } from './Spinner.types';
 
 /** Intrinsic sizes of `ActivityIndicator` (RN `sizeSmall` / `sizeLarge`). */
@@ -27,14 +30,14 @@ export const SPINNER_SIZES = {
 >;
 
 /** Themed `ActivityIndicator` that keeps spinning under reduced motion. */
-export function Spinner({
+export const Spinner: FC<SpinnerProps> = ({
   size = 'M',
   color = 'primary',
   animating = true,
   a11y,
   style,
   ...rest
-}: SpinnerProps) {
+}) => {
   const { theme } = useUnistyles();
   styles.useVariants({ size });
   return (
@@ -52,14 +55,14 @@ export function Spinner({
       style={[styles.spinner, style]}
     />
   );
-}
+};
 
-function resolveColor(
+const resolveColor = (
   colors: Record<ColorRole, string>,
   color: SpinnerColor
-): string {
+): string => {
   return color in colors ? colors[color as ColorRole] : color;
-}
+};
 
 const { diameter, scale } = SPINNER_SIZES.L;
 

@@ -1,7 +1,6 @@
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { ConflictError } from '../project/files';
@@ -15,6 +14,7 @@ import {
   tempDir,
   writeTree,
 } from '../test/fixtures';
+
 import { init } from './init';
 
 const realUi = fileURLToPath(new URL('../../../ui/', import.meta.url));

@@ -1,4 +1,5 @@
 import { type FC, useState } from 'react';
+
 import type {
   PressableEvent,
   PressableStateCallbackType,
@@ -28,6 +29,7 @@ import { Skeleton } from '../skeleton/Skeleton';
 import { Spinner } from '../spinner/Spinner';
 import type { SpinnerColor } from '../spinner/Spinner.types';
 import { Text } from '../text/Text';
+
 import type { ButtonProps, ButtonSize, ButtonVariant } from './Button.types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -160,17 +162,18 @@ export const Button: FC<ButtonProps> = ({
 }) => {
   const [pressed, setPressed] = useState(false);
 
-  const { theme } = useUnistyles();
   const { mode, duration, reduceMotion } = useMotion(
     'fade',
     motion.duration.fast
   );
 
+  const { theme } = useUnistyles();
+  const feedback = useSharedValue(0);
+
   const bare = BARE.includes(variant);
   const fades = bare || mode === 'fade';
   styles.useVariants({ size: bare ? 'bare' : size });
 
-  const feedback = useSharedValue(0);
   const pressedStyle = useAnimatedStyle(() => {
     const progress = feedback.get();
     if (fades) return { opacity: 1 - progress * (1 - PRESSED_OPACITY) };
@@ -216,6 +219,8 @@ export const Button: FC<ButtonProps> = ({
     disabled
   );
 
+  const touchSlop = hitSlop ?? buttonHitSlop(bare, size);
+
   // Not a fresh literal: the `hovered` key exists only in some React Native versions.
   const state = { pressed, hovered: false };
   const buttonStyle = [
@@ -236,7 +241,7 @@ export const Button: FC<ButtonProps> = ({
       {...rest}
       a11y={{ role: 'button', busy: pending || undefined, ...a11y }}
       disabled={disabled || pending}
-      hitSlop={hitSlop ?? buttonHitSlop(bare, size)}
+      hitSlop={touchSlop}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       style={buttonStyle}>
