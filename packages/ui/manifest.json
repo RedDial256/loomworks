@@ -90,7 +90,7 @@
     },
     "input": {
       "kind": "component",
-      "description": "Styled TextInput with a type preset, label, hint, error, required, controlled or uncontrolled value, a ref (get, set, reset, focus, blur, clear, validate) and a loading skeleton.",
+      "description": "Styled TextInput with a type preset, label, hint, error, required, controlled or uncontrolled value, validation (required, any Standard Schema, a validate callback) on blur then debounced on change, a ref (get, set, reset, focus, blur, clear, validate) and a loading skeleton.",
       "files": [
         "components/input/Input.tsx",
         "components/input/Input.types.ts",
@@ -98,7 +98,7 @@
         "components/input/components/InputLabel.tsx",
         "components/input/components/InputMessage.tsx"
       ],
-      "dependencies": ["a11y", "skeleton", "text"],
+      "dependencies": ["a11y", "debounce", "skeleton", "text"],
       "packages": {
         "react-native-unistyles": "^3.5.2"
       }

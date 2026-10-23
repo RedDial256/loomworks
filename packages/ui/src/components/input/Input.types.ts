@@ -13,6 +13,13 @@ export type InputType =
   | 'url'
   | 'search';
 
+/** The part of a Standard Schema (https://standardschema.dev) that `Input` reads; zod 3.24+, valibot and arktype satisfy it. */
+export interface InputSchema {
+  readonly '~standard': {
+    readonly validate: (value: unknown) => unknown;
+  };
+}
+
 /** Imperative handle of an `Input`. */
 export interface InputRef {
   /** Current value. */
@@ -25,7 +32,7 @@ export interface InputRef {
   blur: () => void;
   /** Empties the value. */
   clear: () => void;
-  /** Runs the validations (only `required` for now), shows the error and returns whether the value is valid. */
+  /** Runs `required`, `schema` and `validate`, shows the first error and returns whether the value is valid. */
   validate: () => boolean;
 }
 
@@ -42,12 +49,22 @@ export interface InputProps extends Omit<TextInputProps, 'ref'> {
   required?: boolean;
   /** Message of the `required` failure; "Required" when unset. */
   requiredMessage?: string;
+  /** Any Standard Schema (zod, valibot, arktype); the first issue's message becomes the error. Synchronous only; the value is always a string. */
+  schema?: InputSchema;
+  /** Runs after the schema passes, for logic it cannot express; returns the error message, or nothing when valid. */
+  validate?: (value: string) => string | undefined;
   /** Renders a `Skeleton` at the field height, not editable, announced as busy. */
   loading?: boolean;
   /** Simplified accessibility props for the field; native props still win. */
   a11y?: A11y;
   ref?: Ref<InputRef>;
 }
+
+/** What the validation reads from the props. */
+export type InputValidationOptions = Pick<
+  InputProps,
+  'required' | 'requiredMessage' | 'schema' | 'validate'
+>;
 
 /** Props each `type` sets together. */
 export type InputTypeProps = Pick<
