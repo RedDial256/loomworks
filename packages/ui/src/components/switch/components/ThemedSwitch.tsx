@@ -1,9 +1,8 @@
 import type { FC } from 'react';
 import { Switch as NativeSwitch } from 'react-native';
-import { useUnistyles } from 'react-native-unistyles';
 
 import type { ThemedSwitchProps } from '../Switch.types';
-import { switchColors } from '../Switch.utils';
+import { useSwitchColors } from '../Switch.utils';
 
 export const ThemedSwitch: FC<ThemedSwitchProps> = ({
   value,
@@ -11,8 +10,7 @@ export const ThemedSwitch: FC<ThemedSwitchProps> = ({
   disabled,
   a11yProps,
 }) => {
-  const { theme } = useUnistyles();
-  const { off, on, thumb } = switchColors(theme.colors, disabled);
+  const { off, on, thumb } = useSwitchColors(disabled);
   return (
     <NativeSwitch
       value={value}
