@@ -1,16 +1,26 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { createRef } from 'react';
 import { TextInput } from 'react-native';
+import * as v from 'valibot';
+import { z } from 'zod';
 
 import { light } from '@/theme';
 
 import { Input } from './Input';
 import type { InputRef, InputType } from './Input.types';
-import { TYPE_PROPS } from './Input.utils';
+import { ASYNC_SCHEMA_MESSAGE, TYPE_PROPS } from './Input.utils';
 
 const hidden = { includeHiddenElements: true };
 
 describe('Input', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   describe('type', () => {
     it.each(Object.keys(TYPE_PROPS) as InputType[])(
       'sets the %s props together',
@@ -148,6 +158,7 @@ describe('Input', () => {
         screen.getByLabelText('Name, required'),
         'Ana'
       );
+      await act(async () => jest.advanceTimersByTime(300));
       expect(screen.queryByRole('alert')).toBeNull();
       let valid = false;
       await act(async () => {
@@ -289,6 +300,125 @@ describe('Input', () => {
       expect(input).toHaveStyle({ borderColor: light.colors.danger });
       await fireEvent(input, 'focus');
       expect(input).toHaveStyle({ borderColor: light.colors.danger });
+    });
+  });
+  describe('validation', () => {
+    const phone = z.string().regex(/^9\d{8}$/, 'Invalid number');
+
+    const validateOnRef = async (ref: React.RefObject<InputRef | null>) => {
+      let valid = true;
+      await act(async () => {
+        valid = ref.current!.validate();
+      });
+      return valid;
+    };
+
+    it('shows the first issue of a zod schema', async () => {
+      const ref = createRef<InputRef>();
+      await render(
+        <Input ref={ref} label="Phone" type="phone" schema={phone} />
+      );
+      await act(async () => ref.current!.set('123'));
+      expect(await validateOnRef(ref)).toBe(false);
+      expect(screen.getByRole('alert')).toHaveTextContent('Invalid number');
+      await act(async () => ref.current!.set('912345678'));
+      expect(await validateOnRef(ref)).toBe(true);
+    });
+
+    it('accepts a valibot schema', async () => {
+      const ref = createRef<InputRef>();
+      const schema = v.pipe(v.string(), v.minLength(3, 'Too short'));
+      await render(<Input ref={ref} label="Name" schema={schema} />);
+      await act(async () => ref.current!.set('ab'));
+      expect(await validateOnRef(ref)).toBe(false);
+      expect(screen.getByRole('alert')).toHaveTextContent('Too short');
+      await act(async () => ref.current!.set('abc'));
+      expect(await validateOnRef(ref)).toBe(true);
+    });
+
+    it('runs validate after the schema passes', async () => {
+      const ref = createRef<InputRef>();
+      const validate = jest.fn((value: string) =>
+        value === '900000000' ? 'Reserved' : undefined
+      );
+      await render(
+        <Input ref={ref} label="Phone" schema={phone} validate={validate} />
+      );
+      await act(async () => ref.current!.set('123'));
+      await validateOnRef(ref);
+      expect(validate).not.toHaveBeenCalled();
+      expect(screen.getByRole('alert')).toHaveTextContent('Invalid number');
+      await act(async () => ref.current!.set('900000000'));
+      expect(await validateOnRef(ref)).toBe(false);
+      expect(screen.getByRole('alert')).toHaveTextContent('Reserved');
+    });
+
+    it('checks required first, then schema, then validate', async () => {
+      const ref = createRef<InputRef>();
+      const schema = z.string().min(3, 'Schema');
+      const validate = jest.fn(() => 'Validate');
+      await render(
+        <Input ref={ref} required schema={schema} validate={validate} />
+      );
+      await validateOnRef(ref);
+      expect(screen.getByRole('alert')).toHaveTextContent('Required');
+      expect(validate).not.toHaveBeenCalled();
+      await act(async () => ref.current!.set('a'));
+      await validateOnRef(ref);
+      expect(screen.getByRole('alert')).toHaveTextContent('Schema');
+      await act(async () => ref.current!.set('abc'));
+      await validateOnRef(ref);
+      expect(screen.getByRole('alert')).toHaveTextContent('Validate');
+    });
+
+    it('skips schema and validate for an empty optional value', async () => {
+      const ref = createRef<InputRef>();
+      const validate = jest.fn();
+      await render(<Input ref={ref} schema={phone} validate={validate} />);
+      expect(await validateOnRef(ref)).toBe(true);
+      expect(validate).not.toHaveBeenCalled();
+    });
+
+    it('throws a clear error for an async schema in development', async () => {
+      const ref = createRef<InputRef>();
+      const schema = {
+        '~standard': { validate: () => Promise.resolve({ value: 'a' }) },
+      };
+      await render(<Input ref={ref} schema={schema} defaultValue="a" />);
+      expect(() => ref.current!.validate()).toThrow(ASYNC_SCHEMA_MESSAGE);
+    });
+
+    it('validates on blur, revalidates on a debounced change, then goes back to blur only', async () => {
+      const schema = z.string().min(3, 'Too short');
+      await render(<Input label="Name" schema={schema} />);
+      const input = screen.getByLabelText('Name');
+
+      await fireEvent.changeText(input, 'ab');
+      await act(async () => jest.advanceTimersByTime(1000));
+      expect(screen.queryByRole('alert')).toBeNull();
+
+      await fireEvent(input, 'blur');
+      expect(screen.getByRole('alert')).toHaveTextContent('Too short');
+
+      await fireEvent.changeText(input, 'abc');
+      await act(async () => jest.advanceTimersByTime(299));
+      expect(screen.getByRole('alert')).toBeOnTheScreen();
+      await act(async () => jest.advanceTimersByTime(1));
+      expect(screen.queryByRole('alert')).toBeNull();
+
+      await fireEvent.changeText(input, 'a');
+      await act(async () => jest.advanceTimersByTime(1000));
+      expect(screen.queryByRole('alert')).toBeNull();
+
+      await fireEvent(input, 'blur');
+      expect(screen.getByRole('alert')).toHaveTextContent('Too short');
+    });
+
+    it('lets the error prop win over the own error', async () => {
+      const ref = createRef<InputRef>();
+      await render(<Input ref={ref} required error="Server says no" />);
+      await validateOnRef(ref);
+      expect(screen.getByRole('alert')).toHaveTextContent('Server says no');
     });
   });
 });
