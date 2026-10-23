@@ -4,8 +4,9 @@ import { TextInput } from 'react-native';
 
 import { light } from '@/theme';
 
-import { Input, TYPE_PROPS } from './Input';
+import { Input } from './Input';
 import type { InputRef, InputType } from './Input.types';
+import { TYPE_PROPS } from './Input.utils';
 
 const hidden = { includeHiddenElements: true };
 

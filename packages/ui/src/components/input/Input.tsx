@@ -6,67 +6,10 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
 import { Skeleton } from '../skeleton/Skeleton';
-import { Text } from '../text/Text';
-import type {
-  InputLabelProps,
-  InputMessageProps,
-  InputProps,
-  InputType,
-  InputTypeProps,
-} from './Input.types';
-
-/** Props each `type` sets together; any of them can be overridden by the user. */
-export const TYPE_PROPS: Record<InputType, InputTypeProps> = {
-  text: { autoCapitalize: 'sentences' },
-  email: {
-    keyboardType: 'email-address',
-    inputMode: 'email',
-    autoComplete: 'email',
-    textContentType: 'emailAddress',
-    autoCapitalize: 'none',
-    autoCorrect: false,
-  },
-  password: {
-    autoComplete: 'current-password',
-    textContentType: 'password',
-    secureTextEntry: true,
-    autoCapitalize: 'none',
-    autoCorrect: false,
-  },
-  number: {
-    keyboardType: 'number-pad',
-    inputMode: 'numeric',
-    autoCapitalize: 'none',
-  },
-  decimal: {
-    keyboardType: 'decimal-pad',
-    inputMode: 'decimal',
-    autoCapitalize: 'none',
-  },
-  phone: {
-    keyboardType: 'phone-pad',
-    inputMode: 'tel',
-    autoComplete: 'tel',
-    textContentType: 'telephoneNumber',
-    autoCapitalize: 'none',
-  },
-  url: {
-    keyboardType: 'url',
-    inputMode: 'url',
-    autoComplete: 'url',
-    textContentType: 'URL',
-    autoCapitalize: 'none',
-    autoCorrect: false,
-  },
-  search: {
-    inputMode: 'search',
-    returnKeyType: 'search',
-    autoCapitalize: 'none',
-    autoCorrect: false,
-  },
-};
-
-const DEFAULT_REQUIRED_MESSAGE = 'Required';
+import { InputLabel } from './components/InputLabel';
+import { InputMessage } from './components/InputMessage';
+import type { InputProps } from './Input.types';
+import { DEFAULT_REQUIRED_MESSAGE, TYPE_PROPS } from './Input.utils';
 
 /**
  * Styled `TextInput` with label, hint and error, controlled or uncontrolled,
@@ -144,7 +87,7 @@ export const Input: FC<InputProps> = ({
   if (loading) {
     return (
       <View style={styles.container}>
-        <Label label={label} required={required} />
+        <InputLabel label={label} required={required} />
         <Skeleton
           height={theme.touchTarget.min}
           radius="md"
@@ -170,7 +113,7 @@ export const Input: FC<InputProps> = ({
 
   return (
     <View style={styles.container}>
-      <Label label={label} required={required} />
+      <InputLabel label={label} required={required} />
       <TextInput
         ref={inputRef}
         {...TYPE_PROPS[type]}
@@ -189,42 +132,8 @@ export const Input: FC<InputProps> = ({
         onBlur={handleBlur}
         style={[styles.field, style]}
       />
-      <Message error={shown} hint={hint} />
+      <InputMessage error={shown} hint={hint} />
     </View>
-  );
-};
-
-const Label: FC<InputLabelProps> = ({ label, required }) => {
-  if (!label) return null;
-  return (
-    <Text variant="label" a11y={{ hidden: true }}>
-      {label}
-      {required && (
-        <Text variant="label" a11y={{ hidden: true }} style={styles.asterisk}>
-          {' *'}
-        </Text>
-      )}
-    </Text>
-  );
-};
-
-/** The error replaces the hint; the hint is read through the field's accessibility hint. */
-const Message: FC<InputMessageProps> = ({ error, hint }) => {
-  if (error !== undefined) {
-    return (
-      <Text
-        variant="caption"
-        style={styles.error}
-        a11y={{ role: 'alert', live: 'assertive' }}>
-        {error}
-      </Text>
-    );
-  }
-  if (!hint) return null;
-  return (
-    <Text variant="caption" tone="muted" a11y={{ hidden: true }}>
-      {hint}
-    </Text>
   );
 };
 
@@ -250,6 +159,4 @@ const styles = StyleSheet.create((theme) => ({
       },
     },
   },
-  asterisk: { color: theme.colors.danger },
-  error: { color: theme.colors.danger },
 }));
