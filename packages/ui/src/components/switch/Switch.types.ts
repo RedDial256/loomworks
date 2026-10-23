@@ -17,13 +17,12 @@ export interface SwitchProps {
   a11y?: A11y;
   /** Style of the outer container; applied last. */
   style?: StyleProp<ViewStyle>;
-  testID?: string;
 }
 
 /** Props of the internal native switch wrapper. */
 export interface ThemedSwitchProps extends Pick<
   SwitchProps,
-  'value' | 'onValueChange' | 'testID'
+  'value' | 'onValueChange'
 > {
   disabled: boolean;
   a11yProps: A11yProps;

@@ -4,13 +4,13 @@ import { light } from '@/theme';
 
 import { Switch } from './Switch';
 
-const getNative = () =>
-  screen.getByTestId('sw-native', { includeHiddenElements: true });
+const getNative = (id = 'sw') =>
+  screen.getByTestId(id, { includeHiddenElements: true });
 
 describe('Switch', () => {
   it.each([true, false])('reflects value %s', async (value) => {
     await render(
-      <Switch testID="sw" value={value} onValueChange={jest.fn()} />
+      <Switch a11y={{ id: 'sw' }} value={value} onValueChange={jest.fn()} />
     );
     expect(getNative()).toHaveProp('value', value);
     expect(getNative()).toHaveProp('accessibilityRole', 'switch');
@@ -21,7 +21,9 @@ describe('Switch', () => {
   });
 
   it('themes the track and thumb', async () => {
-    await render(<Switch testID="sw" value onValueChange={jest.fn()} />);
+    await render(
+      <Switch a11y={{ id: 'sw' }} value onValueChange={jest.fn()} />
+    );
     expect(getNative()).toHaveProp('onTintColor', light.colors.primary);
     expect(getNative()).toHaveProp('tintColor', light.colors.borderStrong);
     expect(getNative()).toHaveProp('thumbTintColor', light.colors.onPrimary);
@@ -33,7 +35,7 @@ describe('Switch', () => {
   it('calls onValueChange from the switch', async () => {
     const onValueChange = jest.fn();
     await render(
-      <Switch testID="sw" value={false} onValueChange={onValueChange} />
+      <Switch a11y={{ id: 'sw' }} value={false} onValueChange={onValueChange} />
     );
     fireEvent(getNative(), 'valueChange', true);
     expect(onValueChange).toHaveBeenCalledWith(true);
@@ -43,7 +45,7 @@ describe('Switch', () => {
     it('is a switch named by the label', async () => {
       await render(
         <Switch
-          testID="sw"
+          a11y={{ id: 'sw' }}
           value
           label="Notifications"
           onValueChange={jest.fn()}
@@ -58,7 +60,7 @@ describe('Switch', () => {
       const onValueChange = jest.fn();
       await render(
         <Switch
-          testID="sw"
+          a11y={{ id: 'sw' }}
           value
           label="Notifications"
           onValueChange={onValueChange}
@@ -74,7 +76,7 @@ describe('Switch', () => {
       const onValueChange = jest.fn();
       await render(
         <Switch
-          testID="sw"
+          a11y={{ id: 'sw' }}
           value={false}
           disabled
           label="Notifications"
@@ -83,8 +85,8 @@ describe('Switch', () => {
       );
       fireEvent.press(screen.getByText('Notifications'));
       expect(onValueChange).not.toHaveBeenCalled();
-      expect(getNative()).toHaveProp('disabled', true);
-      expect(getNative()).toHaveProp(
+      expect(getNative('sw-native')).toHaveProp('disabled', true);
+      expect(getNative('sw-native')).toHaveProp(
         'thumbTintColor',
         light.colors.textDisabled
       );
@@ -97,11 +99,19 @@ describe('Switch', () => {
   describe('loading', () => {
     it('shows a busy skeleton instead of the switch', async () => {
       await render(
-        <Switch testID="sw" loading value={false} onValueChange={jest.fn()} />
+        <Switch
+          a11y={{ id: 'sw' }}
+          loading
+          value={false}
+          onValueChange={jest.fn()}
+        />
       );
       expect(
         screen.queryByTestId('sw-native', { includeHiddenElements: true })
       ).toBeNull();
+      expect(
+        screen.queryByTestId('sw', { includeHiddenElements: true })
+      ).not.toHaveProp('trackColor');
       expect(screen.getByRole('switch', { busy: true })).toBeOnTheScreen();
     });
   });
@@ -109,10 +119,9 @@ describe('Switch', () => {
   it('lets a11y and style override the defaults', async () => {
     await render(
       <Switch
-        testID="sw"
         value
         onValueChange={jest.fn()}
-        a11y={{ label: 'Dark mode', hint: 'Toggles the theme' }}
+        a11y={{ id: 'sw', label: 'Dark mode', hint: 'Toggles the theme' }}
         style={{ marginTop: 3 }}
       />
     );
@@ -122,7 +131,7 @@ describe('Switch', () => {
 
   it('keeps a touch target of at least the minimum', async () => {
     await render(
-      <Switch testID="sw" value onValueChange={jest.fn()} label="A" />
+      <Switch a11y={{ id: 'sw' }} value onValueChange={jest.fn()} label="A" />
     );
     expect(screen.getByTestId('sw')).toHaveStyle({ minHeight: 48 });
   });

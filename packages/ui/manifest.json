@@ -44,6 +44,11 @@
       "description": "easyA11y: maps a simplified a11y object to legacy accessibility props.",
       "files": ["utils/a11y/easyA11y.ts", "utils/a11y/easyA11y.types.ts"]
     },
+    "capitalize": {
+      "kind": "util",
+      "description": "capitalize: uppercases the first character of a string, keeping literal types precise.",
+      "files": ["utils/capitalize/capitalize.ts"]
+    },
     "reduced-motion": {
       "kind": "hook",
       "description": "useReducedMotion and useMotion: reactive reduced-motion setting resolved into the none / fade / keep behaviors, plus Reanimated easings from the theme.",
@@ -83,6 +88,21 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
+    "input": {
+      "kind": "component",
+      "description": "Styled TextInput with a type preset, label, hint, error, required, controlled or uncontrolled value, a ref (get, set, reset, focus, blur, clear, validate) and a loading skeleton.",
+      "files": [
+        "components/input/Input.tsx",
+        "components/input/Input.types.ts",
+        "components/input/Input.utils.ts",
+        "components/input/components/InputLabel.tsx",
+        "components/input/components/InputMessage.tsx"
+      ],
+      "dependencies": ["a11y", "skeleton", "text"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
     "skeleton": {
       "kind": "component",
       "description": "Loading placeholder with an opacity pulse; a static block under reduced motion.",
@@ -113,7 +133,12 @@
       "description": "Controlled native Switch with theme colors, a pressable labelled row, disabled and loading states.",
       "files": [
         "components/switch/Switch.tsx",
-        "components/switch/Switch.types.ts"
+        "components/switch/Switch.types.ts",
+        "components/switch/Switch.utils.ts",
+        "components/switch/components/SwitchBare.tsx",
+        "components/switch/components/SwitchLoading.tsx",
+        "components/switch/components/SwitchRow.tsx",
+        "components/switch/components/ThemedSwitch.tsx"
       ],
       "dependencies": ["a11y", "skeleton", "text"],
       "packages": {
@@ -129,17 +154,58 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
+    "pressable": {
+      "kind": "component",
+      "description": "Touch enabler over the Gesture Handler Pressable: pressed state for style and children, a11y, disabled, and a hitSlop helper that reaches the minimum touch target.",
+      "files": [
+        "components/pressable/Pressable.tsx",
+        "components/pressable/Pressable.types.ts"
+      ],
+      "dependencies": ["a11y"],
+      "packages": {
+        "react-native-gesture-handler": "^3.3.0"
+      }
+    },
+    "button": {
+      "kind": "component",
+      "description": "Button over Pressable with solid, subtle, outline, ghost, link and text variants, color families, S / M / L sizes, press feedback, and loading and pending states.",
+      "files": [
+        "components/button/Button.tsx",
+        "components/button/Button.types.ts"
+      ],
+      "dependencies": [
+        "a11y",
+        "capitalize",
+        "pressable",
+        "reduced-motion",
+        "skeleton",
+        "spinner",
+        "text"
+      ],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      },
+      "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
+    },
     "debounce": {
       "kind": "hook",
       "description": "useDebounce: returns a value once it has stopped changing for a delay.",
       "files": ["hooks/debounce/useDebounce.ts"]
     },
-    "disclosure": {
+    "timeout": {
       "kind": "hook",
-      "description": "useDisclosure: open / closed state with stable open, close and toggle callbacks.",
+      "description": "useTimeout: owns one setTimeout, cleared on unmount, with set, clear and a ref to the timer.",
       "files": [
-        "hooks/disclosure/useDisclosure.ts",
-        "hooks/disclosure/useDisclosure.types.ts"
+        "hooks/timeout/useTimeout.ts",
+        "hooks/timeout/useTimeout.types.ts"
+      ]
+    },
+    "boolean": {
+      "kind": "hook",
+      "description": "useBoolean: boolean state with stable set, toggle, setter (cached handler per value) and reset.",
+      "files": [
+        "hooks/boolean/useBoolean.ts",
+        "hooks/boolean/useBoolean.types.ts"
       ]
     }
   }
