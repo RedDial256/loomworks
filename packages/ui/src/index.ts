@@ -1,5 +1,11 @@
 export { Box } from './components/box/Box';
 export type { BoxProps } from './components/box/Box.types';
+export { Button, buttonColors } from './components/button/Button';
+export type {
+  ButtonProps,
+  ButtonSize,
+  ButtonVariant,
+} from './components/button/Button.types';
 export { Card } from './components/card/Card';
 export type { CardProps } from './components/card/Card.types';
 export { Divider } from './components/divider/Divider';
@@ -44,3 +50,4 @@ export type {
 } from './hooks/timeout/useTimeout.types';
 export { easyA11y } from './utils/a11y/easyA11y';
 export type { A11y, A11yAction, A11yProps } from './utils/a11y/easyA11y.types';
+export { capitalize } from './utils/capitalize/capitalize';

@@ -44,6 +44,11 @@
       "description": "easyA11y: maps a simplified a11y object to legacy accessibility props.",
       "files": ["utils/a11y/easyA11y.ts", "utils/a11y/easyA11y.types.ts"]
     },
+    "capitalize": {
+      "kind": "util",
+      "description": "capitalize: uppercases the first character of a string, keeping literal types precise.",
+      "files": ["utils/capitalize/capitalize.ts"]
+    },
     "reduced-motion": {
       "kind": "hook",
       "description": "useReducedMotion and useMotion: reactive reduced-motion setting resolved into the none / fade / keep behaviors, plus Reanimated easings from the theme.",
@@ -128,6 +133,27 @@
       "packages": {
         "react-native-gesture-handler": "^3.3.0"
       }
+    },
+    "button": {
+      "kind": "component",
+      "description": "Button over Pressable with solid, subtle, outline, ghost, link and text variants, color families, S / M / L sizes, press feedback, and loading and pending states.",
+      "files": [
+        "components/button/Button.tsx",
+        "components/button/Button.types.ts"
+      ],
+      "dependencies": [
+        "a11y",
+        "capitalize",
+        "pressable",
+        "reduced-motion",
+        "skeleton",
+        "spinner",
+        "text"
+      ],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      },
+      "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
     },
     "debounce": {
       "kind": "hook",
