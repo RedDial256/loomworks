@@ -14,6 +14,12 @@ export type {
   DividerProps,
   DividerVariant,
 } from './components/divider/Divider.types';
+export { Input } from './components/input/Input';
+export type {
+  InputProps,
+  InputRef,
+  InputType,
+} from './components/input/Input.types';
 export { Pressable, touchHitSlop } from './components/pressable/Pressable';
 export type {
   PressableProps,

@@ -88,6 +88,21 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
+    "input": {
+      "kind": "component",
+      "description": "Styled TextInput with a type preset, label, hint, error, required, controlled or uncontrolled value, a ref (get, set, reset, focus, blur, clear, validate) and a loading skeleton.",
+      "files": [
+        "components/input/Input.tsx",
+        "components/input/Input.types.ts",
+        "components/input/Input.utils.ts",
+        "components/input/components/InputLabel.tsx",
+        "components/input/components/InputMessage.tsx"
+      ],
+      "dependencies": ["a11y", "skeleton", "text"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
     "skeleton": {
       "kind": "component",
       "description": "Loading placeholder with an opacity pulse; a static block under reduced motion.",
