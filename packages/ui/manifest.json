@@ -128,6 +128,23 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
+    "switch": {
+      "kind": "component",
+      "description": "Controlled native Switch with theme colors, a pressable labelled row, disabled and loading states.",
+      "files": [
+        "components/switch/Switch.tsx",
+        "components/switch/Switch.types.ts",
+        "components/switch/Switch.utils.ts",
+        "components/switch/components/SwitchBare.tsx",
+        "components/switch/components/SwitchLoading.tsx",
+        "components/switch/components/SwitchRow.tsx",
+        "components/switch/components/ThemedSwitch.tsx"
+      ],
+      "dependencies": ["a11y", "skeleton", "text"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
     "text": {
       "kind": "component",
       "description": "Themed text with typography presets and a loading skeleton.",
