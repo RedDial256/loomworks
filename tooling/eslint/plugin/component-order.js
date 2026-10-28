@@ -215,8 +215,9 @@ export default {
 
     const visitFunction = (node, name) => {
       const fn = unwrap(node);
-      if (!isFunction(fn) || fn.body.type !== 'BlockStatement') return;
+      if (!isFunction(fn)) return;
       if (isHookName(name)) localHooks.add(name);
+      if (fn.body.type !== 'BlockStatement') return;
       check(fn.body);
     };
 
