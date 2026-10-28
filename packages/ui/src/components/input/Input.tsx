@@ -11,11 +11,11 @@ import { Skeleton } from '../skeleton/Skeleton';
 import { InputLabel } from './components/InputLabel';
 import { InputMessage } from './components/InputMessage';
 import type { InputProps } from './Input.types';
-import { DEFAULT_REQUIRED_MESSAGE, TYPE_PROPS } from './Input.utils';
+import { TYPE_PROPS, useInputValidation } from './Input.utils';
 
 /**
  * Styled `TextInput` with label, hint and error, controlled or uncontrolled,
- * and an imperative ref. Validation beyond `required` arrives with T22.
+ * and an imperative ref. Validates `required`, `schema` and `validate` on blur, then on every change while an error shows.
  */
 export const Input: FC<InputProps> = ({
   type = 'text',
@@ -23,7 +23,9 @@ export const Input: FC<InputProps> = ({
   hint,
   error,
   required,
-  requiredMessage = DEFAULT_REQUIRED_MESSAGE,
+  requiredMessage,
+  schema,
+  validate,
   loading,
   a11y,
   value: controlled,
@@ -38,28 +40,31 @@ export const Input: FC<InputProps> = ({
 }) => {
   const [uncontrolled, setUncontrolled] = useState(defaultValue);
   const [focused, setFocused] = useState(false);
-  const [ownError, setOwnError] = useState<string>();
 
   const inputRef = useRef<TextInput>(null);
   const value = controlled ?? uncontrolled;
   // Read by the ref methods, so `get` and `validate` see a `set` before the next render.
   const valueRef = useRef(value);
 
+  const {
+    message: ownError,
+    run,
+    clear,
+  } = useInputValidation(value, {
+    required,
+    requiredMessage,
+    schema,
+    validate,
+  });
+
   const { theme } = useUnistyles();
   const shown = error ?? ownError;
   const invalid = shown !== undefined;
   styles.useVariants({ focused, invalid });
 
-  const check = (next: string) => {
-    if (required && next === '') return requiredMessage;
-    return undefined;
-  };
-
   const change = (next: string) => {
     valueRef.current = next;
     if (controlled === undefined) setUncontrolled(next);
-    // A stale "Required" would outlive the fix, so re-check while it shows.
-    if (ownError !== undefined) setOwnError(check(next));
     onChangeText?.(next);
   };
 
@@ -70,6 +75,7 @@ export const Input: FC<InputProps> = ({
 
   const handleBlur: TextInputProps['onBlur'] = (event) => {
     setFocused(false);
+    run(valueRef.current);
     onBlur?.(event);
   };
 
@@ -78,16 +84,12 @@ export const Input: FC<InputProps> = ({
     set: change,
     reset: () => {
       change(defaultValue);
-      setOwnError(undefined);
+      clear();
     },
     focus: () => inputRef.current?.focus(),
     blur: () => inputRef.current?.blur(),
     clear: () => change(''),
-    validate: () => {
-      const message = check(valueRef.current);
-      setOwnError(message);
-      return message === undefined;
-    },
+    validate: () => run(valueRef.current),
   }));
 
   useEffect(() => {
