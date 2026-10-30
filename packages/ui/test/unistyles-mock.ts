@@ -32,15 +32,10 @@ export const StyleSheet = {
   create(
     factory:
       | Record<string, Definition>
-      | ((
-          theme: typeof light,
-          rt: typeof UnistylesRuntime
-        ) => Record<string, Definition>)
+      | ((theme: typeof light) => Record<string, Definition>)
   ) {
     const definitions =
-      typeof factory === 'function'
-        ? factory(light, UnistylesRuntime)
-        : factory;
+      typeof factory === 'function' ? factory(light) : factory;
     let selected: Selection = {};
     const styles: Record<string, unknown> = {
       useVariants: (variants: Selection = {}) => {
@@ -67,7 +62,6 @@ export const UnistylesRuntime = {
   setTheme: () => {},
   setAdaptiveThemes: () => {},
   updateTheme: () => {},
-  insets: { top: 0, bottom: 0, left: 0, right: 0, ime: 0 },
 };
 
 export const useUnistyles = () => ({ theme: light, rt: UnistylesRuntime });

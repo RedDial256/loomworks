@@ -1,30 +1,36 @@
 import type { FC } from 'react';
 import { useImperativeHandle, useState } from 'react';
-import { Platform, Pressable } from 'react-native';
+import { Platform, View } from 'react-native';
 
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
-import { easyA11y } from '../../utils/a11y/easyA11y';
 import { Field } from '../field/Field';
 import { fieldName, useField } from '../field/Field.utils';
-import { Text } from '../text/Text';
 
-import { DateTimeSheet } from './components/DateTimeSheet';
-import type { DateTimeInputProps } from './DateTimeInput.types';
+import { DateTimeTrigger } from './components/DateTimeTrigger';
+import { InlinePicker } from './components/InlinePicker';
+import type { DateTimeInputProps, DateTimePart } from './DateTimeInput.types';
 import {
+  DEFAULT_PART_LABELS,
   DEFAULT_RANGE_MESSAGE,
   dismissAndroidPicker,
-  formatDateTime,
+  formatPart,
+  mergePart,
+  modeParts,
   openAndroidPicker,
+  partA11yId,
+  partName,
+  partsDirection,
   pickerSeed,
   withRange,
 } from './DateTimeInput.utils';
 
 /**
- * Field that picks a `Date` with the native picker: a sheet with the inline
- * calendar or wheels on iOS, the system dialogs on Android. The field is a
- * button whose value is the formatted date. Validates when the picker closes,
- * then on every change while an error shows.
+ * Field that picks a `Date` with the native picker: inline below the field on
+ * iOS (the calendar for a day, wheels for a time), the system dialogs on
+ * Android. Each part is a button whose value is the formatted part; `datetime`
+ * shows a date and a time button side by side. Validates when the picker
+ * closes, then on every change while an error shows.
  */
 export const DateTimeInput: FC<DateTimeInputProps> = ({
   mode = 'date',
@@ -43,16 +49,16 @@ export const DateTimeInput: FC<DateTimeInputProps> = ({
   minimum,
   maximum,
   rangeMessage = DEFAULT_RANGE_MESSAGE,
+  minuteInterval,
   locale,
   format,
   placeholder,
   disabled = false,
-  doneLabel = 'Done',
+  partLabels = DEFAULT_PART_LABELS,
   style,
   ref,
 }) => {
-  const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState(() => new Date());
+  const [open, setOpen] = useState<DateTimePart | null>(null);
 
   const range = { mode, minimum, maximum };
   const checkLimits = withRange(range, rangeMessage, validate);
@@ -69,62 +75,93 @@ export const DateTimeInput: FC<DateTimeInputProps> = ({
     validate: checkLimits,
   });
 
-  const invalid = field.error !== undefined;
-  styles.useVariants({ focused: open, invalid, disabled });
+  const { rt } = useUnistyles();
+  styles.useVariants({ direction: partsDirection(rt.fontScale) });
 
-  const pick = (next: Date) => {
-    field.change(next);
+  const seed = () => pickerSeed(field.handle.get(), range);
+
+  const changePart = (part: DateTimePart, picked: Date) =>
+    field.change(mergePart(seed(), picked, part));
+
+  const close = () => {
+    setOpen(null);
     field.validateNow();
   };
 
-  const openPicker = () => {
+  const openAndroid = (part: DateTimePart) =>
+    openAndroidPicker({
+      part,
+      value: seed(),
+      minimum,
+      maximum,
+      minuteInterval,
+      onPick: (picked) => {
+        changePart(part, picked);
+        field.validateNow();
+      },
+      onDismiss: field.validateNow,
+    });
+
+  const toggle = (part: DateTimePart) => {
     if (disabled) return;
-    const seed = pickerSeed(field.handle.get(), range);
-    if (Platform.OS === 'android') {
-      openAndroidPicker({
-        ...range,
-        value: seed,
-        onPick: pick,
-        onDismiss: field.validateNow,
-      });
-      return;
-    }
-    setDraft(seed);
-    setOpen(true);
+    if (Platform.OS === 'android') openAndroid(part);
+    else if (open === part) close();
+    else setOpen(part);
   };
 
-  const cancel = () => {
-    setOpen(false);
-    field.validateNow();
-  };
-
-  const confirm = () => {
-    setOpen(false);
-    pick(draft);
+  const changeInline = (picked: Date) => {
+    if (open !== null) changePart(open, picked);
   };
 
   const closePicker = () => {
     if (Platform.OS === 'android') dismissAndroidPicker();
-    else if (open) cancel();
+    else if (open !== null) close();
   };
 
-  const shownValue = () => {
+  const partPlaceholder = (index: number) => {
+    if (index === 0) return placeholder;
+    return undefined;
+  };
+
+  const expandedPart = (part: DateTimePart) => {
+    if (Platform.OS !== 'ios') return undefined;
+    return open === part;
+  };
+
+  const partText = (part: DateTimePart) => {
     if (!field.value) return undefined;
-    if (format) return format(field.value, mode);
-    return formatDateTime(field.value, mode, locale);
+    if (format) return format(field.value, part);
+    return formatPart(field.value, part, locale);
   };
 
   useImperativeHandle(ref, () => ({
     ...field.handle,
-    focus: openPicker,
+    focus: () => toggle(modeParts(mode)[0]!),
     blur: closePicker,
   }));
 
-  const text = shownValue();
+  const name = fieldName(label, required);
+  const invalid = field.error !== undefined;
   const a11yHint = invalid ? field.error : hint;
-  const a11yValue = readValue(text);
-  const content = text ?? placeholder;
-  const tone = textTone(text, disabled);
+  const inline = Platform.OS === 'ios';
+
+  const triggers = modeParts(mode).map((part, index) => (
+    <View key={part} style={styles[part]}>
+      <DateTimeTrigger
+        part={part}
+        text={partText(part)}
+        placeholder={partPlaceholder(index)}
+        label={partName(name, part, mode, partLabels)}
+        hint={a11yHint}
+        expanded={expandedPart(part)}
+        disabled={disabled}
+        invalid={invalid}
+        onPress={toggle}
+        a11y={{ ...a11y, id: partA11yId(a11y?.id, index) }}
+        style={style}
+      />
+    </View>
+  ));
 
   return (
     <Field
@@ -133,71 +170,32 @@ export const DateTimeInput: FC<DateTimeInputProps> = ({
       hint={hint}
       error={field.error}
       loading={loading}>
-      <Pressable
-        {...easyA11y({
-          role: 'button',
-          label: fieldName(label, required),
-          hint: a11yHint,
-          value: a11yValue,
-          disabled,
-          ...a11y,
-        })}
-        disabled={disabled}
-        onPress={openPicker}
-        style={[styles.field, style]}>
-        <Text tone={tone} a11y={{ hidden: true }}>
-          {content}
-        </Text>
-      </Pressable>
-      <DateTimeSheet
-        {...range}
-        open={open}
-        value={draft}
-        locale={locale}
-        doneLabel={doneLabel}
-        onChange={setDraft}
-        onDone={confirm}
-        onCancel={cancel}
-      />
+      <View style={styles.parts}>{triggers}</View>
+      {inline && (
+        <InlinePicker
+          part={open}
+          value={seed()}
+          minimum={minimum}
+          maximum={maximum}
+          minuteInterval={minuteInterval}
+          locale={locale}
+          onChange={changeInline}
+        />
+      )}
     </Field>
   );
 };
 
-/** Read after the name; nothing while empty. */
-const readValue = (text: string | undefined) => {
-  if (text === undefined) return undefined;
-  return { text };
-};
-
-/** Muted for the placeholder, disabled when blocked. */
-const textTone = (text: string | undefined, disabled: boolean) => {
-  if (disabled) return 'disabled';
-  if (text === undefined) return 'muted';
-  return undefined;
-};
-
 const styles = StyleSheet.create((theme) => ({
-  field: {
-    minHeight: theme.touchTarget.min,
-    justifyContent: 'center',
-    paddingHorizontal: theme.spacing.sm,
-    borderWidth: 1,
-    borderRadius: theme.radii.md,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
+  parts: {
+    gap: theme.spacing.xs,
     variants: {
-      focused: {
-        true: { borderColor: theme.colors.focusRing },
-        false: {},
-      },
-      invalid: {
-        true: { borderColor: theme.colors.danger },
-        false: {},
-      },
-      disabled: {
-        true: { backgroundColor: theme.colors.surfaceSunken },
-        false: {},
+      direction: {
+        row: { flexDirection: 'row' },
+        column: { flexDirection: 'column' },
       },
     },
   },
+  date: { flex: 3 },
+  time: { flex: 2 },
 }));

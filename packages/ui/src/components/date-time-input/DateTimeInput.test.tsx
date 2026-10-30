@@ -10,14 +10,18 @@ import { light } from '@/theme';
 import { DateTimeInput } from './DateTimeInput';
 import type { DateTimeInputRef } from './DateTimeInput.types';
 import {
-  formatDateTime,
+  formatPart,
   isOutOfRange,
+  mergePart,
+  partName,
+  partsDirection,
   pickerSeed,
+  themeVariant,
 } from './DateTimeInput.utils';
 
 jest.mock('@react-native-community/datetimepicker', () => {
   const { View } = jest.requireActual('react-native');
-  const Picker = (props: object) => <View testID="picker" {...props} />;
+  const Picker = (props: object) => <View {...props} />;
   return {
     __esModule: true,
     default: Picker,
@@ -25,15 +29,17 @@ jest.mock('@react-native-community/datetimepicker', () => {
   };
 });
 
+const PICKER = 'dateTimeInlinePicker';
 const open = jest.mocked(DateTimePickerAndroid.open);
 const hidden = { includeHiddenElements: true };
+const event = { nativeEvent: { timestamp: 0, utcOffset: 0 } };
 const day = new Date(2026, 0, 15, 10, 30);
 const later = new Date(2026, 5, 1, 18, 0);
 
-const pickInSheet = async (date: Date) => {
-  await fireEvent(screen.getByTestId('picker'), 'valueChange', {}, date);
-  await fireEvent.press(screen.getByRole('button', { name: 'Done' }));
-};
+const press = async (name: string) =>
+  fireEvent.press(screen.getByRole('button', { name }));
+
+const settle = async () => act(async () => jest.runAllTimers());
 
 describe('DateTimeInput', () => {
   beforeEach(() => {
@@ -54,10 +60,10 @@ describe('DateTimeInput', () => {
     });
 
     it.each([
-      ['date', 'Jan 15, 2026'],
-      ['time', '10:30 AM'],
-      ['datetime', 'Jan 15, 2026, 10:30 AM'],
-    ] as const)('formats %s with the locale', async (mode, text) => {
+      ['date', ['Jan 15, 2026']],
+      ['time', ['10:30 AM']],
+      ['datetime', ['Jan 15, 2026', '10:30 AM']],
+    ] as const)('formats %s with the locale', async (mode, texts) => {
       await render(
         <DateTimeInput
           label="When"
@@ -66,16 +72,24 @@ describe('DateTimeInput', () => {
           locale="en-US"
         />
       );
-      expect(screen.getByText(text, hidden)).toBeOnTheScreen();
+      for (const text of texts) {
+        expect(screen.getByText(text, hidden)).toBeOnTheScreen();
+      }
     });
 
-    it('uses format when given', async () => {
+    it('uses format per part when given', async () => {
       const format = jest.fn(() => 'custom');
       await render(
-        <DateTimeInput label="Day" defaultValue={day} format={format} />
+        <DateTimeInput
+          label="When"
+          mode="datetime"
+          defaultValue={day}
+          format={format}
+        />
       );
-      expect(screen.getByText('custom', hidden)).toBeOnTheScreen();
+      expect(screen.getAllByText('custom', hidden)).toHaveLength(2);
       expect(format).toHaveBeenCalledWith(day, 'date');
+      expect(format).toHaveBeenCalledWith(day, 'time');
     });
 
     it('controlled: shows the value prop only', async () => {
@@ -88,9 +102,9 @@ describe('DateTimeInput', () => {
           onChangeDate={onChangeDate}
         />
       );
-      await fireEvent.press(screen.getByRole('button', { name: 'Day' }));
-      await pickInSheet(later);
-      expect(onChangeDate).toHaveBeenCalledWith(later);
+      await press('Day');
+      await fireEvent(screen.getByTestId(PICKER), 'valueChange', event, later);
+      expect(onChangeDate).toHaveBeenCalledWith(mergePart(day, later, 'date'));
       expect(screen.getByText('Jan 15, 2026', hidden)).toBeOnTheScreen();
       await screen.rerender(
         <DateTimeInput
@@ -120,6 +134,40 @@ describe('DateTimeInput', () => {
       expect(button).toHaveProp('accessibilityHint', 'Your birthday');
     });
 
+    it('datetime: a date and a time button, each with its part', async () => {
+      await render(
+        <DateTimeInput
+          label="Starts"
+          mode="datetime"
+          defaultValue={day}
+          locale="en-US"
+          a11y={{ id: 'starts' }}
+        />
+      );
+      const date = screen.getByRole('button', { name: 'Starts, date' });
+      const time = screen.getByRole('button', { name: 'Starts, time' });
+      expect(date).toHaveAccessibilityValue({ text: 'Jan 15, 2026' });
+      expect(time).toHaveAccessibilityValue({ text: '10:30 AM' });
+      expect(date).toHaveProp('testID', 'starts');
+      expect(time).toHaveProp('testID', 'starts-time');
+    });
+
+    it('partLabels names the datetime buttons', async () => {
+      await render(
+        <DateTimeInput
+          label="Início"
+          mode="datetime"
+          partLabels={{ date: 'data', time: 'hora' }}
+        />
+      );
+      expect(
+        screen.getByRole('button', { name: 'Início, data' })
+      ).toBeOnTheScreen();
+      expect(
+        screen.getByRole('button', { name: 'Início, hora' })
+      ).toBeOnTheScreen();
+    });
+
     it('reads no value while empty, and the error as the hint', async () => {
       await render(<DateTimeInput label="Day" error="Bad day" />);
       const button = screen.getByRole('button', { name: 'Day' });
@@ -128,57 +176,85 @@ describe('DateTimeInput', () => {
       expect(screen.getByRole('alert')).toHaveTextContent('Bad day');
     });
 
+    it('announces expanded while the inline picker is open', async () => {
+      await render(<DateTimeInput label="Day" />);
+      expect(screen.getByRole('button', { name: 'Day' })).toHaveProp(
+        'accessibilityState',
+        expect.objectContaining({ expanded: false })
+      );
+      await press('Day');
+      expect(screen.getByRole('button', { name: 'Day' })).toBeExpanded();
+    });
+
     it('disabled: announced, and pressing does not open the picker', async () => {
       await render(<DateTimeInput label="Day" disabled />);
       const button = screen.getByRole('button', { name: 'Day' });
       expect(button).toBeDisabled();
       await fireEvent.press(button);
-      expect(screen.queryByTestId('picker')).toBeNull();
+      expect(screen.queryByTestId(PICKER)).toBeNull();
     });
   });
 
-  describe('iOS sheet', () => {
-    it('opens on press at the value, commits on Done and validates', async () => {
+  describe('iOS inline picker', () => {
+    it('opens below the field at the value and changes it live', async () => {
       const onChangeDate = jest.fn();
       await render(
         <DateTimeInput
           label="Day"
           defaultValue={day}
           locale="en-US"
+          minuteInterval={15}
           onChangeDate={onChangeDate}
         />
       );
-      await fireEvent.press(screen.getByRole('button', { name: 'Day' }));
-      const picker = screen.getByTestId('picker');
+      expect(screen.queryByTestId(PICKER)).toBeNull();
+      await press('Day');
+      const picker = screen.getByTestId(PICKER);
       expect(picker).toHaveProp('value', day);
+      expect(picker).toHaveProp('mode', 'date');
       expect(picker).toHaveProp('display', 'inline');
-      await pickInSheet(later);
-      expect(onChangeDate).toHaveBeenCalledWith(later);
-      expect(screen.queryByTestId('picker')).toBeNull();
+      expect(picker).toHaveProp('minuteInterval', 15);
+      expect(picker).toHaveProp('themeVariant', 'light');
+      await fireEvent(picker, 'valueChange', event, later);
+      const next = mergePart(day, later, 'date');
+      expect(onChangeDate).toHaveBeenCalledWith(next);
       expect(screen.getByText('Jun 1, 2026', hidden)).toBeOnTheScreen();
+      expect(screen.getByTestId(PICKER)).toBeOnTheScreen();
     });
 
-    it('uses wheels for a time', async () => {
-      await render(<DateTimeInput label="At" mode="time" />);
-      await fireEvent.press(screen.getByRole('button', { name: 'At' }));
-      expect(screen.getByTestId('picker')).toHaveProp('display', 'spinner');
+    it('closes on a second press, after the animation, and validates', async () => {
+      await render(<DateTimeInput label="Day" required />);
+      await press('Day, required');
+      expect(screen.queryByRole('alert')).toBeNull();
+      await press('Day, required');
+      expect(screen.getByRole('alert')).toHaveTextContent('Required');
+      await settle();
+      expect(screen.queryByTestId(PICKER)).toBeNull();
     });
 
-    it('cancel keeps the value and validates', async () => {
+    it('datetime: each button opens its part and keeps the other', async () => {
       const onChangeDate = jest.fn();
       await render(
-        <DateTimeInput label="Day" required onChangeDate={onChangeDate} />
+        <DateTimeInput
+          label="Starts"
+          mode="datetime"
+          defaultValue={day}
+          onChangeDate={onChangeDate}
+        />
       );
-      await fireEvent.press(
-        screen.getByRole('button', { name: 'Day, required' })
+      await press('Starts, time');
+      expect(screen.getByTestId(PICKER)).toHaveProp('mode', 'time');
+      expect(screen.getByTestId(PICKER)).toHaveProp('display', 'spinner');
+      await fireEvent(screen.getByTestId(PICKER), 'valueChange', event, later);
+      expect(onChangeDate).toHaveBeenLastCalledWith(
+        new Date(2026, 0, 15, 18, 0)
       );
-      await fireEvent(screen.getByTestId('picker'), 'valueChange', {}, later);
-      await fireEvent(
-        screen.root!.queryAll((node) => node.props.onRequestClose)[0]!,
-        'requestClose'
-      );
-      expect(onChangeDate).not.toHaveBeenCalled();
-      expect(screen.getByRole('alert')).toHaveTextContent('Required');
+      await press('Starts, date');
+      expect(screen.getByTestId(PICKER)).toHaveProp('mode', 'date');
+      expect(
+        screen.getByRole('button', { name: 'Starts, time' }).props
+          .accessibilityState.expanded
+      ).toBe(false);
     });
 
     it('passes the limits and the locale to the picker', async () => {
@@ -190,20 +266,21 @@ describe('DateTimeInput', () => {
           locale="pt-PT"
         />
       );
-      await fireEvent.press(screen.getByRole('button', { name: 'Day' }));
-      const picker = screen.getByTestId('picker');
+      await press('Day');
+      const picker = screen.getByTestId(PICKER);
       expect(picker).toHaveProp('minimumDate', day);
       expect(picker).toHaveProp('maximumDate', later);
       expect(picker).toHaveProp('locale', 'pt-PT');
     });
 
-    it('focus opens the sheet and blur closes it', async () => {
+    it('focus opens the picker and blur closes it', async () => {
       const ref = createRef<DateTimeInputRef>();
       await render(<DateTimeInput ref={ref} label="Day" />);
       await act(async () => ref.current!.focus());
-      expect(screen.getByTestId('picker')).toBeOnTheScreen();
+      expect(screen.getByTestId(PICKER)).toBeOnTheScreen();
       await act(async () => ref.current!.blur());
-      expect(screen.queryByTestId('picker')).toBeNull();
+      await settle();
+      expect(screen.queryByTestId(PICKER)).toBeNull();
     });
   });
 
@@ -226,7 +303,8 @@ describe('DateTimeInput', () => {
           onChangeDate={onChangeDate}
         />
       );
-      await fireEvent.press(screen.getByRole('button', { name: 'Day' }));
+      await press('Day');
+      expect(screen.queryByTestId(PICKER)).toBeNull();
       expect(open).toHaveBeenCalledTimes(1);
       const options = open.mock.calls[0]![0];
       expect(options).toMatchObject({
@@ -234,45 +312,45 @@ describe('DateTimeInput', () => {
         value: day,
         minimumDate: day,
       });
-      await act(async () =>
-        options.onValueChange!(
-          { nativeEvent: { timestamp: 0, utcOffset: 0 } },
-          later
-        )
-      );
-      expect(onChangeDate).toHaveBeenCalledWith(later);
+      await act(async () => options.onValueChange!(event, later));
+      expect(onChangeDate).toHaveBeenCalledWith(mergePart(day, later, 'date'));
     });
 
-    it('datetime: the date dialog, then the time dialog on that day', async () => {
+    it('datetime: the time button opens only the time dialog', async () => {
       const onChangeDate = jest.fn();
       await render(
         <DateTimeInput
           label="When"
           mode="datetime"
+          defaultValue={day}
+          minuteInterval={5}
           onChangeDate={onChangeDate}
         />
       );
-      await fireEvent.press(screen.getByRole('button', { name: 'When' }));
-      const event = { nativeEvent: { timestamp: 0, utcOffset: 0 } };
-      await act(async () => open.mock.calls[0]![0].onValueChange!(event, day));
-      expect(onChangeDate).not.toHaveBeenCalled();
-      expect(open.mock.calls[1]![0]).toMatchObject({
+      await press('When, time');
+      expect(open).toHaveBeenCalledTimes(1);
+      expect(open.mock.calls[0]![0]).toMatchObject({
         mode: 'time',
-        value: day,
+        minuteInterval: 5,
       });
       await act(async () =>
-        open.mock.calls[1]![0].onValueChange!(event, later)
+        open.mock.calls[0]![0].onValueChange!(event, later)
       );
-      expect(onChangeDate).toHaveBeenCalledWith(later);
+      expect(onChangeDate).toHaveBeenCalledWith(new Date(2026, 0, 15, 18, 0));
     });
 
     it('dismissing validates', async () => {
       await render(<DateTimeInput label="Day" required />);
-      await fireEvent.press(
-        screen.getByRole('button', { name: 'Day, required' })
-      );
+      await press('Day, required');
       await act(async () => open.mock.calls[0]![0].onDismiss!());
       expect(screen.getByRole('alert')).toHaveTextContent('Required');
+    });
+
+    it('blur dismisses the dialog', async () => {
+      const ref = createRef<DateTimeInputRef>();
+      await render(<DateTimeInput ref={ref} label="Day" />);
+      ref.current!.blur();
+      expect(DateTimePickerAndroid.dismiss).toHaveBeenCalled();
     });
   });
 
@@ -348,12 +426,11 @@ describe('DateTimeInput', () => {
   describe('styles', () => {
     it('uses the focus ring while open and the danger border on error', async () => {
       await render(<DateTimeInput label="Day" />);
-      const button = screen.getByRole('button', { name: 'Day' });
-      expect(button).toHaveStyle({
+      expect(screen.getByRole('button', { name: 'Day' })).toHaveStyle({
         borderColor: light.colors.border,
         minHeight: 48,
       });
-      await fireEvent.press(button);
+      await press('Day');
       expect(screen.getByRole('button', { name: 'Day' })).toHaveStyle({
         borderColor: light.colors.focusRing,
       });
@@ -372,6 +449,11 @@ describe('DateTimeInput', () => {
 });
 
 describe('DateTimeInput utils', () => {
+  it('merges the day or the time of the pick into the value', () => {
+    expect(mergePart(day, later, 'date')).toEqual(new Date(2026, 5, 1, 10, 30));
+    expect(mergePart(day, later, 'time')).toEqual(new Date(2026, 0, 15, 18, 0));
+  });
+
   it('compares days for date, minutes of the day for time, instants for datetime', () => {
     const morning = new Date(2026, 0, 15, 8, 0);
     expect(isOutOfRange(morning, { mode: 'date', minimum: day })).toBe(false);
@@ -389,15 +471,32 @@ describe('DateTimeInput utils', () => {
 
   it('seeds the picker with the value, or now inside the limits', () => {
     jest.useFakeTimers({ now: new Date(2026, 3, 1) });
-    expect(pickerSeed(day, { mode: 'date' })).toBe(day);
-    expect(pickerSeed(null, { mode: 'date', minimum: later })).toBe(later);
-    expect(pickerSeed(null, { mode: 'date', maximum: day })).toBe(day);
-    expect(pickerSeed(null, { mode: 'date' })).toEqual(new Date(2026, 3, 1));
+    expect(pickerSeed(day, {})).toBe(day);
+    expect(pickerSeed(null, { minimum: later })).toBe(later);
+    expect(pickerSeed(null, { maximum: day })).toBe(day);
+    expect(pickerSeed(null, {})).toEqual(new Date(2026, 3, 1));
     jest.useRealTimers();
   });
 
+  it('names the parts only for datetime', () => {
+    const labels = { date: 'date', time: 'time' };
+    expect(partName('Day', 'date', 'date', labels)).toBe('Day');
+    expect(partName('When', 'time', 'datetime', labels)).toBe('When, time');
+    expect(partName(undefined, 'time', 'datetime', labels)).toBe('time');
+  });
+
+  it('stacks the buttons with very large text', () => {
+    expect(partsDirection(1)).toBe('row');
+    expect(partsDirection(2)).toBe('column');
+  });
+
+  it('follows the app theme on the iOS picker', () => {
+    expect(themeVariant('dark')).toBe('dark');
+    expect(themeVariant('light')).toBe('light');
+  });
+
   it('formats with Intl', () => {
-    expect(formatDateTime(day, 'date', 'pt-PT')).toBe(
+    expect(formatPart(day, 'date', 'pt-PT')).toBe(
       new Intl.DateTimeFormat('pt-PT', { dateStyle: 'medium' }).format(day)
     );
   });
