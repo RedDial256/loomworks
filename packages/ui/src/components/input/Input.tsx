@@ -1,17 +1,16 @@
 import type { FC } from 'react';
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useImperativeHandle, useRef, useState } from 'react';
 import type { TextInputInstance, TextInputProps } from 'react-native';
-import { TextInput, View } from 'react-native';
+import { TextInput } from 'react-native';
 
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
-import { Skeleton } from '../skeleton/Skeleton';
+import { Field } from '../field/Field';
+import { fieldName, useField } from '../field/Field.utils';
 
-import { InputLabel } from './components/InputLabel';
-import { InputMessage } from './components/InputMessage';
 import type { InputProps } from './Input.types';
-import { TYPE_PROPS, useInputValidation } from './Input.utils';
+import { TYPE_PROPS } from './Input.utils';
 
 /**
  * Styled `TextInput` with label, hint and error, controlled or uncontrolled,
@@ -29,7 +28,7 @@ export const Input: FC<InputProps> = ({
   loading,
   a11y,
   value: controlled,
-  defaultValue = '',
+  defaultValue,
   onChangeText,
   onFocus,
   onBlur,
@@ -38,19 +37,16 @@ export const Input: FC<InputProps> = ({
   ref,
   ...rest
 }) => {
-  const [uncontrolled, setUncontrolled] = useState(defaultValue);
   const [focused, setFocused] = useState(false);
 
   const inputRef = useRef<TextInputInstance>(null);
-  const value = controlled ?? uncontrolled;
-  // Read by the ref methods, so `get` and `validate` see a `set` before the next render.
-  const valueRef = useRef(value);
 
-  const {
-    message: ownError,
-    run,
-    clear,
-  } = useInputValidation(value, {
+  const field = useField({
+    value: controlled,
+    defaultValue,
+    empty: '',
+    error,
+    onChange: onChangeText,
     required,
     requiredMessage,
     schema,
@@ -58,15 +54,8 @@ export const Input: FC<InputProps> = ({
   });
 
   const { theme } = useUnistyles();
-  const shown = error ?? ownError;
-  const invalid = shown !== undefined;
+  const invalid = field.error !== undefined;
   styles.useVariants({ focused, invalid });
-
-  const change = (next: string) => {
-    valueRef.current = next;
-    if (controlled === undefined) setUncontrolled(next);
-    onChangeText?.(next);
-  };
 
   const handleFocus: TextInputProps['onFocus'] = (event) => {
     setFocused(true);
@@ -75,74 +64,48 @@ export const Input: FC<InputProps> = ({
 
   const handleBlur: TextInputProps['onBlur'] = (event) => {
     setFocused(false);
-    run(valueRef.current);
+    field.validateNow();
     onBlur?.(event);
   };
 
   useImperativeHandle(ref, () => ({
-    get: () => valueRef.current,
-    set: change,
-    reset: () => {
-      change(defaultValue);
-      clear();
-    },
+    ...field.handle,
     focus: () => inputRef.current?.focus(),
     blur: () => inputRef.current?.blur(),
-    clear: () => change(''),
-    validate: () => run(valueRef.current),
   }));
 
-  useEffect(() => {
-    valueRef.current = value;
-  }, [value]);
-
-  const name = label && required ? `${label}, required` : label;
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <InputLabel label={label} required={required} />
-        <Skeleton
-          height={theme.touchTarget.min}
-          radius="md"
-          a11y={{
-            label: name ? `Loading ${name}` : 'Loading',
-            hidden: false,
-            busy: true,
-          }}
-        />
-      </View>
-    );
-  }
+  const a11yHint = invalid ? field.error : hint;
 
   return (
-    <View style={styles.container}>
-      <InputLabel label={label} required={required} />
+    <Field
+      label={label}
+      required={required}
+      hint={hint}
+      error={field.error}
+      loading={loading}>
       <TextInput
         ref={inputRef}
         {...TYPE_PROPS[type]}
         placeholderTextColor={theme.colors.textMuted}
         {...easyA11y({
-          label: name,
-          hint: shown ?? hint,
+          label: fieldName(label, required),
+          hint: a11yHint,
           disabled: editable === false,
           ...a11y,
         })}
         {...rest}
-        value={value}
+        value={field.value}
         editable={editable}
-        onChangeText={change}
+        onChangeText={field.change}
         onFocus={handleFocus}
         onBlur={handleBlur}
         style={[styles.field, style]}
       />
-      <InputMessage error={shown} hint={hint} />
-    </View>
+    </Field>
   );
 };
 
 const styles = StyleSheet.create((theme) => ({
-  container: { gap: theme.spacing['2xs'] },
   field: {
     minHeight: theme.touchTarget.min,
     paddingHorizontal: theme.spacing.sm,
