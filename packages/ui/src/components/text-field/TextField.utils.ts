@@ -1,7 +1,7 @@
-import type { InputType, InputTypeProps } from './Input.types';
+import type { TextFieldType, TextFieldTypeProps } from './TextField.types';
 
 /** Props each `type` sets together; any of them can be overridden by the user. */
-export const TYPE_PROPS: Record<InputType, InputTypeProps> = {
+export const TYPE_PROPS: Record<TextFieldType, TextFieldTypeProps> = {
   text: { autoCapitalize: 'sentences' },
   email: {
     keyboardType: 'email-address',
