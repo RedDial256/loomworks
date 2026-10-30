@@ -28,7 +28,6 @@ export interface DateTimeInputProps extends FieldBaseProps<Date | null> {
   locale?: string;
   /** Replaces the locale formatting of the shown value. */
   format?: (value: Date, mode: DateTimeMode) => string;
-  /** Shown while empty. */
   placeholder?: string;
   /** Blocks opening the picker and dims the field. */
   disabled?: boolean;
@@ -44,7 +43,6 @@ export type DateTimeRange = Pick<DateTimeInputProps, 'minimum' | 'maximum'> & {
   mode: DateTimeMode;
 };
 
-/** Options of the Android dialogs. */
 export interface AndroidPickerOptions extends DateTimeRange {
   value: Date;
   onPick: (value: Date) => void;

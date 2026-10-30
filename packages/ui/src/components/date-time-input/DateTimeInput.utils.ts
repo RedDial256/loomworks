@@ -112,7 +112,6 @@ export const openAndroidPicker = ({
   });
 };
 
-/** Closes the open Android dialog, if any. */
 export const dismissAndroidPicker = () => {
   DateTimePickerAndroid.dismiss('date');
   DateTimePickerAndroid.dismiss('time');
