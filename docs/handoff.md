@@ -8,7 +8,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 
 ## Where things are
 
-- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T16) is #17 to #23 and #26, milestone "Phase 2". Phase 3 (T17 to T23) is #37 to #43, milestone "Phase 3 — Interactive components".
+- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T16) is #17 to #23 and #26, milestone "Phase 2". Phase 3 (T17 to T23) is #37 to #43, milestone "Phase 3 — Interactive components". Phase 4 (T24 to T32) is #53 to #61, no milestone yet; blockers are listed in each issue body.
 - Local repo: `~/Desktop/projects/pers/loomworks`, branch `main`. The `origin` remote is SSH.
 
 ## State
@@ -21,8 +21,9 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 | T07 `Box` and `Text` | Merged (#15); the `X.types.ts` split landed with T08 (#16). `Box`: `padding` (`none`/`S`/`M`/`L`) and `surface` variants. `Text`: `variant` (presets, default `body`) and `tone` (`muted`/`disabled`, `text` when unset); headings get `accessibilityRole="header"` and `maxFontSizeMultiplier` 1.5. `loom add box text` verified on SDK 57 and 56 (tsc, iOS export) and launched on SDK 56 in both themes |
 | T08 integration test | Merged (#16). `integration` CI job running `scripts/integration.sh`: fresh SDK 57 app (`create-expo-app@5.0.0`), `loom init`, `loom add box text`, `tsc --noEmit`, `expo lint` on the files loom wrote (the template itself fails `expo lint`). Runnable locally after building the CLI |
 | Phase 2 (T09 to T16) | Ticketed: #17 to #23 and #26 (T16) with blocking links. T09, T10, T14, T15 and T16 have no blockers |
-| Phase 3 (T17 to T23) | Ticketed: #37 to #43. Only T19 (`Button`, blocked by T17) and T22 (`Input` validation, blocked by T21) have blockers |
-| Phases 4 and 5 | Outlined in the roadmap, not ticketed on purpose |
+| Phase 3 (T17 to T23) | Done and merged (#45 to #51); code style enforced with ESLint and tsconfig (#52). Interactive components covered by unit tests only, not yet seen in an app (first visual pass in T29) |
+| Phase 4 (T24 to T32) | Ticketed: #53 to #61. SDK 58 only from T24. T24 has no blockers; T30's extraction step can start before T24 lands |
+| Phase 5 | Outlined in the roadmap, not ticketed on purpose |
 
 Notes:
 - A fresh Expo template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). `scripts/integration.sh` creates it.
@@ -31,7 +32,7 @@ Notes:
 
 ## Recommended next steps
 
-1. Finish T16 (#26). Phase 3: T17, T18, T20, T21 and T23 can go in parallel; T19 waits for T17 and T22 for T21.
+1. Phase 4: T24 (#53) first, T30 (#59) in parallel. After T24: T25 (#54) and T31 (#60); after T25: T26 (#55) and T28 (#57).
 2. Pending small items: launch the SDK 58 app on the iOS simulator and on Android; decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
 
 ## Working conventions

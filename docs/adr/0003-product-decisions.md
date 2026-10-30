@@ -76,7 +76,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 
 ## Process
 
-- Issues and milestones on GitHub; Phases 0 to 3 are ticketed, later phases are outlined in `docs/roadmap.md`.
+- Issues and milestones on GitHub; Phases 0 to 4 are ticketed, later phases are outlined in `docs/roadmap.md`.
 
 ## Open points
 
