@@ -7,9 +7,11 @@ import { z } from 'zod';
 
 import { light } from '@/theme';
 
+import { ASYNC_SCHEMA_MESSAGE } from '../field/Field.utils';
+
 import { Input } from './Input';
 import type { InputRef, InputType } from './Input.types';
-import { ASYNC_SCHEMA_MESSAGE, TYPE_PROPS } from './Input.utils';
+import { TYPE_PROPS } from './Input.utils';
 
 const hidden = { includeHiddenElements: true };
 

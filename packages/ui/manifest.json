@@ -88,17 +88,30 @@
         "react-native-unistyles": "^3.7.0"
       }
     },
+    "field": {
+      "kind": "component",
+      "description": "Shared field logic: the frame (label, hint or error, loading skeleton), controlled or uncontrolled value, validation (required, any Standard Schema, a validate callback) on blur then debounced on change, and the base of the ref. Generic over the value type.",
+      "files": [
+        "components/field/Field.tsx",
+        "components/field/Field.types.ts",
+        "components/field/Field.utils.ts",
+        "components/field/components/FieldLabel.tsx",
+        "components/field/components/FieldMessage.tsx"
+      ],
+      "dependencies": ["a11y", "debounce", "skeleton", "text"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      }
+    },
     "input": {
       "kind": "component",
       "description": "Styled TextInput with a type preset, label, hint, error, required, controlled or uncontrolled value, validation (required, any Standard Schema, a validate callback) on blur then debounced on change, a ref (get, set, reset, focus, blur, clear, validate) and a loading skeleton.",
       "files": [
         "components/input/Input.tsx",
         "components/input/Input.types.ts",
-        "components/input/Input.utils.ts",
-        "components/input/components/InputLabel.tsx",
-        "components/input/components/InputMessage.tsx"
+        "components/input/Input.utils.ts"
       ],
-      "dependencies": ["a11y", "debounce", "skeleton", "text"],
+      "dependencies": ["a11y", "field"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
       }

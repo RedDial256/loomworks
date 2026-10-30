@@ -3,9 +3,9 @@ import type { FC } from 'react';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { Text } from '../../text/Text';
-import type { InputLabelProps } from '../Input.types';
+import type { FieldLabelProps } from '../Field.types';
 
-export const InputLabel: FC<InputLabelProps> = ({ label, required }) => {
+export const FieldLabel: FC<FieldLabelProps> = ({ label, required }) => {
   if (!label) return null;
   return (
     <Text variant="label" a11y={{ hidden: true }}>
