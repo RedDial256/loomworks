@@ -8,6 +8,12 @@ export type {
 } from './components/button/Button.types';
 export { Card } from './components/card/Card';
 export type { CardProps } from './components/card/Card.types';
+export { DateTimeInput } from './components/date-time-input/DateTimeInput';
+export type {
+  DateTimeInputProps,
+  DateTimeInputRef,
+  DateTimeMode,
+} from './components/date-time-input/DateTimeInput.types';
 export { Divider } from './components/divider/Divider';
 export type {
   DividerOrientation,
@@ -15,7 +21,12 @@ export type {
   DividerVariant,
 } from './components/divider/Divider.types';
 export { Input } from './components/input/Input';
-export type { InputProps, InputRef } from './components/input/Input.types';
+export type {
+  DateInputProps,
+  InputProps,
+  InputRef,
+  InputType,
+} from './components/input/Input.types';
 export { Pressable, touchHitSlop } from './components/pressable/Pressable';
 export type {
   PressableProps,
