@@ -9,7 +9,7 @@ import type { InputRef } from './Input.types';
 
 jest.mock('@react-native-community/datetimepicker', () => {
   const { View } = jest.requireActual('react-native');
-  const Picker = (props: object) => <View testID="picker" {...props} />;
+  const Picker = (props: object) => <View {...props} />;
   return {
     __esModule: true,
     default: Picker,
@@ -37,16 +37,13 @@ describe('Input', () => {
   });
 
   it.each([
-    ['date', 'inline'],
-    ['time', 'spinner'],
-    ['datetime', 'inline'],
-  ] as const)('routes %s to DateTimeInput', async (type, display) => {
+    ['date', 'When', 'date'],
+    ['time', 'When', 'time'],
+    ['datetime', 'When, date', 'date'],
+  ] as const)('routes %s to DateTimeInput', async (type, name, mode) => {
     await render(<Input type={type} label="When" />);
-    const button = screen.getByRole('button', { name: 'When' });
-    await fireEvent.press(button);
-    const picker = screen.getByTestId('picker');
-    expect(picker).toHaveProp('mode', type);
-    expect(picker).toHaveProp('display', display);
+    await fireEvent.press(screen.getByRole('button', { name }));
+    expect(screen.getByTestId('dateTimeInlinePicker')).toHaveProp('mode', mode);
   });
 
   it('types the value and the ref of a date input', async () => {

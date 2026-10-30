@@ -118,18 +118,26 @@
     },
     "date-time-input": {
       "kind": "component",
-      "description": "Date, time or date-and-time field on the shared field: a button showing the locale-formatted value that opens the native picker (a sheet on iOS, the system dialogs on Android, date then time for datetime), minimum and maximum, validation on Date and a ref.",
+      "description": "Date, time or date-and-time field on the shared field: buttons showing the locale-formatted value with a calendar or clock icon, the native picker inline below the field on iOS and the system dialogs on Android (a date and a time button for datetime), minimum and maximum, minute interval, validation on Date and a ref.",
       "files": [
         "components/date-time-input/DateTimeInput.tsx",
         "components/date-time-input/DateTimeInput.types.ts",
         "components/date-time-input/DateTimeInput.utils.ts",
-        "components/date-time-input/components/DateTimeSheet.tsx"
+        "components/date-time-input/components/CalendarIcon.tsx",
+        "components/date-time-input/components/ClockIcon.tsx",
+        "components/date-time-input/components/DateTimeTrigger.tsx",
+        "components/date-time-input/components/InlinePicker.tsx"
       ],
-      "dependencies": ["a11y", "field", "text"],
+      "dependencies": ["a11y", "field", "reduced-motion", "text"],
       "packages": {
         "react-native-unistyles": "^3.5.2"
       },
-      "sdkPackages": ["@react-native-community/datetimepicker"]
+      "sdkPackages": [
+        "@react-native-community/datetimepicker",
+        "react-native-reanimated",
+        "react-native-svg",
+        "react-native-worklets"
+      ]
     },
     "input": {
       "kind": "component",
