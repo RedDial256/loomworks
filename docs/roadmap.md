@@ -10,7 +10,7 @@ Monorepo (`RedDial256/loomworks`, pnpm workspaces, MIT) with:
 | `templates/app` | (embedded in create-weaver) | no |
 
 Versions: lockstep via Changesets, pre-release (`alpha`) until stable.
-Support: `loom` and the template on Expo 58 only ([ADR 0004](adr/0004-expo-58-support.md); was 56 + 57).
+Support: `loom` and the template on Expo 58 only ([ADR 0001](adr/0001-expo-compatibility.md)).
 Labels: `pkg:ui`, `pkg:loom`, `pkg:weaver`, `template`, `ci`, `docs`, `spike`.
 
 Order follows tracer bullets: one thin slice end-to-end first (Phase 1), then widen.
@@ -152,5 +152,5 @@ Done: recorded in [ADR 0002](adr/0002-design-tokens.md), backed by three benchma
 - **Phase 4 — Demos, template and scaffolder:** demo convention, template app (tabs + sandbox drawer), `weaver` with `--yes` and prompts.
   - `Input`, second iteration: date and time, as its own component or inside `Input` to reuse its logic.
   - `Background`: fills a background with colors or gradients. Two forms (variants or separate components): a wrapper that is the parent and wraps its children, and a child that fills its parent completely. Borders (radius, clipping) need testing. Technology and libraries still to discuss.
-- **Phase 5 — Quality and release:** accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, Expo 56 matrix and `engines` validation, release pipeline, docs, first alpha.
+- **Phase 5 — Quality and release:** accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, an SDK 58 + 59 matrix if SDK 59 exists by then (keep 58), `engines` validation, release pipeline, docs, first alpha.
 - **Not in v1:** `loom diff`, remote registry, `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists, template mirror repo.

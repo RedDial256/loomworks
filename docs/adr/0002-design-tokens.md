@@ -6,7 +6,7 @@ Status: accepted (design session, values to be tuned with real components)
 
 Loom components must look uniform, support light and dark themes, and be easy for users to customize after the CLI copies them into their project. The theme is consumed through Unistyles 3 and must share one typed `Theme` contract across themes.
 
-Evidence: [color benchmark](../research/theme-color-benchmark.md), [typography benchmark](../research/typography-scale-benchmark.md), [motion, touch target and elevation benchmark](../research/motion-and-touch-target-benchmark.md). Compatibility constraints are in [ADR 0001](0001-expo-56-57-compatibility.md). Numbers marked "proposed" in the benchmarks are derivations, not published tokens.
+Evidence: [color benchmark](../research/theme-color-benchmark.md), [typography benchmark](../research/typography-scale-benchmark.md), [motion, touch target and elevation benchmark](../research/motion-and-touch-target-benchmark.md). Compatibility constraints are in [ADR 0001](0001-expo-compatibility.md). Numbers marked "proposed" in the benchmarks are derivations, not published tokens.
 
 ## Decision
 
