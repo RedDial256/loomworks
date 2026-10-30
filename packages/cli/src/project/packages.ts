@@ -62,10 +62,10 @@ export const addCommand = (
   return [pm, [pm === 'npm' ? 'install' : 'add', ...specs]];
 };
 
-/** `expo install` resolves the version Expo pins for the project's SDK. */
-export const expoInstallCommand = (
+/** Runs a binary of the project's dependencies. */
+export const execCommand = (
   pm: PackageManager,
-  names: string[]
+  args: string[]
 ): [string, string[]] => {
   const exec: Record<PackageManager, string[]> = {
     npm: ['npx'],
@@ -74,8 +74,14 @@ export const expoInstallCommand = (
     bun: ['bunx'],
   };
   const [command, ...prefix] = exec[pm] as [string, ...string[]];
-  return [command, [...prefix, 'expo', 'install', ...names]];
+  return [command, [...prefix, ...args]];
 };
+
+/** `expo install` resolves the version Expo pins for the project's SDK. */
+export const expoInstallCommand = (
+  pm: PackageManager,
+  names: string[]
+): [string, string[]] => execCommand(pm, ['expo', 'install', ...names]);
 
 export interface PackageJson {
   main?: string;
