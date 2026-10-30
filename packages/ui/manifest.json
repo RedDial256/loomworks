@@ -116,14 +116,30 @@
         "react-native-unistyles": "^3.7.0"
       }
     },
+    "date-time-input": {
+      "kind": "component",
+      "description": "Date, time or date-and-time field on the shared field: a button showing the locale-formatted value that opens the native picker (a sheet on iOS, the system dialogs on Android, date then time for datetime), minimum and maximum, validation on Date and a ref.",
+      "files": [
+        "components/date-time-input/DateTimeInput.tsx",
+        "components/date-time-input/DateTimeInput.types.ts",
+        "components/date-time-input/DateTimeInput.utils.ts",
+        "components/date-time-input/components/DateTimeSheet.tsx"
+      ],
+      "dependencies": ["a11y", "field", "text"],
+      "packages": {
+        "react-native-unistyles": "^3.5.2"
+      },
+      "sdkPackages": ["@react-native-community/datetimepicker"]
+    },
     "input": {
       "kind": "component",
-      "description": "Field routed by type over TextField.",
+      "description": "One entry point for the fields, routed by type: date, time and datetime render a DateTimeInput, the text types a TextField; props, value and ref are typed by type.",
       "files": [
         "components/input/Input.tsx",
-        "components/input/Input.types.ts"
+        "components/input/Input.types.ts",
+        "components/input/Input.utils.ts"
       ],
-      "dependencies": ["text-field"]
+      "dependencies": ["date-time-input", "text-field"]
     },
     "skeleton": {
       "kind": "component",
