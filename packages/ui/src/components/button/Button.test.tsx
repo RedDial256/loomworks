@@ -1,5 +1,6 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
+
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { withSpring, withTiming } from 'react-native-reanimated';
 
 import { light, motion, touchTarget, typography } from '@/theme';
@@ -50,12 +51,12 @@ const variants: ButtonVariant[] = [
 
 const getButton = () => screen.getByTestId('button');
 
-async function press() {
+const press = async () => {
   await fireEvent(getButton(), 'layout', layout);
   await fireEvent(getButton(), 'pressIn', touch);
   await fireEvent(getButton(), 'pressOut', touch);
   await fireEvent.press(getButton(), touch);
-}
+};
 
 beforeEach(() => jest.clearAllMocks());
 

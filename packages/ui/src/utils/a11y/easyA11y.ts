@@ -13,7 +13,7 @@ const STATE_KEYS = [
 ] as const satisfies readonly (keyof AccessibilityState)[];
 
 /** Maps the simplified `a11y` object to legacy native props. */
-export function easyA11y(a11y?: A11y): A11yProps {
+export const easyA11y = (a11y?: A11y): A11yProps => {
   const { id, hidden, actions, ...rest } = { ...DEFAULTS, ...a11y };
   // A hidden element must not stay focusable through the `accessible` default.
   const accessible = hidden === true ? false : rest.accessible;
@@ -49,13 +49,13 @@ export function easyA11y(a11y?: A11y): A11yProps {
   return Object.fromEntries(
     Object.entries(props).filter(([, value]) => value !== undefined)
   );
-}
+};
 
-function importance(
+const importance = (
   hidden: boolean | undefined,
   accessible: boolean | undefined
-): A11yProps['importantForAccessibility'] {
+): A11yProps['importantForAccessibility'] => {
   if (hidden) return 'no-hide-descendants';
   if (accessible !== undefined) return accessible ? 'yes' : 'no';
   return hidden === false ? 'auto' : undefined;
-}
+};

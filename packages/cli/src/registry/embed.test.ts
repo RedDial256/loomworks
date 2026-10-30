@@ -9,7 +9,6 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { embedRegistry } from './embed';
@@ -23,14 +22,14 @@ beforeEach(async () => {
 });
 afterEach(() => rm(root, { recursive: true, force: true }));
 
-async function writeTree(base: string, files: Record<string, string>) {
+const writeTree = async (base: string, files: Record<string, string>) => {
   for (const [path, content] of Object.entries(files)) {
     await mkdir(dirname(join(base, path)), { recursive: true });
     await writeFile(join(base, path), content);
   }
-}
+};
 
-async function listFiles(dir: string, prefix = ''): Promise<string[]> {
+const listFiles = async (dir: string, prefix = ''): Promise<string[]> => {
   const out: string[] = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const rel = `${prefix}${entry.name}`;
@@ -39,7 +38,7 @@ async function listFiles(dir: string, prefix = ''): Promise<string[]> {
     } else out.push(rel);
   }
   return out.sort();
-}
+};
 
 const manifest = {
   version: 1,

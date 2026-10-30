@@ -1,7 +1,10 @@
+import type { FC } from 'react';
 import { View } from 'react-native';
+
 import { StyleSheet } from 'react-native-unistyles';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
+
 import type {
   DividerOrientation,
   DividerProps,
@@ -9,14 +12,14 @@ import type {
 } from './Divider.types';
 
 /** Hairline separator, decorative: hidden from screen readers by default. */
-export function Divider({
+export const Divider: FC<DividerProps> = ({
   orientation = 'horizontal',
   variant = 'hairline',
   tone = 'border',
   a11y,
   style,
   ...rest
-}: DividerProps) {
+}) => {
   styles.useVariants({ orientation, variant, tone });
   return (
     <View
@@ -25,7 +28,7 @@ export function Divider({
       style={[styles.divider, style]}
     />
   );
-}
+};
 
 const ORIENTATIONS: DividerOrientation[] = ['horizontal', 'vertical'];
 

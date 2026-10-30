@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { UseBooleanResult } from './useBoolean.types';
 
 /** Boolean state with stable setters; `initial` is required. */
-export function useBoolean(initial: boolean): UseBooleanResult {
+export const useBoolean = (initial: boolean): UseBooleanResult => {
   const [value, set] = useState(initial);
   const initialRef = useRef(initial);
   const toggle = useCallback(() => set((current) => !current), []);
@@ -15,4 +15,4 @@ export function useBoolean(initial: boolean): UseBooleanResult {
     [setTrue, setFalse]
   );
   return { value, set, toggle, setter, reset };
-}
+};

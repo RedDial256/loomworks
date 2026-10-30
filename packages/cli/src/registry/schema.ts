@@ -126,27 +126,27 @@ export const manifestSchema = z
 export type Manifest = z.infer<typeof manifestSchema>;
 export type ManifestItem = Manifest['items'][string];
 
-export function parseManifest(input: unknown): Manifest {
+export const parseManifest = (input: unknown): Manifest => {
   const result = manifestSchema.safeParse(input);
   if (!result.success) {
     throw new Error(`Invalid manifest:\n${z.prettifyError(result.error)}`);
   }
   return result.data;
-}
+};
 
 /** Every file the manifest references (item files and demos), without duplicates. */
-export function manifestFiles(manifest: Manifest): string[] {
+export const manifestFiles = (manifest: Manifest): string[] => {
   const paths = new Set<string>();
   for (const item of Object.values(manifest.items)) {
     item.files.forEach((f) => paths.add(f));
     if (item.demo) paths.add(item.demo);
   }
   return [...paths];
-}
+};
 
-function findCycle(
+const findCycle = (
   items: Record<string, { dependencies: string[] }>
-): string[] | undefined {
+): string[] | undefined => {
   const state = new Map<string, 'visiting' | 'done'>();
   const stack: string[] = [];
 
@@ -173,4 +173,4 @@ function findCycle(
     if (cycle) return cycle;
   }
   return undefined;
-}
+};

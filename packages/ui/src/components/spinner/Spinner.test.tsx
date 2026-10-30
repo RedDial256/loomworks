@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
+
+import { render, screen } from '@testing-library/react-native';
 
 import { light } from '@/theme';
 

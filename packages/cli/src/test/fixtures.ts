@@ -6,12 +6,15 @@ import type { RunCommand } from '../project/packages';
 
 export const tempDir = (prefix: string) => mkdtemp(join(tmpdir(), prefix));
 
-export async function writeTree(base: string, files: Record<string, string>) {
+export const writeTree = async (
+  base: string,
+  files: Record<string, string>
+) => {
   for (const [path, content] of Object.entries(files)) {
     await mkdir(dirname(join(base, path)), { recursive: true });
     await writeFile(join(base, path), content);
   }
-}
+};
 
 export const read = (base: string, path: string) =>
   readFile(join(base, path), 'utf8');
@@ -22,13 +25,13 @@ export const readJsonFile = async (base: string, path: string) =>
   JSON.parse(await read(base, path)) as Record<string, any>;
 
 /** A RunCommand that records calls instead of installing. */
-export function fakeRun() {
+export const fakeRun = () => {
   const calls: string[] = [];
   const run: RunCommand = async (command, args) => {
     calls.push([command, ...args].join(' '));
   };
   return { run, calls };
-}
+};
 
 /** A fresh Expo Router project, as created by create-expo-app (SDK 57). */
 export const expoProject = (deps: Record<string, string> = {}) => ({

@@ -6,6 +6,7 @@ import { easyA11y } from '../../../utils/a11y/easyA11y';
 import { Text } from '../../text/Text';
 import type { SwitchProps } from '../Switch.types';
 import { nativeId, styles } from '../Switch.utils';
+
 import { ThemedSwitch } from './ThemedSwitch';
 
 export const SwitchRow: FC<SwitchProps> = ({

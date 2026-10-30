@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { type FC, useEffect } from 'react';
+
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -15,6 +16,7 @@ import {
   useMotion,
 } from '../../hooks/reduced-motion/useReducedMotion';
 import { easyA11y } from '../../utils/a11y/easyA11y';
+
 import type { SkeletonProps } from './Skeleton.types';
 
 /** Half a pulse cycle, in ms. */
@@ -27,7 +29,7 @@ export const STATIC_OPACITY = 0.75;
  * Loading placeholder with an opacity pulse. The pulse is decorative (`none`):
  * under reduced motion the block stays static.
  */
-export function Skeleton({
+export const Skeleton: FC<SkeletonProps> = ({
   width = '100%',
   height,
   variant = 'body',
@@ -35,9 +37,11 @@ export function Skeleton({
   a11y,
   style,
   ...rest
-}: SkeletonProps) {
+}) => {
   const { mode, duration, reduceMotion } = useMotion('none', PULSE_DURATION);
   const opacity = useSharedValue(mode === 'static' ? STATIC_OPACITY : 1);
+
+  const pulse = useAnimatedStyle(() => ({ opacity: opacity.get() }));
 
   useEffect(() => {
     if (mode === 'static') {
@@ -62,7 +66,6 @@ export function Skeleton({
     return () => cancelAnimation(opacity);
   }, [opacity, mode, duration, reduceMotion]);
 
-  const pulse = useAnimatedStyle(() => ({ opacity: opacity.get() }));
   const { fontSize, lineHeight } = typography[variant];
   const size =
     height === undefined
@@ -82,7 +85,7 @@ export function Skeleton({
       ]}
     />
   );
-}
+};
 
 const styles = StyleSheet.create((theme) => ({
   skeleton: { backgroundColor: theme.colors.border },

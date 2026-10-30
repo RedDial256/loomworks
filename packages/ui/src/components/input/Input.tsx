@@ -2,10 +2,12 @@ import type { FC } from 'react';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { TextInputProps } from 'react-native';
 import { TextInput, View } from 'react-native';
+
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { easyA11y } from '../../utils/a11y/easyA11y';
 import { Skeleton } from '../skeleton/Skeleton';
+
 import { InputLabel } from './components/InputLabel';
 import { InputMessage } from './components/InputMessage';
 import type { InputProps } from './Input.types';
@@ -66,6 +68,17 @@ export const Input: FC<InputProps> = ({
     onChangeText?.(next);
   };
 
+  const handleFocus: TextInputProps['onFocus'] = (event) => {
+    setFocused(true);
+    onFocus?.(event);
+  };
+
+  const handleBlur: TextInputProps['onBlur'] = (event) => {
+    setFocused(false);
+    run(valueRef.current);
+    onBlur?.(event);
+  };
+
   useImperativeHandle(ref, () => ({
     get: () => valueRef.current,
     set: change,
@@ -101,17 +114,6 @@ export const Input: FC<InputProps> = ({
       </View>
     );
   }
-
-  const handleFocus: TextInputProps['onFocus'] = (event) => {
-    setFocused(true);
-    onFocus?.(event);
-  };
-
-  const handleBlur: TextInputProps['onBlur'] = (event) => {
-    setFocused(false);
-    run(valueRef.current);
-    onBlur?.(event);
-  };
 
   return (
     <View style={styles.container}>

@@ -12,7 +12,7 @@ export interface RegistrySource {
 }
 
 /** Reads a folder produced by `embedRegistry`. */
-export function createFsSource(dir: string): RegistrySource {
+export const createFsSource = (dir: string): RegistrySource => {
   let manifest: Promise<Manifest> | undefined;
   const getManifest = () =>
     (manifest ??= readFile(join(dir, 'manifest.json'), 'utf8').then((raw) =>
@@ -28,9 +28,9 @@ export function createFsSource(dir: string): RegistrySource {
       return readFile(join(dir, 'files', path), 'utf8');
     },
   };
-}
+};
 
 /** The registry bundled next to the built CLI (`dist/registry`). */
-export function createEmbeddedSource(): RegistrySource {
+export const createEmbeddedSource = (): RegistrySource => {
   return createFsSource(fileURLToPath(new URL('./registry/', import.meta.url)));
-}
+};
