@@ -1,17 +1,17 @@
 {
   "version": 1,
   "minimums": {
-    "expo": ">=56.0.23 <58",
-    "react-native": ">=0.85.3",
-    "react": ">=19.2.3",
-    "react-native-unistyles": "^3.5.2",
+    "expo": ">=58.0.21 <59",
+    "react-native": ">=0.88.1",
+    "react": ">=19.3.0",
+    "react-native-unistyles": "^3.7.0",
     "react-native-nitro-modules": "^0.37.1",
     "react-native-gesture-handler": "^3.3.0",
-    "react-native-reanimated": "^4.3.1",
-    "react-native-worklets": ">=0.8.3 <0.11",
+    "react-native-reanimated": "^4.7.1",
+    "react-native-worklets": "~0.13.0",
     "@react-native-async-storage/async-storage": "^3.1.1",
     "@react-native-async-storage/expo-with-async-storage": "^1.0.0",
-    "babel-preset-expo": "~56.0.0 || ~57.0.0"
+    "babel-preset-expo": "~58.0.0"
   },
   "items": {
     "theme": {
@@ -32,7 +32,7 @@
         "theme/useThemeMode.types.ts"
       ],
       "packages": {
-        "react-native-unistyles": "^3.5.2",
+        "react-native-unistyles": "^3.7.0",
         "react-native-nitro-modules": "^0.37.1",
         "react-native-gesture-handler": "^3.3.0",
         "@react-native-async-storage/async-storage": "^3.1.1",
@@ -64,7 +64,7 @@
       "files": ["components/box/Box.tsx", "components/box/Box.types.ts"],
       "dependencies": ["a11y"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       }
     },
     "card": {
@@ -73,7 +73,7 @@
       "files": ["components/card/Card.tsx", "components/card/Card.types.ts"],
       "dependencies": ["box"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       }
     },
     "divider": {
@@ -85,7 +85,7 @@
       ],
       "dependencies": ["a11y"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       }
     },
     "input": {
@@ -100,7 +100,7 @@
       ],
       "dependencies": ["a11y", "debounce", "skeleton", "text"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       }
     },
     "skeleton": {
@@ -112,7 +112,7 @@
       ],
       "dependencies": ["a11y", "reduced-motion"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       },
       "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
     },
@@ -125,7 +125,7 @@
       ],
       "dependencies": ["a11y"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       }
     },
     "switch": {
@@ -142,7 +142,7 @@
       ],
       "dependencies": ["a11y", "skeleton", "text"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       }
     },
     "text": {
@@ -151,7 +151,7 @@
       "files": ["components/text/Text.tsx", "components/text/Text.types.ts"],
       "dependencies": ["a11y", "skeleton"],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       }
     },
     "pressable": {
@@ -183,7 +183,7 @@
         "text"
       ],
       "packages": {
-        "react-native-unistyles": "^3.5.2"
+        "react-native-unistyles": "^3.7.0"
       },
       "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
     },

@@ -16,7 +16,7 @@ import { add, resolveItems } from './add';
 
 const manifest = {
   version: 1,
-  minimums: { expo: '>=56.0.23 <58' },
+  minimums: { expo: '>=58.0.21 <59' },
   items: {
     theme: { kind: 'theme', files: ['theme/index.ts'] },
     cn: { kind: 'util', files: ['utils/cn.ts'] },
@@ -25,13 +25,13 @@ const manifest = {
       files: ['components/box/Box.tsx'],
       demo: 'components/box/Box.demo.tsx',
       dependencies: ['cn'],
-      packages: { 'react-native-unistyles': '^3.5.2' },
+      packages: { 'react-native-unistyles': '^3.7.0' },
     },
     text: {
       kind: 'component',
       files: ['components/text/Text.tsx'],
       dependencies: ['box', 'cn'],
-      packages: { 'react-native-unistyles': '^3.5.2', extra: '^1.0.0' },
+      packages: { 'react-native-unistyles': '^3.7.0', extra: '^1.0.0' },
     },
     motion: {
       kind: 'hook',
@@ -76,7 +76,7 @@ beforeEach(async () => {
     'package-lock.json': '{}',
     'loom.json': JSON.stringify(config),
     'package.json': JSON.stringify({
-      dependencies: { 'react-native-unistyles': '^3.5.2' },
+      dependencies: { 'react-native-unistyles': '^3.7.0' },
     }),
   });
 });
@@ -159,7 +159,7 @@ describe('add', () => {
   it('installs missing SDK-pinned packages with expo install', async () => {
     await writeTree(cwd, {
       'package.json': JSON.stringify({
-        dependencies: { 'react-native-reanimated': '~4.5.1' },
+        dependencies: { 'react-native-reanimated': '~4.7.1' },
       }),
     });
     const { result, calls } = await runAdd(['motion']);
@@ -168,7 +168,7 @@ describe('add', () => {
 
     const { calls: both } = await runAdd(['motion', 'text']);
     expect(both).toEqual([
-      'npm install react-native-unistyles@^3.5.2 extra@^1.0.0',
+      'npm install react-native-unistyles@^3.7.0 extra@^1.0.0',
       'npx expo install react-native-worklets',
     ]);
   });

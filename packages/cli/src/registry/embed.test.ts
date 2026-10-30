@@ -42,7 +42,7 @@ const listFiles = async (dir: string, prefix = ''): Promise<string[]> => {
 
 const manifest = {
   version: 1,
-  minimums: { expo: '>=56.0.23 <58' },
+  minimums: { expo: '>=58.0.21 <59' },
   items: {
     box: {
       kind: 'component',

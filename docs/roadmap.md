@@ -10,7 +10,7 @@ Monorepo (`RedDial256/loomworks`, pnpm workspaces, MIT) with:
 | `templates/app` | (embedded in create-weaver) | no |
 
 Versions: lockstep via Changesets, pre-release (`alpha`) until stable.
-Support: `loom` on Expo 56 + 57, template on Expo 57 only.
+Support: `loom` and the template on Expo 58 only ([ADR 0001](adr/0001-expo-compatibility.md)).
 Labels: `pkg:ui`, `pkg:loom`, `pkg:weaver`, `template`, `ci`, `docs`, `spike`.
 
 Order follows tracer bullets: one thin slice end-to-end first (Phase 1), then widen.
@@ -148,7 +148,7 @@ Native `Switch` with theme colors, controlled only (no ref), `label` row and `lo
 Expo SDK 58 only (T24 replaces the 56 + 57 support). Three parallel tracks after T24: weaver, `Input` with date and time, `Background`. Tickets #53 to #61, blocking links in each issue body.
 
 **T24 Upgrade to Expo SDK 58** `ci` `pkg:loom` `pkg:ui` (#53)
-SDK 58 only (RN 0.88.1, React 19.3.0), needed for the stable `backgroundImage` (RN 0.87+). Unistyles 3.7.0, Reanimated 4.7.1, Worklets 0.13; Gesture Handler stays on the Expo pin (`~3.3`) and leaves `expo.install.exclude`. Manifest minimums, `integration.sh` and an ADR 0004 replacing the ADR 0001 support policy.
+SDK 58 only (RN 0.88.1, React 19.3.0), needed for the stable `backgroundImage` (RN 0.87+). Unistyles 3.7.0, Reanimated 4.7.1, Worklets 0.13; Gesture Handler stays on the Expo pin (`~3.3`) and leaves `expo.install.exclude`. Manifest minimums, `integration.sh` and ADR 0001 updated to the SDK 58 policy.
 - Blocked by: —
 
 **T25 Template app** `template` (#54)

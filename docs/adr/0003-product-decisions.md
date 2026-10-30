@@ -1,6 +1,6 @@
 # ADR 0003: Product decisions (distribution, CLI, components, release)
 
-Status: accepted. Decisions from the initial design session; tokens are in [ADR 0002](0002-design-tokens.md) and Expo compatibility in [ADR 0001](0001-expo-56-57-compatibility.md).
+Status: accepted. Decisions from the initial design session; tokens are in [ADR 0002](0002-design-tokens.md) and Expo compatibility in [ADR 0001](0001-expo-compatibility.md).
 
 ## Goal
 
@@ -13,7 +13,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 | `packages/ui` | `@red_dial/loom-ui` | no (embedded in the CLI at build time) | Component and hook sources, tests, demos |
 | `packages/cli` | `@red_dial/loom` | yes | `loom init`, `loom add`, and a programmatic API |
 | `packages/create-weaver` | `@red_dial/create-weaver` | yes | `npm create @red_dial/weaver`; uses the `loom` API |
-| `templates/app` | embedded in `create-weaver` | no | Expo 57 template |
+| `templates/app` | embedded in `create-weaver` | no | Expo 58 template |
 
 - Repo: `RedDial256/loomworks` (public, MIT), single monorepo. npm scope `@red_dial`. Everything (code, folders, docs, CLI messages) is in English.
 - pnpm workspaces, no Turborepo or Nx. Lint and format with `@red_dial/rn-tooling-config` (pinned; it is alpha).
@@ -26,7 +26,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 
 ## Support policy
 
-- `loom` supports Expo SDK 56 and 57 (minimums in ADR 0001, validated by the CLI). The template targets SDK 57 only. Unistyles 3 needs the New Architecture and a development build (no Expo Go). SDK 57 on iOS could not be launched yet (see issue #9).
+- `loom` and the template support Expo SDK 58 only ([ADR 0001](0001-expo-compatibility.md); the CLI validates the SDK). Unistyles 3 needs the New Architecture and a development build (no Expo Go).
 
 ## CLI behavior
 
@@ -71,7 +71,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 ## Testing
 
 1. `jest-expo` with React Native Testing Library for utilities, hooks and components (variants, `loading`, style override, accessibility).
-2. CI integration: scaffold or init in a temp project, `loom add`, then `tsc --noEmit` and lint, on Expo 57 and a 56 fixture.
+2. CI integration: scaffold or init in a temp project, `loom add`, then `tsc --noEmit` and lint, on Expo 58.
 3. Manual: the sandbox in hot reload.
 
 ## Process

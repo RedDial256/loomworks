@@ -17,6 +17,12 @@ export const easyA11y = (a11y?: A11y): A11yProps => {
   const { id, hidden, actions, ...rest } = { ...DEFAULTS, ...a11y };
   // A hidden element must not stay focusable through the `accessible` default.
   const accessible = hidden === true ? false : rest.accessible;
+  const state: AccessibilityState = {};
+  for (const key of STATE_KEYS) {
+    if (rest[key] !== undefined) Object.assign(state, { [key]: rest[key] });
+  }
+
+  // React Native's strict types make these props read-only, so the object is built in one go.
   const props: A11yProps = {
     nativeID: id,
     testID: id,
@@ -29,22 +35,15 @@ export const easyA11y = (a11y?: A11y): A11yProps => {
     accessibilityValue: rest.value,
     accessibilityLiveRegion: rest.live,
     accessibilityViewIsModal: rest.modal,
+    accessibilityState: Object.keys(state).length > 0 ? state : undefined,
+    accessibilityActions: actions?.length
+      ? actions.map(({ name, label }) => ({ name, label }))
+      : undefined,
+    onAccessibilityAction: actions?.length
+      ? (event) =>
+          actions.find((a) => a.name === event.nativeEvent.actionName)?.action()
+      : undefined,
   };
-
-  const state: AccessibilityState = {};
-  for (const key of STATE_KEYS) {
-    if (rest[key] !== undefined) Object.assign(state, { [key]: rest[key] });
-  }
-  if (Object.keys(state).length > 0) props.accessibilityState = state;
-
-  if (actions?.length) {
-    props.accessibilityActions = actions.map(({ name, label }) => ({
-      name,
-      label,
-    }));
-    props.onAccessibilityAction = (event) =>
-      actions.find((a) => a.name === event.nativeEvent.actionName)?.action();
-  }
 
   return Object.fromEntries(
     Object.entries(props).filter(([, value]) => value !== undefined)

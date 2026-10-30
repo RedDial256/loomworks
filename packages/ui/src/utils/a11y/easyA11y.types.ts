@@ -1,9 +1,12 @@
 import type {
-  AccessibilityActionName,
   AccessibilityRole,
   AccessibilityValue,
   ViewProps,
 } from 'react-native';
+
+/** Standard actions; React Native's strict types do not export this union. */
+export type AccessibilityActionName =
+  'activate' | 'increment' | 'decrement' | 'longpress' | 'magicTap' | 'escape';
 
 export interface A11yAction {
   /** Standard action (`activate`, `increment`, …) or a custom name. */

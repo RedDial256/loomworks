@@ -4,7 +4,7 @@ Start here when picking up the project. Written at the end of the design session
 
 ## What this is
 
-Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects by a CLI (`@red_dial/loom`), plus a project scaffolder (`@red_dial/create-weaver`) with an Expo Router template and a component sandbox. Full product decisions: [ADR 0003](adr/0003-product-decisions.md). Tokens: [ADR 0002](adr/0002-design-tokens.md). Expo compatibility: [ADR 0001](adr/0001-expo-56-57-compatibility.md). Plan: [roadmap](roadmap.md). Evidence behind the decisions: `docs/research/`.
+Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects by a CLI (`@red_dial/loom`), plus a project scaffolder (`@red_dial/create-weaver`) with an Expo Router template and a component sandbox. Full product decisions: [ADR 0003](adr/0003-product-decisions.md). Tokens: [ADR 0002](adr/0002-design-tokens.md). Expo compatibility: [ADR 0001](adr/0001-expo-compatibility.md). Plan: [roadmap](roadmap.md). Evidence behind the decisions: `docs/research/`.
 
 ## Where things are
 
@@ -26,14 +26,14 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 | Phase 5 | Outlined in the roadmap, not ticketed on purpose |
 
 Notes:
-- A fresh SDK 57 template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). `scripts/integration.sh` creates it.
+- A fresh Expo template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). `scripts/integration.sh` creates it.
 - `pod install` from a non-interactive shell needs `LANG=en_US.UTF-8` (CocoaPods aborts otherwise).
 - `packages/ui` tests run on `jest-expo` + RNTL 14 (ADR 0003). Unistyles is replaced by `packages/ui/test/unistyles-mock.ts`, which resolves styles against the light theme and applies `useVariants` (the official mock strips variants). Unistyles reserves the `default` variant key for "unset", so variant values cannot be named `default`.
 
 ## Recommended next steps
 
 1. Phase 4: T24 (#53) first, T30 (#59) in parallel. After T24: T25 (#54) and T31 (#60); after T25: T26 (#55) and T28 (#57).
-2. Pending small items: reproduce the SDK 57 iOS build error on a clean install without local patches (#9); decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
+2. Pending small items: launch the SDK 58 app on the iOS simulator and on Android; decide whether the private `@red_dial/loom-ui` stays in the Changesets `fixed` group.
 
 ## Working conventions
 
@@ -65,6 +65,6 @@ Several tickets can be developed at the same time, each by its own agent in its 
 
 ## Machine notes
 
-- Xcode 26.3 (Swift 6.2). Expo SDK 57 iOS builds fail in `expo-modules-jsi` (upstream; issue #9). SDK 56 builds and launches.
+- Xcode 26.3 (Swift 6.2).
 - The throwaway projects from the spike lived in a temporary scratchpad and may be gone. The `dev.t02.sdk56` test app may still be installed in the iPhone 17 Pro simulator.
 - Installed global skills for RN and Expo work: `expo-router`, `expo-native-ui`, `expo-dev-client`, `expo-upgrade`, `react-native-best-practices`, `vercel-react-native-skills`, `react-native-testing`, `animate-expo`. The `mattpocock-skills` plugin provides `grilling`, `tdd`, `code-review`, `diagnosing-bugs`, `research` and others; some skills named in its flow guide (`to-spec`, `to-tickets`, `implement`, `wayfinder`) were not available in the session that wrote this.
