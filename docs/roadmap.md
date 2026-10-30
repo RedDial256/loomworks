@@ -14,7 +14,7 @@ Support: `loom` on Expo 56 + 57, template on Expo 57 only.
 Labels: `pkg:ui`, `pkg:loom`, `pkg:weaver`, `template`, `ci`, `docs`, `spike`.
 
 Order follows tracer bullets: one thin slice end-to-end first (Phase 1), then widen.
-Phases 0 to 3 are ticketed; later phases are outlined at the end.
+Phases 0 to 4 are ticketed; later phases are outlined at the end.
 
 ---
 
@@ -143,14 +143,53 @@ Native `Switch` with theme colors, controlled only (no ref), `label` row and `lo
 
 ---
 
+## Phase 4 — Demos, template and scaffolder
+
+Expo SDK 58 only (T24 replaces the 56 + 57 support). Three parallel tracks after T24: weaver, `Input` with date and time, `Background`. Tickets #53 to #61, blocking links in each issue body.
+
+**T24 Upgrade to Expo SDK 58** `ci` `pkg:loom` `pkg:ui` (#53)
+SDK 58 only (RN 0.88.1, React 19.3.0), needed for the stable `backgroundImage` (RN 0.87+). Unistyles 3.7.0, Reanimated 4.7.1, Worklets 0.13; Gesture Handler stays on the Expo pin (`~3.3`) and leaves `expo.install.exclude`. Manifest minimums, `integration.sh` and an ADR 0004 replacing the ADR 0001 support policy.
+- Blocked by: —
+
+**T25 Template app** `template` (#54)
+`templates/app` with Expo Router: home and sandbox tabs; the sandbox opens an `expo-router/drawer` with a search field (`Input` + `useDebounce`) over the component list. Imports `packages/ui` through the workspace and Metro `watchFolders`.
+- Blocked by: T24
+
+**T26 `weaver` core with `--yes`** `pkg:weaver` (#55)
+Copies the embedded template, runs `loom init` through the API, installs with the detected package manager, `git init`, tooling. Flags `--yes`, `--no-install`, `--no-git`, `--no-tooling`.
+- Blocked by: T25
+
+**T27 `weaver` prompts** `pkg:weaver` (#56)
+`@clack/prompts` for name, components, hooks, install, git and tooling; `--components` / `--hooks` skip their prompts; items installed through the `loom add` API.
+- Blocked by: T26
+
+**T28 Demo convention and sandbox index** `pkg:loom` `pkg:ui` `template` (#57)
+`*.demo.tsx` format (title, sections, search keywords), the demo index feeding the drawer, `loom add` updating it when `sandbox` is set; `Box` demo as the reference.
+- Blocked by: T25
+
+**T29 Demos for the existing components** `pkg:ui` (#58)
+One demo per v1 component; first visual pass on the Phase 3 interactive components.
+- Blocked by: T28
+
+**T30 `Input` with date and time** `pkg:ui` (#59)
+Shared field logic extracted first; today's text implementation moves to a new text field; `DateTimeInput` (`date` / `time` / `datetime`, `Date` value, `@react-native-community/datetimepicker`); `Input` becomes a wrapper routing by `type` with a discriminated union.
+- Blocked by: T24 (the extraction can start before)
+
+**T31 Spike: `Background` with `backgroundImage`** `spike` (#60)
+Gradients with theme colors, radius and clipping, background size/position/repeat, wrapper vs fill-parent forms, on iOS and Android. Outcome in an ADR; `expo-linear-gradient` only as a fallback.
+- Blocked by: T24
+
+**T32 `Background`** `pkg:ui` (#61)
+Color or gradient background in the forms decided in T31, with a sandbox demo.
+- Blocked by: T31 (and T28 for the demo)
+
+---
+
 ## Decision gate — Design system and tokens
 
 Done: recorded in [ADR 0002](adr/0002-design-tokens.md), backed by three benchmarks in `docs/research/`. Remaining: per-role color values in T05 and a visual pass once Phase 1 components exist.
 
 ## Later phases (outline, not ticketed yet)
 
-- **Phase 4 — Demos, template and scaffolder:** demo convention, template app (tabs + sandbox drawer), `weaver` with `--yes` and prompts.
-  - `Input`, second iteration: date and time, as its own component or inside `Input` to reuse its logic.
-  - `Background`: fills a background with colors or gradients. Two forms (variants or separate components): a wrapper that is the parent and wraps its children, and a child that fills its parent completely. Borders (radius, clipping) need testing. Technology and libraries still to discuss.
-- **Phase 5 — Quality and release:** accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, Expo 56 matrix and `engines` validation, release pipeline, docs, first alpha.
+- **Phase 5 — Quality and release:** check whether Expo SDK 59 exists; if so, keep 58 and add 59. Accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, Expo SDK matrix and `engines` validation, release pipeline, docs, first alpha.
 - **Not in v1:** `loom diff`, remote registry, `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists, template mirror repo.
