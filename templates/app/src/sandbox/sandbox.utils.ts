@@ -24,3 +24,8 @@ export const filterDemos = (
     )
   );
 };
+
+export const findDemo = (
+  entries: readonly DemoEntry[],
+  id: string | undefined
+) => entries.find((entry) => entry.id === id);

@@ -25,6 +25,7 @@ import {
   type RunCommand,
   runCommand,
 } from '../project/packages';
+import { writeSandboxIndex } from '../project/sandbox';
 import type { Manifest } from '../registry/schema';
 import { createEmbeddedSource, type RegistrySource } from '../registry/source';
 import { LOOM_VERSION } from '../version';
@@ -46,9 +47,11 @@ export interface AddResult {
   files: WriteReport;
   /** Package specs and SDK-pinned names installed, or that would be installed with `install: false`. */
   packages: string[];
+  /** The sandbox index, when it changed. */
+  sandboxIndex?: string;
 }
 
-/** Copies items (and their dependencies) into the project, installs their packages and records them in `loom.json`. */
+/** Copies items (and their dependencies) into the project, installs their packages, records them in `loom.json` and rewrites the sandbox index. */
 export const add = async ({
   cwd,
   items,
@@ -81,6 +84,7 @@ export const add = async ({
 
   for (const name of resolved) config.items[name] = { version };
   await writeConfig(cwd, config);
+  const sandboxIndex = await writeSandboxIndex(cwd, manifest, config);
 
   if (install && (packages.length || sdkPackages.length)) {
     const pm = await detectPackageManager(cwd);
@@ -89,7 +93,12 @@ export const add = async ({
       await run(...expoInstallCommand(pm, sdkPackages), cwd);
     }
   }
-  return { items: resolved, files, packages: [...packages, ...sdkPackages] };
+  return {
+    items: resolved,
+    files,
+    packages: [...packages, ...sdkPackages],
+    sandboxIndex,
+  };
 };
 
 /** The requested items plus their dependencies, in install order (dependencies first). */
