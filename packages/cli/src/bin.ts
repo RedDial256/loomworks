@@ -72,6 +72,7 @@ const main = async () => {
       });
       log.info(`Items: ${result.items.join(', ')}`);
       printFiles(result.files);
+      if (result.sandboxIndex) log.info(`Updated ${result.sandboxIndex}`);
       printPackages(result.packages, values.install);
       outro('Done.');
       return;
