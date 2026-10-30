@@ -4,11 +4,27 @@
   "description": "Weaver: creates an Expo Router project.",
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.ts",
+  "bin": {
+    "create-weaver": "./dist/bin.mjs"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsdown --config-loader unrun",
+    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "@red_dial/loom": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown": "^0.23.1",
+    "unrun": "^0.3.1",
+    "vitest": "^5.0.4"
   }
 }

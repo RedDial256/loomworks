@@ -51,6 +51,21 @@ jobs:
             !${{ runner.temp }}/app/node_modules
           retention-days: 3
 
+  weaver:
+    # weaver --yes -> tsc + lint + prettier on the created project (T26).
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @red_dial/loom --filter @red_dial/create-weaver build
+      - run: scripts/weaver-integration.sh "$RUNNER_TEMP"
+
   security:
     # rnsec on packages/ and the integration app, compared with security/rnsec-baseline.json (T16).
     needs: integration
