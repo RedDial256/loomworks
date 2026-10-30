@@ -103,18 +103,27 @@
         "react-native-unistyles": "^3.5.2"
       }
     },
-    "input": {
+    "text-field": {
       "kind": "component",
-      "description": "Styled TextInput with a type preset, label, hint, error, required, controlled or uncontrolled value, validation (required, any Standard Schema, a validate callback) on blur then debounced on change, a ref (get, set, reset, focus, blur, clear, validate) and a loading skeleton.",
+      "description": "Styled TextInput on the shared field: a type preset, label, hint, error, required, controlled or uncontrolled value, validation, a ref (get, set, reset, focus, blur, clear, validate) and a loading skeleton.",
       "files": [
-        "components/input/Input.tsx",
-        "components/input/Input.types.ts",
-        "components/input/Input.utils.ts"
+        "components/text-field/TextField.tsx",
+        "components/text-field/TextField.types.ts",
+        "components/text-field/TextField.utils.ts"
       ],
       "dependencies": ["a11y", "field"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
       }
+    },
+    "input": {
+      "kind": "component",
+      "description": "Field routed by type over TextField.",
+      "files": [
+        "components/input/Input.tsx",
+        "components/input/Input.types.ts"
+      ],
+      "dependencies": ["text-field"]
     },
     "skeleton": {
       "kind": "component",

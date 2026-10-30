@@ -15,11 +15,7 @@ export type {
   DividerVariant,
 } from './components/divider/Divider.types';
 export { Input } from './components/input/Input';
-export type {
-  InputProps,
-  InputRef,
-  InputType,
-} from './components/input/Input.types';
+export type { InputProps, InputRef } from './components/input/Input.types';
 export { Pressable, touchHitSlop } from './components/pressable/Pressable';
 export type {
   PressableProps,
@@ -35,6 +31,12 @@ export type {
 } from './components/spinner/Spinner.types';
 export { Switch } from './components/switch/Switch';
 export type { SwitchProps } from './components/switch/Switch.types';
+export { TextField } from './components/text-field/TextField';
+export type {
+  TextFieldProps,
+  TextFieldRef,
+  TextFieldType,
+} from './components/text-field/TextField.types';
 export { Text } from './components/text/Text';
 export type { TextProps } from './components/text/Text.types';
 export { useBoolean } from './hooks/boolean/useBoolean';

@@ -9,13 +9,13 @@ import { light } from '@/theme';
 
 import { ASYNC_SCHEMA_MESSAGE } from '../field/Field.utils';
 
-import { Input } from './Input';
-import type { InputRef, InputType } from './Input.types';
-import { TYPE_PROPS } from './Input.utils';
+import { TextField } from './TextField';
+import type { TextFieldRef, TextFieldType } from './TextField.types';
+import { TYPE_PROPS } from './TextField.utils';
 
 const hidden = { includeHiddenElements: true };
 
-describe('Input', () => {
+describe('TextField', () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });
@@ -25,10 +25,10 @@ describe('Input', () => {
   });
 
   describe('type', () => {
-    it.each(Object.keys(TYPE_PROPS) as InputType[])(
+    it.each(Object.keys(TYPE_PROPS) as TextFieldType[])(
       'sets the %s props together',
       async (type) => {
-        await render(<Input type={type} label="Field" />);
+        await render(<TextField type={type} label="Field" />);
         const input = screen.getByLabelText('Field');
         for (const [prop, value] of Object.entries(TYPE_PROPS[type])) {
           expect(input).toHaveProp(prop, value);
@@ -37,7 +37,7 @@ describe('Input', () => {
     );
 
     it('maps the keyboards', async () => {
-      const keyboards: [InputType, string | undefined][] = [
+      const keyboards: [TextFieldType, string | undefined][] = [
         ['text', undefined],
         ['email', 'email-address'],
         ['password', undefined],
@@ -48,28 +48,30 @@ describe('Input', () => {
         ['search', undefined],
       ];
       for (const [type, keyboardType] of keyboards) {
-        await render(<Input type={type} a11y={{ id: type }} />);
+        await render(<TextField type={type} a11y={{ id: type }} />);
         expect(screen.getByTestId(type).props.keyboardType).toBe(keyboardType);
       }
     });
 
     it('is a plain text field by default, and only password is secure', async () => {
-      await render(<Input a11y={{ id: 'a' }} />);
+      await render(<TextField a11y={{ id: 'a' }} />);
       expect(screen.getByTestId('a')).toHaveProp('autoCapitalize', 'sentences');
       expect(screen.getByTestId('a').props.secureTextEntry).toBeUndefined();
-      await render(<Input type="password" a11y={{ id: 'b' }} />);
+      await render(<TextField type="password" a11y={{ id: 'b' }} />);
       expect(screen.getByTestId('b')).toHaveProp('secureTextEntry', true);
     });
 
     it('lets native props override the type', async () => {
-      await render(<Input type="email" autoCapitalize="words" testID="x" />);
+      await render(
+        <TextField type="email" autoCapitalize="words" testID="x" />
+      );
       expect(screen.getByTestId('x')).toHaveProp('autoCapitalize', 'words');
     });
   });
 
   describe('label, hint and error', () => {
     it('names the field with the label and passes the placeholder', async () => {
-      await render(<Input label="Email" placeholder="you@example.com" />);
+      await render(<TextField label="Email" placeholder="you@example.com" />);
       expect(screen.getByLabelText('Email')).toHaveProp(
         'placeholder',
         'you@example.com'
@@ -78,7 +80,7 @@ describe('Input', () => {
     });
 
     it('shows the hint and reads it with the field', async () => {
-      await render(<Input label="Name" hint="As on your ID" />);
+      await render(<TextField label="Name" hint="As on your ID" />);
       expect(screen.getByText('As on your ID', hidden)).toBeOnTheScreen();
       expect(screen.getByLabelText('Name')).toHaveProp(
         'accessibilityHint',
@@ -88,7 +90,7 @@ describe('Input', () => {
 
     it('replaces the hint with an announced error', async () => {
       await render(
-        <Input label="Name" hint="As on your ID" error="Too short" />
+        <TextField label="Name" hint="As on your ID" error="Too short" />
       );
       expect(screen.queryByText('As on your ID', hidden)).toBeNull();
       const alert = screen.getByRole('alert');
@@ -102,7 +104,7 @@ describe('Input', () => {
 
     it('lets a11y and native props override the defaults', async () => {
       await render(
-        <Input
+        <TextField
           label="Name"
           a11y={{ label: 'A11y' }}
           accessibilityHint="Native"
@@ -115,7 +117,7 @@ describe('Input', () => {
 
   describe('required', () => {
     it('marks the label and the accessible name, hiding the asterisk', async () => {
-      await render(<Input label="Name" required />);
+      await render(<TextField label="Name" required />);
       expect(screen.getByLabelText('Name, required')).toBeOnTheScreen();
       expect(
         screen.getByText('*', { ...hidden, exact: false })
@@ -124,14 +126,14 @@ describe('Input', () => {
     });
 
     it('carries no marker when optional', async () => {
-      await render(<Input label="Name" />);
+      await render(<TextField label="Name" />);
       expect(screen.getByLabelText('Name')).toBeOnTheScreen();
       expect(screen.queryByText('*', { ...hidden, exact: false })).toBeNull();
     });
 
     it('fails an empty value with "Required"', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} label="Name" required />);
+      const ref = createRef<TextFieldRef>();
+      await render(<TextField ref={ref} label="Name" required />);
       let valid = true;
       await act(async () => {
         valid = ref.current!.validate();
@@ -141,9 +143,14 @@ describe('Input', () => {
     });
 
     it('uses requiredMessage', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       await render(
-        <Input ref={ref} label="Name" required requiredMessage="Obrigatório" />
+        <TextField
+          ref={ref}
+          label="Name"
+          required
+          requiredMessage="Obrigatório"
+        />
       );
       await act(async () => {
         ref.current!.validate();
@@ -152,8 +159,8 @@ describe('Input', () => {
     });
 
     it('passes once filled, and clears the shown error while typing', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} label="Name" required />);
+      const ref = createRef<TextFieldRef>();
+      await render(<TextField ref={ref} label="Name" required />);
       await act(async () => {
         ref.current!.validate();
       });
@@ -171,8 +178,8 @@ describe('Input', () => {
     });
 
     it('is valid when optional and empty', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} label="Name" />);
+      const ref = createRef<TextFieldRef>();
+      await render(<TextField ref={ref} label="Name" />);
       expect(ref.current!.validate()).toBe(true);
     });
   });
@@ -181,7 +188,11 @@ describe('Input', () => {
     it('uncontrolled: starts at defaultValue and follows typing', async () => {
       const onChangeText = jest.fn();
       await render(
-        <Input label="Name" defaultValue="Ana" onChangeText={onChangeText} />
+        <TextField
+          label="Name"
+          defaultValue="Ana"
+          onChangeText={onChangeText}
+        />
       );
       const input = screen.getByLabelText('Name');
       expect(input).toHaveDisplayValue('Ana');
@@ -193,14 +204,14 @@ describe('Input', () => {
     it('controlled: shows the value prop only', async () => {
       const onChangeText = jest.fn();
       await render(
-        <Input label="Name" value="Ana" onChangeText={onChangeText} />
+        <TextField label="Name" value="Ana" onChangeText={onChangeText} />
       );
       const input = screen.getByLabelText('Name');
       await fireEvent.changeText(input, 'Bia');
       expect(onChangeText).toHaveBeenCalledWith('Bia');
       expect(input).toHaveDisplayValue('Ana');
       await screen.rerender(
-        <Input label="Name" value="Bia" onChangeText={onChangeText} />
+        <TextField label="Name" value="Bia" onChangeText={onChangeText} />
       );
       expect(input).toHaveDisplayValue('Bia');
     });
@@ -208,10 +219,10 @@ describe('Input', () => {
 
   describe('ref', () => {
     it('get, set and clear', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       const onChangeText = jest.fn();
       await render(
-        <Input
+        <TextField
           ref={ref}
           label="Name"
           defaultValue="Ana"
@@ -229,8 +240,10 @@ describe('Input', () => {
     });
 
     it('reset goes back to defaultValue and clears the error', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} label="Name" required defaultValue="" />);
+      const ref = createRef<TextFieldRef>();
+      await render(
+        <TextField ref={ref} label="Name" required defaultValue="" />
+      );
       await act(async () => ref.current!.validate());
       expect(screen.getByRole('alert')).toBeOnTheScreen();
       await act(async () => ref.current!.set('Bia'));
@@ -240,16 +253,16 @@ describe('Input', () => {
     });
 
     it('reset restores a non-empty defaultValue', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} label="Name" defaultValue="Ana" />);
+      const ref = createRef<TextFieldRef>();
+      await render(<TextField ref={ref} label="Name" defaultValue="Ana" />);
       await act(async () => ref.current!.set('Bia'));
       await act(async () => ref.current!.reset());
       expect(screen.getByLabelText('Name')).toHaveDisplayValue('Ana');
     });
 
     it('focus and blur reach the native input', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} label="Name" />);
+      const ref = createRef<TextFieldRef>();
+      await render(<TextField ref={ref} label="Name" />);
       const focus = jest.spyOn(TextInput.prototype, 'focus');
       const blur = jest.spyOn(TextInput.prototype, 'blur');
       ref.current!.focus();
@@ -261,7 +274,7 @@ describe('Input', () => {
 
   describe('loading', () => {
     it('renders a busy skeleton at the field height, keeping the label', async () => {
-      await render(<Input label="Name" required loading />);
+      await render(<TextField label="Name" required loading />);
       expect(screen.getByText(/Name/, hidden)).toBeOnTheScreen();
       expect(screen.queryByDisplayValue('')).toBeNull();
       const skeleton = screen.getByLabelText('Loading Name, required');
@@ -270,8 +283,8 @@ describe('Input', () => {
     });
 
     it('keeps the ref usable', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} defaultValue="Ana" loading />);
+      const ref = createRef<TextFieldRef>();
+      await render(<TextField ref={ref} defaultValue="Ana" loading />);
       expect(ref.current!.get()).toBe('Ana');
       expect(() => ref.current!.focus()).not.toThrow();
     });
@@ -279,15 +292,15 @@ describe('Input', () => {
 
   describe('styles', () => {
     it('has a 48 minimum height and the user style last', async () => {
-      await render(<Input label="Name" style={{ minHeight: 60 }} />);
+      await render(<TextField label="Name" style={{ minHeight: 60 }} />);
       expect(screen.getByLabelText('Name')).toHaveStyle({ minHeight: 60 });
-      await screen.rerender(<Input label="Name" />);
+      await screen.rerender(<TextField label="Name" />);
       expect(screen.getByLabelText('Name')).toHaveStyle({ minHeight: 48 });
     });
 
     it('uses the focus ring on focus and goes back on blur', async () => {
       const onFocus = jest.fn();
-      await render(<Input label="Name" onFocus={onFocus} />);
+      await render(<TextField label="Name" onFocus={onFocus} />);
       const input = screen.getByLabelText('Name');
       expect(input).toHaveStyle({ borderColor: light.colors.border });
       await fireEvent(input, 'focus');
@@ -298,7 +311,7 @@ describe('Input', () => {
     });
 
     it('uses the danger border on error, even when focused', async () => {
-      await render(<Input label="Name" error="Bad" />);
+      await render(<TextField label="Name" error="Bad" />);
       const input = screen.getByLabelText('Name');
       expect(input).toHaveStyle({ borderColor: light.colors.danger });
       await fireEvent(input, 'focus');
@@ -308,7 +321,7 @@ describe('Input', () => {
   describe('validation', () => {
     const phone = z.string().regex(/^9\d{8}$/, 'Invalid number');
 
-    const validateOnRef = async (ref: React.RefObject<InputRef | null>) => {
+    const validateOnRef = async (ref: React.RefObject<TextFieldRef | null>) => {
       let valid = true;
       await act(async () => {
         valid = ref.current!.validate();
@@ -317,9 +330,9 @@ describe('Input', () => {
     };
 
     it('shows the first issue of a zod schema', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       await render(
-        <Input ref={ref} label="Phone" type="phone" schema={phone} />
+        <TextField ref={ref} label="Phone" type="phone" schema={phone} />
       );
       await act(async () => ref.current!.set('123'));
       expect(await validateOnRef(ref)).toBe(false);
@@ -329,9 +342,9 @@ describe('Input', () => {
     });
 
     it('accepts a valibot schema', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       const schema = v.pipe(v.string(), v.minLength(3, 'Too short'));
-      await render(<Input ref={ref} label="Name" schema={schema} />);
+      await render(<TextField ref={ref} label="Name" schema={schema} />);
       await act(async () => ref.current!.set('ab'));
       expect(await validateOnRef(ref)).toBe(false);
       expect(screen.getByRole('alert')).toHaveTextContent('Too short');
@@ -340,12 +353,12 @@ describe('Input', () => {
     });
 
     it('runs validate after the schema passes', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       const validate = jest.fn((value: string) =>
         value === '900000000' ? 'Reserved' : undefined
       );
       await render(
-        <Input ref={ref} label="Phone" schema={phone} validate={validate} />
+        <TextField ref={ref} label="Phone" schema={phone} validate={validate} />
       );
       await act(async () => ref.current!.set('123'));
       await validateOnRef(ref);
@@ -357,11 +370,11 @@ describe('Input', () => {
     });
 
     it('checks required first, then schema, then validate', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       const schema = z.string().min(3, 'Schema');
       const validate = jest.fn(() => 'Validate');
       await render(
-        <Input ref={ref} required schema={schema} validate={validate} />
+        <TextField ref={ref} required schema={schema} validate={validate} />
       );
       await validateOnRef(ref);
       expect(screen.getByRole('alert')).toHaveTextContent('Required');
@@ -375,25 +388,25 @@ describe('Input', () => {
     });
 
     it('skips schema and validate for an empty optional value', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       const validate = jest.fn();
-      await render(<Input ref={ref} schema={phone} validate={validate} />);
+      await render(<TextField ref={ref} schema={phone} validate={validate} />);
       expect(await validateOnRef(ref)).toBe(true);
       expect(validate).not.toHaveBeenCalled();
     });
 
     it('throws a clear error for an async schema in development', async () => {
-      const ref = createRef<InputRef>();
+      const ref = createRef<TextFieldRef>();
       const schema = {
         '~standard': { validate: () => Promise.resolve({ value: 'a' }) },
       };
-      await render(<Input ref={ref} schema={schema} defaultValue="a" />);
+      await render(<TextField ref={ref} schema={schema} defaultValue="a" />);
       expect(() => ref.current!.validate()).toThrow(ASYNC_SCHEMA_MESSAGE);
     });
 
     it('validates on blur, revalidates on a debounced change, then goes back to blur only', async () => {
       const schema = z.string().min(3, 'Too short');
-      await render(<Input label="Name" schema={schema} />);
+      await render(<TextField label="Name" schema={schema} />);
       const input = screen.getByLabelText('Name');
 
       await fireEvent.changeText(input, 'ab');
@@ -418,8 +431,8 @@ describe('Input', () => {
     });
 
     it('lets the error prop win over the own error', async () => {
-      const ref = createRef<InputRef>();
-      await render(<Input ref={ref} required error="Server says no" />);
+      const ref = createRef<TextFieldRef>();
+      await render(<TextField ref={ref} required error="Server says no" />);
       await validateOnRef(ref);
       expect(screen.getByRole('alert')).toHaveTextContent('Server says no');
     });

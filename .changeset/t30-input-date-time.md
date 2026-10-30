@@ -3,3 +3,5 @@
 ---
 
 Extract the shared field logic of `Input` into the `field` item (frame, value state, validation and the base of the ref), generic over the value type.
+
+Move the text implementation into `TextField`, installable without the date picker; `Input` renders it.
