@@ -4,7 +4,7 @@ Start here when picking up the project. Written at the end of the design session
 
 ## What this is
 
-Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects by a CLI (`@red_dial/loom`), plus a project scaffolder (`@red_dial/create-weaver`) with an Expo Router template and a component sandbox. Full product decisions: [ADR 0003](adr/0003-product-decisions.md). Tokens: [ADR 0002](adr/0002-design-tokens.md). Expo compatibility: [ADR 0001](adr/0001-expo-56-57-compatibility.md). Plan: [roadmap](roadmap.md). Evidence behind the decisions: `docs/research/`.
+Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects by a CLI (`@red_dial/loom`), plus a project scaffolder (`@red_dial/create-weaver`) with an Expo Router template and a component sandbox. Full product decisions: [ADR 0003](adr/0003-product-decisions.md). Tokens: [ADR 0002](adr/0002-design-tokens.md). Expo compatibility: [ADR 0004](adr/0004-expo-58-support.md) (SDK 58 only; replaces [ADR 0001](adr/0001-expo-56-57-compatibility.md)). Plan: [roadmap](roadmap.md). Evidence behind the decisions: `docs/research/`.
 
 ## Where things are
 

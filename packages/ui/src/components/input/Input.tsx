@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import type { TextInputProps } from 'react-native';
+import type { TextInputInstance, TextInputProps } from 'react-native';
 import { TextInput, View } from 'react-native';
 
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -41,7 +41,7 @@ export const Input: FC<InputProps> = ({
   const [uncontrolled, setUncontrolled] = useState(defaultValue);
   const [focused, setFocused] = useState(false);
 
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const value = controlled ?? uncontrolled;
   // Read by the ref methods, so `get` and `validate` see a `set` before the next render.
   const valueRef = useRef(value);

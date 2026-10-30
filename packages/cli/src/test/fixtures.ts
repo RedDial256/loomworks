@@ -33,16 +33,16 @@ export const fakeRun = () => {
   return { run, calls };
 };
 
-/** A fresh Expo Router project, as created by create-expo-app (SDK 57). */
+/** A fresh Expo Router project, as created by create-expo-app (SDK 58). */
 export const expoProject = (deps: Record<string, string> = {}) => ({
   'package.json': `${JSON.stringify(
     {
       name: 'app',
       main: 'expo-router/entry',
       dependencies: {
-        expo: '~57.0.28',
-        'expo-router': '~57.0.26',
-        'react-native-gesture-handler': '~2.32.0',
+        expo: '~58.0.21',
+        'expo-router': '~58.0.28',
+        'react-native-gesture-handler': '~3.3.0',
         ...deps,
       },
     },

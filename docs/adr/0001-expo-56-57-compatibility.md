@@ -1,6 +1,6 @@
 # ADR 0001: Expo SDK 56 / 57 compatibility
 
-- Status: Proposed
+- Status: Superseded by [ADR 0004](0004-expo-58-support.md) (support policy)
 - Date: 2026-10-09
 - Issue: #2 (T02 spike)
 

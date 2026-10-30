@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { manifestFiles, parseManifest } from './schema';
 
-const minimums = { expo: '>=56.0.23 <58' };
+const minimums = { expo: '>=58.0.21 <59' };
 const box = { kind: 'component', files: ['components/box/Box.tsx'] };
 
 const manifest = (items: Record<string, unknown>) => ({
@@ -21,7 +21,7 @@ describe('parseManifest', () => {
           files: ['components/text/Text.tsx'],
           demo: 'components/text/Text.demo.tsx',
           dependencies: ['box'],
-          packages: { 'react-native-unistyles': '^3.5.2' },
+          packages: { 'react-native-unistyles': '^3.7.0' },
         },
       })
     );

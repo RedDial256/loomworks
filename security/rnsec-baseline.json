@@ -2,12 +2,12 @@
   "rnsec": "1.3.0",
   "findings": [
     {
-      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in @react-native-async-storage/expo-with-async-storage (high)",
+      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in @react-native-async-storage/expo-with-async-storage (low)",
       "target": "app",
       "ruleId": "NPM_VULNERABLE_DEPENDENCY",
-      "severity": "HIGH",
+      "severity": "LOW",
       "file": "package.json",
-      "description": "Vulnerability in @react-native-async-storage/expo-with-async-storage (high)"
+      "description": "Vulnerability in @react-native-async-storage/expo-with-async-storage (low)"
     },
     {
       "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in expo (high)",
@@ -16,54 +16,6 @@
       "severity": "HIGH",
       "file": "package.json",
       "description": "Vulnerability in expo (high)"
-    },
-    {
-      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in expo-router (moderate)",
-      "target": "app",
-      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
-      "severity": "MEDIUM",
-      "file": "package.json",
-      "description": "Vulnerability in expo-router (moderate)"
-    },
-    {
-      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in expo-splash-screen (moderate)",
-      "target": "app",
-      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
-      "severity": "MEDIUM",
-      "file": "package.json",
-      "description": "Vulnerability in expo-splash-screen (moderate)"
-    },
-    {
-      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in react-native (high)",
-      "target": "app",
-      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
-      "severity": "HIGH",
-      "file": "package.json",
-      "description": "Vulnerability in react-native (high)"
-    },
-    {
-      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in react-native-reanimated (high)",
-      "target": "app",
-      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
-      "severity": "HIGH",
-      "file": "package.json",
-      "description": "Vulnerability in react-native-reanimated (high)"
-    },
-    {
-      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in react-native-unistyles (high)",
-      "target": "app",
-      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
-      "severity": "HIGH",
-      "file": "package.json",
-      "description": "Vulnerability in react-native-unistyles (high)"
-    },
-    {
-      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in react-native-worklets (high)",
-      "target": "app",
-      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
-      "severity": "HIGH",
-      "file": "package.json",
-      "description": "Vulnerability in react-native-worklets (high)"
     },
     {
       "key": "packages | INSECURE_DESERIALIZATION | cli/src/version.ts | JSON.parse() on potentially untrusted data without validation",

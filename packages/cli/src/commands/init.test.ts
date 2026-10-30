@@ -70,7 +70,6 @@ describe('init', () => {
     const pkg = await readJsonFile(cwd, 'package.json');
     expect(pkg.main).toBe('index.ts');
     expect(pkg.expo.install.exclude).toEqual([
-      'react-native-gesture-handler',
       '@react-native-async-storage/async-storage',
     ]);
     expect((await readJsonFile(cwd, 'app.json')).expo.plugins).toEqual([
@@ -82,9 +81,9 @@ describe('init', () => {
       items: { theme: { version: '1.2.3' } },
     });
 
-    // GH 2.x from the template is below the required range, so it is upgraded.
+    // The template already pins GH 3, so only AsyncStorage 3 overrides Expo's pin.
     expect(calls).toEqual([
-      'npm install react-native-unistyles@^3.5.2 react-native-nitro-modules@^0.37.1 react-native-gesture-handler@^3.3.0 @react-native-async-storage/async-storage@^3.1.1 @react-native-async-storage/expo-with-async-storage@^1.0.0',
+      'npm install react-native-unistyles@^3.7.0 react-native-nitro-modules@^0.37.1 @react-native-async-storage/async-storage@^3.1.1 @react-native-async-storage/expo-with-async-storage@^1.0.0',
       'npx expo install babel-preset-expo',
     ]);
   });
@@ -107,8 +106,8 @@ describe('init', () => {
   it('skips packages that already satisfy the required ranges', async () => {
     await writeTree(cwd, {
       ...expoProject({
-        'babel-preset-expo': '~57.0.0',
-        'react-native-unistyles': '3.5.2',
+        'babel-preset-expo': '~58.0.0',
+        'react-native-unistyles': '3.7.0',
         'react-native-nitro-modules': '0.37.1',
         'react-native-gesture-handler': '^3.3.0',
         '@react-native-async-storage/async-storage': '^3.1.1',
@@ -214,7 +213,7 @@ describe('init', () => {
     await writeTree(cwd, { 'package.json': '{}' });
     await expect(runInit()).rejects.toThrow(/Expo projects only/);
 
-    await writeTree(cwd, expoProject({ expo: '~55.0.0' }));
-    await expect(runInit()).rejects.toThrow(/Expo 55\.0\.0 is not supported/);
+    await writeTree(cwd, expoProject({ expo: '~57.0.28' }));
+    await expect(runInit()).rejects.toThrow(/Expo 57\.0\.28 is not supported/);
   });
 });

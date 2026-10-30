@@ -41,7 +41,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @red_dial/loom build
-      - run: scripts/integration.sh 57 "$RUNNER_TEMP"
+      - run: scripts/integration.sh 58 "$RUNNER_TEMP"
       # The security job scans this app; npm audit only needs package.json and the lockfile.
       - uses: actions/upload-artifact@v4
         with:

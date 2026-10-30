@@ -34,11 +34,8 @@ export const THEME_ITEM = 'theme';
 const UNISTYLES_PLUGIN = 'react-native-unistyles/plugin';
 const ASYNC_STORAGE_PLUGIN =
   '@react-native-async-storage/expo-with-async-storage';
-// Outside Expo's validated set (ADR 0001); excluded so `expo install --check` and `expo-doctor` stop flagging them.
-const INSTALL_EXCLUDE = [
-  'react-native-gesture-handler',
-  '@react-native-async-storage/async-storage',
-];
+// Outside Expo's validated set (ADR 0004); excluded so `expo install --check` and `expo-doctor` stop flagging it.
+const INSTALL_EXCLUDE = ['@react-native-async-storage/async-storage'];
 
 export interface InitOptions extends ConflictOptions {
   cwd: string;

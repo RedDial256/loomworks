@@ -27,7 +27,7 @@ const NPM_RULE = 'NPM_VULNERABLE_DEPENDENCY';
 const buildApp = () => {
   const workdir = mkdtempSync(join(tmpdir(), 'loom-security-'));
   console.log(`No --app: building one in ${workdir}`);
-  run(join(ROOT, 'scripts/integration.sh'), ['57', workdir], {
+  run(join(ROOT, 'scripts/integration.sh'), ['58', workdir], {
     stdio: 'inherit',
   });
   return join(workdir, 'app');

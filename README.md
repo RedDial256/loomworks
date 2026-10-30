@@ -9,7 +9,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style, plus a
 | `packages/ui`            | `@red_dial/loom-ui`       | Component sources (private, embedded in the CLI at build time) |
 | `packages/cli`           | `@red_dial/loom`          | `loom init` / `loom add`: copies components into your project  |
 | `packages/create-weaver` | `@red_dial/create-weaver` | `npm create @red_dial/weaver`: scaffolds a new Expo Router app |
-| `templates/app`          | (embedded)                | Expo 57 app template used by weaver (added in a later ticket)  |
+| `templates/app`          | (embedded)                | Expo 58 app template used by weaver (added in a later ticket)  |
 
 ## Development
 

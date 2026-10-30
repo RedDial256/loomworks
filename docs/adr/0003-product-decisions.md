@@ -26,7 +26,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 
 ## Support policy
 
-- `loom` supports Expo SDK 56 and 57 (minimums in ADR 0001, validated by the CLI). The template targets SDK 57 only. Unistyles 3 needs the New Architecture and a development build (no Expo Go). SDK 57 on iOS could not be launched yet (see issue #9).
+- `loom` and the template support Expo SDK 58 only (minimums in [ADR 0004](0004-expo-58-support.md), validated by the CLI; replaces the 56/57 policy of ADR 0001). Unistyles 3 needs the New Architecture and a development build (no Expo Go).
 
 ## CLI behavior
 

@@ -10,7 +10,7 @@ Monorepo (`RedDial256/loomworks`, pnpm workspaces, MIT) with:
 | `templates/app` | (embedded in create-weaver) | no |
 
 Versions: lockstep via Changesets, pre-release (`alpha`) until stable.
-Support: `loom` on Expo 56 + 57, template on Expo 57 only.
+Support: `loom` and the template on Expo 58 only ([ADR 0004](adr/0004-expo-58-support.md); was 56 + 57).
 Labels: `pkg:ui`, `pkg:loom`, `pkg:weaver`, `template`, `ci`, `docs`, `spike`.
 
 Order follows tracer bullets: one thin slice end-to-end first (Phase 1), then widen.
