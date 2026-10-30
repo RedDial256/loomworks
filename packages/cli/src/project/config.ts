@@ -24,7 +24,7 @@ export const configSchema = z.strictObject({
     /** Theme folder, aliased as `@/theme`. */
     theme: projectPath,
   }),
-  /** Sandbox folder; demos are copied only when set. */
+  /** Sandbox folder, holding the demo index (`demos.ts`); demos are copied only when set. */
   sandbox: projectPath.optional(),
   /** Installed items and the loom version that installed them. */
   items: z

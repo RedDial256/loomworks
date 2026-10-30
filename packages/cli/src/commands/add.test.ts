@@ -143,17 +143,47 @@ describe('add', () => {
     expect(calls).toEqual(['npm install extra@^1.0.0']);
   });
 
-  it('copies demos only when a sandbox is set', async () => {
-    await runAdd(['box']);
+  it('copies demos and writes the index only when a sandbox is set', async () => {
+    const { result: plain } = await runAdd(['box']);
+    expect(plain.sandboxIndex).toBeUndefined();
     await expect(
       read(cwd, 'src/components/box/Box.demo.tsx')
     ).rejects.toThrow();
 
     await writeTree(cwd, {
-      'loom.json': JSON.stringify({ ...config, sandbox: 'src/app/sandbox' }),
+      'loom.json': JSON.stringify({ ...config, sandbox: 'src/sandbox' }),
     });
     const { result } = await runAdd(['box']);
     expect(result.files.written).toEqual(['src/components/box/Box.demo.tsx']);
+    expect(result.sandboxIndex).toBe('src/sandbox/demos.ts');
+    expect(await read(cwd, 'src/sandbox/demos.ts')).toContain(
+      "import { demo as boxDemo } from '@/components/box/Box.demo';"
+    );
+  });
+
+  it('keeps the sandbox index free of duplicates', async () => {
+    await writeTree(cwd, {
+      'loom.json': JSON.stringify({ ...config, sandbox: 'src/sandbox' }),
+    });
+    await runAdd(['text']);
+    const index = await read(cwd, 'src/sandbox/demos.ts');
+
+    const { result } = await runAdd(['box', 'text']);
+    expect(result.sandboxIndex).toBeUndefined();
+    expect(await read(cwd, 'src/sandbox/demos.ts')).toBe(index);
+    expect(index.match(/\.\.\.boxDemo/g)).toHaveLength(1);
+  });
+
+  it('leaves out demos of items added before the sandbox was set', async () => {
+    await runAdd(['box']);
+    await writeTree(cwd, {
+      'loom.json': JSON.stringify({
+        ...(await readJsonFile(cwd, 'loom.json')),
+        sandbox: 'src/sandbox',
+      }),
+    });
+    await runAdd(['motion']);
+    expect(await read(cwd, 'src/sandbox/demos.ts')).not.toContain('boxDemo');
   });
 
   it('installs missing SDK-pinned packages with expo install', async () => {

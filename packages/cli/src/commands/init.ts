@@ -25,6 +25,7 @@ import {
   type RunCommand,
   runCommand,
 } from '../project/packages';
+import { writeSandboxIndex } from '../project/sandbox';
 import { createEmbeddedSource, type RegistrySource } from '../registry/source';
 import { LOOM_VERSION } from '../version';
 
@@ -110,6 +111,8 @@ export const init = async ({
 
   config.items[THEME_ITEM] = { version };
   await writeConfig(cwd, config);
+  const sandboxIndex = await writeSandboxIndex(cwd, manifest, config);
+  if (sandboxIndex) configured.push(sandboxIndex);
 
   const packages = missingPackages(pkg, plan.packages);
   const needsPreset = !declaredRange(pkg, 'babel-preset-expo');
