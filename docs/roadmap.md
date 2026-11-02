@@ -208,4 +208,5 @@ Done: recorded in [ADR 0002](adr/0002-design-tokens.md), backed by three benchma
 ## Later phases (outline, not ticketed yet)
 
 - **Phase 5 — Quality and release:** check whether Expo SDK 59 exists; if so, keep 58 and add 59. Accessibility audit once all v1 components exist (VoiceOver and TalkBack pass per component in the sandbox, WCAG AA contrast for theme roles in both themes, touch targets of at least 44 pt / 48 dp, reduced motion, font scaling; findings filed as issues), scaffold integration test, Expo SDK matrix and `engines` validation, release pipeline, docs, first alpha.
+  - Ticketed so far: **T37 Spike: Automatic deploy and preview of the example app** `spike` (#77). Production build from `main` and an internal testing build per PR (EAS first), plus a browser preview via Expo web or Snack if feasible. Outcome in an ADR. Blocked by: T25 (useful after T29).
 - **Not in v1:** `loom diff`, remote registry, `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists, template mirror repo.
