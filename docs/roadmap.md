@@ -145,7 +145,7 @@ Native `Switch` with theme colors, controlled only (no ref), `label` row and `lo
 
 ## Phase 4 — Demos, template and scaffolder
 
-Expo SDK 58 only (T24 replaces the 56 + 57 support). Three parallel tracks after T24: weaver, `Input` with date and time, `Background`. Tickets #53 to #61, blocking links in each issue body.
+Expo SDK 58 only (T24 replaces the 56 + 57 support). Three parallel tracks after T24: weaver, `Input` with date and time, `Background`. Two closing spikes on the sandbox (visual proof in PRs, component cards) and two template dependencies (LegendList, `expo-image`). Tickets #53 to #61 and #69 to #73, blocking links in each issue body.
 
 **T24 Upgrade to Expo SDK 58** `ci` `pkg:loom` `pkg:ui` (#53)
 SDK 58 only (RN 0.88.1, React 19.3.0), needed for the stable `backgroundImage` (RN 0.87+). Unistyles 3.7.0, Reanimated 4.7.1, Worklets 0.13; Gesture Handler stays on the Expo pin (`~3.3`) and leaves `expo.install.exclude`. Manifest minimums, `integration.sh` and ADR 0001 updated to the SDK 58 policy.
@@ -182,6 +182,22 @@ Gradients with theme colors, radius and clipping, background size/position/repea
 **T32 `Background`** `pkg:ui` (#61)
 Color or gradient background in the forms decided in T31, with a sandbox demo.
 - Blocked by: T31 (and T28 for the demo)
+
+**T33 Spike: Visual proof in PRs** `spike` (#69)
+Screenshots (and short recordings) of the sandbox demos attached to PRs, iOS and Android, both themes. Compare Argent, agent-device, screenmap and others: agent-driven navigation, local vs CI, how images reach the PR. Outcome in an ADR.
+- Blocked by: T25 (useful from T29 on)
+
+**T34 Spike: Sandbox component cards with thumbnails** `spike` (#70)
+Grid of cards with a thumbnail per component instead of the drawer list, search kept. Compare pre-generated screenshots (T33 tooling) with a live scaled render; try shared element transitions to the demo screen. Outcome in an ADR.
+- Blocked by: T28, T29
+
+**T35 LegendList in the template app** `template` (#72)
+`@legendapp/list` in `templates/app`, replacing the sandbox drawer's `FlatList`; generated projects start with it.
+- Blocked by: T28 (same drawer list)
+
+**T36 `expo-image` in the template app** `template` (#73)
+`expo-image` (Expo-maintained, SDK-pinned, New Architecture) instead of `react-native-fast-image`, with at least one real use in the template; T34 thumbnails use it if they are images.
+- Blocked by: T25
 
 ---
 
