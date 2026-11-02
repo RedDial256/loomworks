@@ -46,6 +46,8 @@ export interface InitOptions extends ConflictOptions {
   run?: RunCommand;
   /** Folder overrides for a new `loom.json`; ignored when one exists. */
   paths?: Partial<LoomConfig['paths']>;
+  /** Sandbox folder for a new `loom.json`; ignored when one exists. */
+  sandbox?: string;
   version?: string;
 }
 
@@ -67,6 +69,7 @@ export const init = async ({
   install = true,
   run = runCommand,
   paths,
+  sandbox,
   version = LOOM_VERSION,
   ...conflicts
 }: InitOptions): Promise<InitResult> => {
@@ -91,6 +94,7 @@ export const init = async ({
       ui: paths?.ui ?? defaults.paths.ui,
       theme: paths?.theme ?? defaults.paths.theme,
     },
+    ...(sandbox && { sandbox }),
   };
 
   const plan = await planItems(source, manifest, config, [THEME_ITEM]);
