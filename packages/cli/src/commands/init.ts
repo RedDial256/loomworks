@@ -25,6 +25,7 @@ import {
   type RunCommand,
   runCommand,
 } from '../project/packages';
+import { writeSandboxIndex } from '../project/sandbox';
 import { createEmbeddedSource, type RegistrySource } from '../registry/source';
 import { LOOM_VERSION } from '../version';
 
@@ -45,6 +46,8 @@ export interface InitOptions extends ConflictOptions {
   run?: RunCommand;
   /** Folder overrides for a new `loom.json`; ignored when one exists. */
   paths?: Partial<LoomConfig['paths']>;
+  /** Sandbox folder for a new `loom.json`; ignored when one exists. */
+  sandbox?: string;
   version?: string;
 }
 
@@ -66,6 +69,7 @@ export const init = async ({
   install = true,
   run = runCommand,
   paths,
+  sandbox,
   version = LOOM_VERSION,
   ...conflicts
 }: InitOptions): Promise<InitResult> => {
@@ -90,6 +94,7 @@ export const init = async ({
       ui: paths?.ui ?? defaults.paths.ui,
       theme: paths?.theme ?? defaults.paths.theme,
     },
+    ...(sandbox && { sandbox }),
   };
 
   const plan = await planItems(source, manifest, config, [THEME_ITEM]);
@@ -110,6 +115,8 @@ export const init = async ({
 
   config.items[THEME_ITEM] = { version };
   await writeConfig(cwd, config);
+  const sandboxIndex = await writeSandboxIndex(cwd, manifest, config);
+  if (sandboxIndex) configured.push(sandboxIndex);
 
   const packages = missingPackages(pkg, plan.packages);
   const needsPreset = !declaredRange(pkg, 'babel-preset-expo');

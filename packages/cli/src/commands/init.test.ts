@@ -136,6 +136,20 @@ describe('init', () => {
     expect(await read(cwd, 'babel.config.js')).toContain("root: 'app-src'");
   });
 
+  it('records a sandbox and writes its empty index', async () => {
+    await writeTree(cwd, expoProject());
+    const { result } = await runInit({
+      install: false,
+      sandbox: 'src/sandbox',
+    });
+
+    expect((await readJsonFile(cwd, 'loom.json')).sandbox).toBe('src/sandbox');
+    expect(result.configured).toContain('src/sandbox/demos.ts');
+    expect(await read(cwd, 'src/sandbox/demos.ts')).toContain(
+      'export const demos: readonly DemoEntry[] = [];'
+    );
+  });
+
   it('keeps the router entry first when taking over an existing index.ts', async () => {
     await writeTree(cwd, {
       ...expoProject(),

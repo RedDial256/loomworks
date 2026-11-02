@@ -123,6 +123,7 @@ describe('create', () => {
     );
     const loom = await readJson('loom.json');
     expect(Object.keys(loom.items)).toEqual(['theme', ...result.items]);
+    expect(loom.sandbox).toBe('src/sandbox');
   });
 
   it('copies every kit file the template imports', async () => {

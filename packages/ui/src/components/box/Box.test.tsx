@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react-native';
 import { light } from '@/theme';
 
 import { Box } from './Box';
+import { demo } from './Box.demo';
 
 const custom = '#ff0000';
 
@@ -126,4 +127,12 @@ describe('Box', () => {
       expect(screen.queryByTestId('child')).toBeNull();
     });
   });
+
+  it.each(demo.sections.map((section) => [section.title, section]))(
+    'renders the %s demo section',
+    async (_, section) => {
+      await render(<>{section.content}</>);
+      expect(screen.toJSON()).toBeTruthy();
+    }
+  );
 });

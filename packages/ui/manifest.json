@@ -62,6 +62,7 @@
       "kind": "component",
       "description": "Layout primitive: a View with theme spacing and surfaces.",
       "files": ["components/box/Box.tsx", "components/box/Box.types.ts"],
+      "demo": "components/box/Box.demo.tsx",
       "dependencies": ["a11y"],
       "packages": {
         "react-native-unistyles": "^3.7.0"

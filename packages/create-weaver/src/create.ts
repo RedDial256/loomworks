@@ -32,6 +32,9 @@ export const TEMPLATE_ITEMS = [
   'text',
 ];
 
+/** The template's sandbox folder, holding the demo index that `loom add` rewrites. */
+export const TEMPLATE_SANDBOX = 'src/sandbox';
+
 const NAME = /^[a-z][a-z0-9-]*$/;
 
 export interface CreateOptions {
@@ -95,7 +98,7 @@ export const create = async ({
   if (install) await run(packageManager, ['install'], target);
 
   const loom = { cwd: target, install, run, source };
-  const initResult = await init(loom);
+  const initResult = await init({ ...loom, sandbox: TEMPLATE_SANDBOX });
   const addResult = await add({ ...loom, items: TEMPLATE_ITEMS });
 
   // Settles the JSON files edited above to the project's Prettier config.
