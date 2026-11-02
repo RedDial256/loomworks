@@ -4,10 +4,22 @@ import typescript from '@red_dial/rn-tooling-config/eslint/typescript';
 import style from './tooling/eslint/style.js';
 
 export default [
-  { ignores: ['**/dist/**', '**/node_modules/**', '.changeset/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/.expo/**',
+      '.changeset/**',
+    ],
+  },
   ...base,
   ...typescript,
   ...style,
   // No react dependency in the root; pin the version to silence "detect".
   { settings: { react: { version: '19' } } },
+  // Metro and Babel load these as CommonJS.
+  {
+    files: ['templates/app/*.config.js'],
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
+  },
 ];

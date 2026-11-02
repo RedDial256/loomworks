@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Loom",
+    "slug": "loom-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "loom",
+    "userInterfaceStyle": "automatic",
+    "plugins": [
+      "expo-router",
+      "expo-splash-screen",
+      "@react-native-async-storage/expo-with-async-storage"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
