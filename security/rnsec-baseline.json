@@ -10,6 +10,14 @@
       "description": "Vulnerability in @react-native-async-storage/expo-with-async-storage (low)"
     },
     {
+      "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in @react-native-community/datetimepicker (low)",
+      "target": "app",
+      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
+      "severity": "LOW",
+      "file": "package.json",
+      "description": "Vulnerability in @react-native-community/datetimepicker (low)"
+    },
+    {
       "key": "app | NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in expo (high)",
       "target": "app",
       "ruleId": "NPM_VULNERABLE_DEPENDENCY",

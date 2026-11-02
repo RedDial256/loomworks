@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration test: fresh Expo project -> loom init (theme + useThemeMode) -> loom add box text spinner divider card input switch debounce boolean pressable timeout button (+ a11y, capitalize, skeleton, reduced-motion) -> tsc + lint.
+# Integration test: fresh Expo project -> loom init (theme + useThemeMode) -> loom add box text spinner divider card field text-field date-time-input input switch debounce boolean pressable timeout button (+ a11y, capitalize, skeleton, reduced-motion) -> tsc + lint.
 # Usage: scripts/integration.sh [sdk] [workdir]   (build the CLI first: pnpm --filter @red_dial/loom build)
 set -euo pipefail
 
@@ -22,8 +22,8 @@ node "$LOOM" init
 echo "::endgroup::"
 
 # `text` pulls `skeleton` and `reduced-motion`, `button` pulls `capitalize`; the lint step fails if their folders are missing.
-echo "::group::loom add box text spinner divider card input switch debounce boolean pressable timeout button"
-node "$LOOM" add box text spinner divider card input switch debounce boolean pressable timeout button
+echo "::group::loom add box text spinner divider card field text-field date-time-input input switch debounce boolean pressable timeout button"
+node "$LOOM" add box text spinner divider card field text-field date-time-input input switch debounce boolean pressable timeout button
 echo "::endgroup::"
 
 # Expo writes this on the first `expo start`; the template does not typecheck without it.
@@ -40,7 +40,7 @@ echo "::endgroup::"
 
 # Only the files loom wrote: the template itself fails `expo lint` (react-hooks/set-state-in-effect on SDK 57).
 echo "::group::expo lint"
-npx expo lint src/theme src/components/box src/components/text src/components/skeleton src/components/divider src/components/card src/components/input src/components/switch src/components/spinner src/utils/a11y src/utils/capitalize src/hooks/reduced-motion src/hooks/debounce src/hooks/boolean src/components/pressable src/hooks/timeout src/components/button index.ts babel.config.js
+npx expo lint src/theme src/components/box src/components/text src/components/skeleton src/components/divider src/components/card src/components/field src/components/text-field src/components/date-time-input src/components/input src/components/switch src/components/spinner src/utils/a11y src/utils/capitalize src/hooks/reduced-motion src/hooks/debounce src/hooks/boolean src/components/pressable src/hooks/timeout src/components/button index.ts babel.config.js
 echo "::endgroup::"
 
 echo "Integration test passed (SDK $SDK) in $APP"

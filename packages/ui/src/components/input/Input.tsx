@@ -1,166 +1,19 @@
 import type { FC } from 'react';
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import type { TextInputInstance, TextInputProps } from 'react-native';
-import { TextInput, View } from 'react-native';
 
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { DateTimeInput } from '../date-time-input/DateTimeInput';
+import { TextField } from '../text-field/TextField';
 
-import { easyA11y } from '../../utils/a11y/easyA11y';
-import { Skeleton } from '../skeleton/Skeleton';
-
-import { InputLabel } from './components/InputLabel';
-import { InputMessage } from './components/InputMessage';
 import type { InputProps } from './Input.types';
-import { TYPE_PROPS, useInputValidation } from './Input.utils';
+import { isDateInput } from './Input.utils';
 
 /**
- * Styled `TextInput` with label, hint and error, controlled or uncontrolled,
- * and an imperative ref. Validates `required`, `schema` and `validate` on blur, then on every change while an error shows.
+ * One entry point for the fields, routed by `type`: `date`, `time` and
+ * `datetime` render a `DateTimeInput`, every other type a `TextField`.
  */
-export const Input: FC<InputProps> = ({
-  type = 'text',
-  label,
-  hint,
-  error,
-  required,
-  requiredMessage,
-  schema,
-  validate,
-  loading,
-  a11y,
-  value: controlled,
-  defaultValue = '',
-  onChangeText,
-  onFocus,
-  onBlur,
-  editable,
-  style,
-  ref,
-  ...rest
-}) => {
-  const [uncontrolled, setUncontrolled] = useState(defaultValue);
-  const [focused, setFocused] = useState(false);
-
-  const inputRef = useRef<TextInputInstance>(null);
-  const value = controlled ?? uncontrolled;
-  // Read by the ref methods, so `get` and `validate` see a `set` before the next render.
-  const valueRef = useRef(value);
-
-  const {
-    message: ownError,
-    run,
-    clear,
-  } = useInputValidation(value, {
-    required,
-    requiredMessage,
-    schema,
-    validate,
-  });
-
-  const { theme } = useUnistyles();
-  const shown = error ?? ownError;
-  const invalid = shown !== undefined;
-  styles.useVariants({ focused, invalid });
-
-  const change = (next: string) => {
-    valueRef.current = next;
-    if (controlled === undefined) setUncontrolled(next);
-    onChangeText?.(next);
-  };
-
-  const handleFocus: TextInputProps['onFocus'] = (event) => {
-    setFocused(true);
-    onFocus?.(event);
-  };
-
-  const handleBlur: TextInputProps['onBlur'] = (event) => {
-    setFocused(false);
-    run(valueRef.current);
-    onBlur?.(event);
-  };
-
-  useImperativeHandle(ref, () => ({
-    get: () => valueRef.current,
-    set: change,
-    reset: () => {
-      change(defaultValue);
-      clear();
-    },
-    focus: () => inputRef.current?.focus(),
-    blur: () => inputRef.current?.blur(),
-    clear: () => change(''),
-    validate: () => run(valueRef.current),
-  }));
-
-  useEffect(() => {
-    valueRef.current = value;
-  }, [value]);
-
-  const name = label && required ? `${label}, required` : label;
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <InputLabel label={label} required={required} />
-        <Skeleton
-          height={theme.touchTarget.min}
-          radius="md"
-          a11y={{
-            label: name ? `Loading ${name}` : 'Loading',
-            hidden: false,
-            busy: true,
-          }}
-        />
-      </View>
-    );
+export const Input: FC<InputProps> = (props) => {
+  if (isDateInput(props)) {
+    const { type, ...rest } = props;
+    return <DateTimeInput mode={type} {...rest} />;
   }
-
-  return (
-    <View style={styles.container}>
-      <InputLabel label={label} required={required} />
-      <TextInput
-        ref={inputRef}
-        {...TYPE_PROPS[type]}
-        placeholderTextColor={theme.colors.textMuted}
-        {...easyA11y({
-          label: name,
-          hint: shown ?? hint,
-          disabled: editable === false,
-          ...a11y,
-        })}
-        {...rest}
-        value={value}
-        editable={editable}
-        onChangeText={change}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        style={[styles.field, style]}
-      />
-      <InputMessage error={shown} hint={hint} />
-    </View>
-  );
+  return <TextField {...props} />;
 };
-
-const styles = StyleSheet.create((theme) => ({
-  container: { gap: theme.spacing['2xs'] },
-  field: {
-    minHeight: theme.touchTarget.min,
-    paddingHorizontal: theme.spacing.sm,
-    borderWidth: 1,
-    borderRadius: theme.radii.md,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    color: theme.colors.text,
-    ...theme.typography.body,
-    variants: {
-      focused: {
-        true: { borderColor: theme.colors.focusRing },
-        false: {},
-      },
-      invalid: {
-        true: { borderColor: theme.colors.danger },
-        false: {},
-      },
-    },
-  },
-}));

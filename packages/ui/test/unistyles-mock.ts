@@ -1,5 +1,7 @@
 // Minimal Unistyles for tests: styles resolve against the light theme and apply
 // the variants passed to `useVariants` (the official mock strips variants).
+import { type ComponentType, createElement } from 'react';
+
 import { light } from '../src/theme/light';
 
 type Style = Record<string, unknown>;
@@ -32,10 +34,15 @@ export const StyleSheet = {
   create(
     factory:
       | Record<string, Definition>
-      | ((theme: typeof light) => Record<string, Definition>)
+      | ((
+          theme: typeof light,
+          rt: typeof UnistylesRuntime
+        ) => Record<string, Definition>)
   ) {
     const definitions =
-      typeof factory === 'function' ? factory(light) : factory;
+      typeof factory === 'function'
+        ? factory(light, UnistylesRuntime)
+        : factory;
     let selected: Selection = {};
     const styles: Record<string, unknown> = {
       useVariants: (variants: Selection = {}) => {
@@ -62,6 +69,22 @@ export const UnistylesRuntime = {
   setTheme: () => {},
   setAdaptiveThemes: () => {},
   updateTheme: () => {},
+  fontScale: 1,
 };
 
 export const useUnistyles = () => ({ theme: light, rt: UnistylesRuntime });
+
+type Mapping = (
+  theme: typeof light,
+  rt: typeof UnistylesRuntime
+) => Record<string, unknown>;
+
+// Same precedence as the real one: mappings, then `uniProps`, then the props.
+export const withUnistyles =
+  (Component: ComponentType<Record<string, unknown>>, mappings?: Mapping) =>
+  ({ uniProps, ...props }: { uniProps?: Mapping } & Record<string, unknown>) =>
+    createElement(Component, {
+      ...mappings?.(light, UnistylesRuntime),
+      ...uniProps?.(light, UnistylesRuntime),
+      ...props,
+    });
