@@ -11,6 +11,10 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style, plus a
 | `packages/create-weaver` | `@red_dial/create-weaver` | `npm create @red_dial/weaver`: scaffolds a new Expo Router app |
 | `templates/app`          | (embedded)                | Expo 58 app template used by weaver                            |
 
+## Docs
+
+Design decisions are in [`docs/adr`](./docs/adr), the plan in [`docs/roadmap.md`](./docs/roadmap.md) and the code conventions in [`docs/code-style.md`](./docs/code-style.md).
+
 ## Development
 
 ```sh
