@@ -22,6 +22,12 @@ export default [
   ...base,
   ...typescript,
   ...expo,
+  {
+    // Object shapes are \`type\`, never \`interface\` (the UI kit's code follows it).
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+    },
+  },
 ];
 `;
 
