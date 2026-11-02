@@ -440,6 +440,16 @@ describe('DateTimeInput', () => {
       });
     });
 
+    it('tints the icon muted, or disabled', async () => {
+      const iconColor = () =>
+        screen.root!.queryAll((node) => node.props.stroke !== undefined)[0]!
+          .props.stroke;
+      await render(<DateTimeInput label="Day" />);
+      expect(iconColor()).toBe(light.colors.textMuted);
+      await screen.rerender(<DateTimeInput label="Day" disabled />);
+      expect(iconColor()).toBe(light.colors.textDisabled);
+    });
+
     it('renders a busy skeleton while loading', async () => {
       await render(<DateTimeInput label="Day" loading />);
       expect(screen.getByLabelText('Loading Day')).toBeBusy();

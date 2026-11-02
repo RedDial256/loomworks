@@ -149,7 +149,9 @@ export const iconColor = (
 };
 
 /** The iOS picker follows the app theme, which `useThemeMode` can set apart from the system. */
-export const themeVariant = (themeName: string | undefined) => {
+export const themeVariant = (
+  themeName: string | undefined
+): 'dark' | 'light' => {
   if (themeName === 'dark') return 'dark';
   return 'light';
 };

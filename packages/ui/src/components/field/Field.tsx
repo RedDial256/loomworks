@@ -1,7 +1,9 @@
 import type { FC } from 'react';
 import { View } from 'react-native';
 
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
+
+import { touchTarget } from '@/theme';
 
 import { Skeleton } from '../skeleton/Skeleton';
 
@@ -22,8 +24,6 @@ export const Field: FC<FieldProps> = ({
   loading,
   children,
 }) => {
-  const { theme } = useUnistyles();
-
   if (loading) {
     const name = fieldName(label, required);
     const loadingLabel = name ? `Loading ${name}` : 'Loading';
@@ -31,7 +31,7 @@ export const Field: FC<FieldProps> = ({
       <View style={styles.container}>
         <FieldLabel label={label} required={required} />
         <Skeleton
-          height={theme.touchTarget.min}
+          height={touchTarget.min}
           radius="md"
           a11y={{ label: loadingLabel, hidden: false, busy: true }}
         />

@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import { useImperativeHandle, useState } from 'react';
 import { Platform, View } from 'react-native';
 
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { Field } from '../field/Field';
 import { fieldName, useField } from '../field/Field.utils';
@@ -74,9 +74,6 @@ export const DateTimeInput: FC<DateTimeInputProps> = ({
     schema,
     validate: checkLimits,
   });
-
-  const { rt } = useUnistyles();
-  styles.useVariants({ direction: partsDirection(rt.fontScale) });
 
   const seed = () => pickerSeed(field.handle.get(), range);
 
@@ -186,16 +183,9 @@ export const DateTimeInput: FC<DateTimeInputProps> = ({
   );
 };
 
-const styles = StyleSheet.create((theme) => ({
-  parts: {
-    gap: theme.spacing.xs,
-    variants: {
-      direction: {
-        row: { flexDirection: 'row' },
-        column: { flexDirection: 'column' },
-      },
-    },
-  },
+const styles = StyleSheet.create((theme, rt) => ({
+  // Recomputed by Unistyles when the font scale changes, without a rerender.
+  parts: { gap: theme.spacing.xs, flexDirection: partsDirection(rt.fontScale) },
   date: { flex: 3 },
   time: { flex: 2 },
 }));

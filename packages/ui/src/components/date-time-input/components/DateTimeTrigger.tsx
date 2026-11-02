@@ -1,7 +1,9 @@
 import type { FC } from 'react';
 import { Pressable, type PressableStateCallbackType } from 'react-native';
 
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet, withUnistyles } from 'react-native-unistyles';
+
+import type { Theme } from '@/theme';
 
 import { easyA11y } from '../../../utils/a11y/easyA11y';
 import { Text } from '../../text/Text';
@@ -11,7 +13,11 @@ import { iconColor, readValue, textTone } from '../DateTimeInput.utils';
 import { CalendarIcon } from './CalendarIcon';
 import { ClockIcon } from './ClockIcon';
 
-const ICONS = { date: CalendarIcon, time: ClockIcon };
+// Themed through `withUnistyles`: `useUnistyles` would rerender the whole button on any theme change.
+const ICONS = {
+  date: withUnistyles(CalendarIcon),
+  time: withUnistyles(ClockIcon),
+};
 
 /** A button of the field: the part's value (or the placeholder) and its icon. */
 export const DateTimeTrigger: FC<DateTimeTriggerProps> = ({
@@ -27,7 +33,6 @@ export const DateTimeTrigger: FC<DateTimeTriggerProps> = ({
   a11y,
   style,
 }) => {
-  const { theme } = useUnistyles();
   styles.useVariants({ focused: expanded === true, invalid, disabled });
 
   const press = () => onPress(part);
@@ -37,6 +42,10 @@ export const DateTimeTrigger: FC<DateTimeTriggerProps> = ({
     pressed && styles.pressed,
     style,
   ];
+
+  const iconProps = (theme: Theme) => ({
+    color: iconColor(theme.colors, disabled),
+  });
 
   const Icon = ICONS[part];
   const content = text ?? placeholder;
@@ -62,7 +71,7 @@ export const DateTimeTrigger: FC<DateTimeTriggerProps> = ({
         style={styles.text}>
         {content}
       </Text>
-      <Icon color={iconColor(theme.colors, disabled)} />
+      <Icon uniProps={iconProps} />
     </Pressable>
   );
 };

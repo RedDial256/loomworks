@@ -1,15 +1,16 @@
-import { type FC, useEffect, useState } from 'react';
+import { type ComponentType, type FC, useEffect, useState } from 'react';
 import { type LayoutChangeEvent, View } from 'react-native';
 
 import DateTimePicker, {
   type DateTimePickerChangeEvent,
+  type IOSNativeProps,
 } from '@react-native-community/datetimepicker';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet, withUnistyles } from 'react-native-unistyles';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { motion } from '@/theme';
@@ -20,6 +21,18 @@ import {
 } from '../../../hooks/reduced-motion/useReducedMotion';
 import type { DateTimePart, InlinePickerProps } from '../DateTimeInput.types';
 import { iosDisplay, themeVariant } from '../DateTimeInput.utils';
+
+// Themed through `withUnistyles`, as the docs advise for third-party views; the
+// picker follows the app theme, which `useThemeMode` can set apart from the system.
+// Narrowed to the iOS props, where it renders: `withUnistyles` cannot map over the platform union.
+const ThemedPicker = withUnistyles(
+  DateTimePicker as ComponentType<IOSNativeProps>,
+  (theme, rt) => ({
+    accentColor: theme.colors.primary,
+    textColor: theme.colors.text,
+    themeVariant: themeVariant(rt.themeName),
+  })
+);
 
 /**
  * iOS: the native picker in the layout, below the field (HIG: keep the picker
@@ -42,7 +55,6 @@ export const InlinePicker: FC<InlinePickerProps> = ({
     'fade',
     motion.duration.normal
   );
-  const { theme, rt } = useUnistyles();
   const progress = useSharedValue(0);
   const height = useSharedValue(0);
 
@@ -82,7 +94,7 @@ export const InlinePicker: FC<InlinePickerProps> = ({
   return (
     <Animated.View style={[styles.clip, animated]}>
       <View onLayout={measure} style={styles.content}>
-        <DateTimePicker
+        <ThemedPicker
           testID="dateTimeInlinePicker"
           value={value}
           mode={shown}
@@ -91,9 +103,6 @@ export const InlinePicker: FC<InlinePickerProps> = ({
           maximumDate={maximum}
           minuteInterval={minuteInterval}
           locale={locale}
-          accentColor={theme.colors.primary}
-          textColor={theme.colors.text}
-          themeVariant={themeVariant(rt.themeName)}
           onValueChange={handleChange}
         />
       </View>
