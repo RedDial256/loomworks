@@ -5,11 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { type Manifest, manifestFiles, parseManifest } from './schema';
 
 /** Where the CLI reads items from. A remote registry can implement the same interface. */
-export interface RegistrySource {
+export type RegistrySource = {
   getManifest(): Promise<Manifest>;
   /** Content of a file listed in the manifest, by its manifest path. */
   getFile(path: string): Promise<string>;
-}
+};
 
 /** Reads a folder produced by `embedRegistry`. */
 export const createFsSource = (dir: string): RegistrySource => {

@@ -101,6 +101,9 @@ export default [
         },
       ],
       '@typescript-eslint/no-import-type-side-effects': 'error',
+      // Object shapes are `type`, never `interface` (module augmentation is the
+      // one exception: disable the rule on that line).
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@red_dial/component-order': 'error',
       'no-restricted-syntax': ['error', ...restrictedSyntax],
     },

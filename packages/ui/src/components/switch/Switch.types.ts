@@ -2,7 +2,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 import type { A11y, A11yProps } from '../../utils/a11y/easyA11y.types';
 
-export interface SwitchProps {
+export type SwitchProps = {
   /** Current value; the switch is controlled only. */
   value: boolean;
   /** Called with the next value, from the switch or from the label row. */
@@ -17,13 +17,10 @@ export interface SwitchProps {
   a11y?: A11y;
   /** Style of the outer container; applied last. */
   style?: StyleProp<ViewStyle>;
-}
+};
 
 /** Props of the internal native switch wrapper. */
-export interface ThemedSwitchProps extends Pick<
-  SwitchProps,
-  'value' | 'onValueChange'
-> {
+export type ThemedSwitchProps = {
   disabled: boolean;
   a11yProps: A11yProps;
-}
+} & Pick<SwitchProps, 'value' | 'onValueChange'>;

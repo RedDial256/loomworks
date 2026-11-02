@@ -6,7 +6,7 @@ export type DividerOrientation = 'horizontal' | 'vertical';
 
 export type DividerVariant = 'hairline' | 'thin' | 'small';
 
-export interface DividerProps extends ViewProps {
+export type DividerProps = {
   /** `horizontal` when unset; a vertical divider stretches to the height of its row. */
   orientation?: DividerOrientation;
   /**
@@ -19,4 +19,4 @@ export interface DividerProps extends ViewProps {
   tone?: 'border' | 'borderStrong';
   /** Simplified accessibility props; hidden from screen readers unless set otherwise. */
   a11y?: A11y;
-}
+} & ViewProps;

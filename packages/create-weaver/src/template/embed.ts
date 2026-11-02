@@ -3,14 +3,14 @@ import { basename, join } from 'node:path';
 
 import { TOOLING_PACKAGES } from '../tooling';
 
-interface EmbedOptions {
+type EmbedOptions = {
   /** The template app (`templates/app`). */
   templateRoot: string;
   /** package.json that pins the tooling packages in its devDependencies. */
   toolingPackageJson: string;
   /** Output folder; receives `template/` and `tooling.json`. */
   outDir: string;
-}
+};
 
 // Local or generated: never part of the template.
 const SKIPPED = new Set([

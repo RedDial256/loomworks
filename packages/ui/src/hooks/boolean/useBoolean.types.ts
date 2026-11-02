@@ -1,4 +1,4 @@
-export interface UseBooleanResult {
+export type UseBooleanResult = {
   value: boolean;
   /** Every function below keeps its identity across renders. */
   set: (value: boolean) => void;
@@ -7,4 +7,4 @@ export interface UseBooleanResult {
   setter: (value: boolean) => () => void;
   /** Back to the `initial` of the first render. */
   reset: () => void;
-}
+};

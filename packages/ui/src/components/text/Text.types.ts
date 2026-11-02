@@ -4,7 +4,7 @@ import type { TypographyVariant } from '@/theme';
 
 import type { A11y } from '../../utils/a11y/easyA11y.types';
 
-export interface TextProps extends NativeTextProps {
+export type TextProps = {
   /** Typography preset (ADR 0002). */
   variant?: TypographyVariant;
   /** Neutral color role; `text` when unset. */
@@ -13,4 +13,4 @@ export interface TextProps extends NativeTextProps {
   a11y?: A11y;
   /** Renders a `Skeleton` line of the same preset, announced as busy ("Loading" unless `a11y.label` is set). */
   loading?: boolean;
-}
+} & NativeTextProps;

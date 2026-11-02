@@ -30,7 +30,7 @@ import type { Manifest } from '../registry/schema';
 import { createEmbeddedSource, type RegistrySource } from '../registry/source';
 import { LOOM_VERSION } from '../version';
 
-export interface AddOptions extends ConflictOptions {
+export type AddOptions = {
   cwd: string;
   /** Item names; their dependencies are added too. */
   items: string[];
@@ -39,9 +39,9 @@ export interface AddOptions extends ConflictOptions {
   install?: boolean;
   run?: RunCommand;
   version?: string;
-}
+} & ConflictOptions;
 
-export interface AddResult {
+export type AddResult = {
   /** Requested items and their dependencies, dependencies first. */
   items: string[];
   files: WriteReport;
@@ -49,7 +49,7 @@ export interface AddResult {
   packages: string[];
   /** The sandbox index, when it changed. */
   sandboxIndex?: string;
-}
+};
 
 /** Copies items (and their dependencies) into the project, installs their packages, records them in `loom.json` and rewrites the sandbox index. */
 export const add = async ({

@@ -1,32 +1,32 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
-export interface PlannedFile {
+export type PlannedFile = {
   /** Project-relative POSIX path. */
   target: string;
   content: string;
-}
+};
 
-export interface Conflict {
+export type Conflict = {
   target: string;
   current: string;
   incoming: string;
-}
+};
 
 export type ConflictChoice = 'overwrite' | 'skip';
 
-export interface ConflictOptions {
+export type ConflictOptions = {
   overwrite?: boolean;
   skipExisting?: boolean;
   /** Asks the user per file; omit in non-interactive mode, where an unresolved conflict fails. */
   resolveConflict?: (conflict: Conflict) => Promise<ConflictChoice>;
-}
+};
 
-export interface WriteReport {
+export type WriteReport = {
   written: string[];
   unchanged: string[];
   skipped: string[];
-}
+};
 
 export class ConflictError extends Error {
   readonly files: string[];

@@ -1,13 +1,13 @@
 export type ElevationLevel = 'none' | 'sm' | 'md' | 'lg';
 
 /** Spreadable shadow style: iOS `shadow*` paired with Android `elevation`. */
-export interface ShadowStyle {
+export type ShadowStyle = {
   elevation: number;
   shadowColor: string;
   shadowOffset: { width: number; height: number };
   shadowRadius: number;
   shadowOpacity: number;
-}
+};
 
 const levels = {
   none: { elevation: 0, height: 0, shadowRadius: 0, shadowOpacity: 0 },

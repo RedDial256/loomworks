@@ -1,11 +1,11 @@
-export interface TypographyPreset {
+export type TypographyPreset = {
   fontSize: number;
   /** Absolute line height in points (React Native has no multiplier). */
   lineHeight: number;
   fontWeight: '400' | '500' | '600';
   /** Set to use a custom font; the system font is used when undefined. */
   fontFamily?: string;
-}
+};
 
 export type TypographyVariant =
   'h1' | 'h2' | 'h3' | 'title' | 'body' | 'bodySmall' | 'label' | 'caption';

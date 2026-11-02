@@ -83,11 +83,11 @@ export const expoInstallCommand = (
   names: string[]
 ): [string, string[]] => execCommand(pm, ['expo', 'install', ...names]);
 
-export interface PackageJson {
+export type PackageJson = {
   main?: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
-}
+};
 
 export const declaredRange = (pkg: PackageJson, name: string) =>
   pkg.dependencies?.[name] ?? pkg.devDependencies?.[name];

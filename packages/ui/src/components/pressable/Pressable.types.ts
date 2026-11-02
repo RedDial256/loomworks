@@ -5,12 +5,12 @@ import type { PressableProps as GesturePressableProps } from 'react-native-gestu
 import type { A11y } from '../../utils/a11y/easyA11y.types';
 
 /** Gesture Handler's props, so `style` and `children` stay functions of the `pressed` state. */
-export interface PressableProps extends GesturePressableProps {
+export type PressableProps = {
   /** Blocks presses and sets `a11y.disabled`. */
   disabled?: boolean;
   /** Simplified accessibility props; native props still win. Defaults to the `button` role. */
   a11y?: A11y;
-}
+} & GesturePressableProps;
 
 /** Visual size of a control, in pt: one side, or both. */
 export type VisualSize = number | { width: number; height: number };
