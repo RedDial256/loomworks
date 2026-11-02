@@ -1,4 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src"]
+  "compilerOptions": {
+    // Typecheck and test against the loom sources, so neither needs a CLI build.
+    "paths": { "@red_dial/loom": ["../cli/src/index.ts"] }
+  },
+  "include": ["src", "tsdown.config.ts", "vitest.config.ts"]
 }

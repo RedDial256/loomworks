@@ -18,7 +18,13 @@ export {
   type ConflictOptions,
   type WriteReport,
 } from './project/files';
-export { type RunCommand } from './project/packages';
+export {
+  detectPackageManager,
+  execCommand,
+  type PackageManager,
+  type RunCommand,
+  runCommand,
+} from './project/packages';
 export { embedRegistry } from './registry/embed';
 export {
   type Manifest,
