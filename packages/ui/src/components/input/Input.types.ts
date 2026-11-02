@@ -13,9 +13,9 @@ import type {
 export type InputType = TextFieldType | DateTimeMode;
 
 /** `DateTimeInput` props, with `type` in place of `mode`. */
-export interface DateInputProps extends Omit<DateTimeInputProps, 'mode'> {
+export type DateInputProps = Omit<DateTimeInputProps, 'mode'> & {
   type: DateTimeMode;
-}
+};
 
 /** Discriminated on `type`: each type takes the props, value and ref of the field it renders. */
 export type InputProps = TextFieldProps | DateInputProps;

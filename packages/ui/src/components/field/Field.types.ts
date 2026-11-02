@@ -3,14 +3,14 @@ import type { ReactNode } from 'react';
 import type { A11y } from '../../utils/a11y/easyA11y.types';
 
 /** The part of a Standard Schema (https://standardschema.dev) that a field reads; zod 3.24+, valibot and arktype satisfy it. */
-export interface FieldSchema {
+export type FieldSchema = {
   readonly '~standard': {
     readonly validate: (value: unknown) => unknown;
   };
-}
+};
 
 /** Imperative handle of a field holding a `T`. */
-export interface FieldRef<T> {
+export type FieldRef<T> = {
   /** Current value. */
   get: () => T;
   /** Replaces the value; also calls the change callback. */
@@ -23,10 +23,10 @@ export interface FieldRef<T> {
   clear: () => void;
   /** Runs `required`, `schema` and `validate`, shows the first error and returns whether the value is valid. */
   validate: () => boolean;
-}
+};
 
 /** Props every field shares, whatever its value type. */
-export interface FieldBaseProps<T> {
+export type FieldBaseProps<T> = {
   /** Accessible name, shown above the field. */
   label?: string;
   /** Always visible below the field and read by screen readers; replaced by `error`. */
@@ -45,7 +45,7 @@ export interface FieldBaseProps<T> {
   loading?: boolean;
   /** Simplified accessibility props for the field; native props still win. */
   a11y?: A11y;
-}
+};
 
 /** What the validation reads from the props. */
 export type FieldValidationOptions<T> = Pick<
@@ -53,7 +53,7 @@ export type FieldValidationOptions<T> = Pick<
   'required' | 'requiredMessage' | 'schema' | 'validate'
 >;
 
-export interface UseFieldOptions<T> extends FieldValidationOptions<T> {
+export type UseFieldOptions<T> = FieldValidationOptions<T> & {
   /** Controlled value; `undefined` leaves the field uncontrolled. */
   value: T | undefined;
   /** Initial value when uncontrolled, and the target of `reset`; `empty` when unset. */
@@ -63,17 +63,17 @@ export interface UseFieldOptions<T> extends FieldValidationOptions<T> {
   /** Shown instead of the field's own error. */
   error: string | undefined;
   onChange: ((value: T) => void) | undefined;
-}
+};
 
 /** The frame around a field: label, the control (or a skeleton) and the message. */
-export interface FieldProps extends Pick<
+export type FieldProps = Pick<
   FieldBaseProps<unknown>,
   'label' | 'required' | 'hint' | 'loading'
-> {
+> & {
   /** The error shown below the field. */
   error: string | undefined;
   children: ReactNode;
-}
+};
 
 export type FieldLabelProps = Pick<
   FieldBaseProps<unknown>,

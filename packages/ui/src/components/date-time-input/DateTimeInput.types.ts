@@ -16,7 +16,7 @@ export type MinuteInterval = 1 | 2 | 3 | 4 | 5 | 6 | 10 | 12 | 15 | 20 | 30;
 /** Imperative handle of a `DateTimeInput`; `null` is no value. `focus` opens the picker and `blur` closes it. */
 export type DateTimeInputRef = FieldRef<Date | null>;
 
-export interface DateTimeInputProps extends FieldBaseProps<Date | null> {
+export type DateTimeInputProps = FieldBaseProps<Date | null> & {
   /** `date` when unset. */
   mode?: DateTimeMode;
   /** Controlled value; `null` is an empty controlled field, `undefined` leaves it uncontrolled. */
@@ -45,25 +45,25 @@ export interface DateTimeInputProps extends FieldBaseProps<Date | null> {
   /** Style of each button; applied last. */
   style?: StyleProp<ViewStyle>;
   ref?: Ref<DateTimeInputRef>;
-}
+};
 
 /** Limits and mode read by the range check and the pickers. */
 export type DateTimeRange = Pick<DateTimeInputProps, 'minimum' | 'maximum'> & {
   mode: DateTimeMode;
 };
 
-export interface AndroidPickerOptions extends Pick<
+export type AndroidPickerOptions = Pick<
   DateTimeInputProps,
   'minimum' | 'maximum' | 'minuteInterval'
-> {
+> & {
   part: DateTimePart;
   value: Date;
   onPick: (value: Date) => void;
   onDismiss: () => void;
-}
+};
 
 /** One button of the field: the formatted part, or the placeholder, and its icon. */
-export interface DateTimeTriggerProps {
+export type DateTimeTriggerProps = {
   part: DateTimePart;
   text: string | undefined;
   placeholder: string | undefined;
@@ -76,21 +76,21 @@ export interface DateTimeTriggerProps {
   onPress: (part: DateTimePart) => void;
   a11y: A11y | undefined;
   style: StyleProp<ViewStyle>;
-}
+};
 
 /** iOS: the native picker below the field, opened and closed with a height animation. */
-export interface InlinePickerProps extends Pick<
+export type InlinePickerProps = Pick<
   DateTimeInputProps,
   'minimum' | 'maximum' | 'minuteInterval' | 'locale'
-> {
+> & {
   /** The open part, or `null` when closed. */
   part: DateTimePart | null;
   value: Date;
   onChange: (value: Date) => void;
-}
+};
 
-export interface IconProps {
+export type IconProps = {
   color: string;
   /** Side in pt; 20 when unset. */
   size?: number;
-}
+};

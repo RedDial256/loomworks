@@ -16,12 +16,12 @@ export type TextFieldType =
 /** Imperative handle of a `TextField`. */
 export type TextFieldRef = FieldRef<string>;
 
-export interface TextFieldProps
-  extends FieldBaseProps<string>, Omit<TextInputProps, 'ref'> {
-  /** Sets keyboard, autocomplete, content type, secure entry and capitalization together; `text` when unset. */
-  type?: TextFieldType;
-  ref?: Ref<TextFieldRef>;
-}
+export type TextFieldProps = FieldBaseProps<string> &
+  Omit<TextInputProps, 'ref'> & {
+    /** Sets keyboard, autocomplete, content type, secure entry and capitalization together; `text` when unset. */
+    type?: TextFieldType;
+    ref?: Ref<TextFieldRef>;
+  };
 
 /** Props each `type` sets together. */
 export type TextFieldTypeProps = Pick<
