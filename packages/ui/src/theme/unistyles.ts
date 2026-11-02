@@ -12,13 +12,14 @@ const breakpoints = { xs: 0, sm: 576, md: 768, lg: 992, xl: 1200 };
 type AppThemes = typeof themes;
 type AppBreakpoints = typeof breakpoints;
 
-// Module augmentation needs interfaces, even empty ones.
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+// Module augmentation needs interfaces, even empty ones: the one place where
+// `interface` beats `type` (a `type` cannot merge into the library's declaration).
+/* eslint-disable @typescript-eslint/no-empty-object-type, @typescript-eslint/consistent-type-definitions */
 declare module 'react-native-unistyles' {
   export interface UnistylesThemes extends AppThemes {}
   export interface UnistylesBreakpoints extends AppBreakpoints {}
 }
-/* eslint-enable @typescript-eslint/no-empty-object-type */
+/* eslint-enable @typescript-eslint/no-empty-object-type, @typescript-eslint/consistent-type-definitions */
 
 StyleSheet.configure({
   themes,

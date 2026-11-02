@@ -39,3 +39,9 @@ Exceptions the rule already allows:
 ## TypeScript
 
 `tsconfig.base.json` adds `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noImplicitReturns`, `noImplicitOverride`, `noFallthroughCasesInSwitch`, `noUnusedLocals`, `noUnusedParameters` and `allowUnreachableCode: false` on top of `strict` and `noUncheckedIndexedAccess`. TypeScript cannot express the component and JSX rules; those are ESLint only.
+
+### `type`, not `interface`
+
+Object shapes are `type` aliases (`@typescript-eslint/consistent-type-definitions: ['error', 'type']`). Extend with an intersection, base last: `export type CardProps = { padding?: Space } & Omit<BoxProps, 'surface'>;`. A `type` cannot be reopened, so no declaration silently merges into another.
+
+The one exception is module augmentation, which only works with `interface` (`declare module 'react-native-unistyles' { interface UnistylesThemes ... }` in `theme/unistyles.ts`). Disable the rule there with a reason.

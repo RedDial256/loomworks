@@ -8,7 +8,7 @@ export type ButtonVariant =
 export type ButtonSize = 'S' | 'M' | 'L';
 
 /** Everything the `Pressable` takes, with the label as `children`. */
-export interface ButtonProps extends Omit<PressableProps, 'children'> {
+export type ButtonProps = {
   /** Label. `link` and `text` have no padding or background and are standalone, not inline. */
   children?: React.ReactNode;
   /** `solid` when unset. */
@@ -24,4 +24,4 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
   loading?: boolean;
   /** Action in progress: shows a `Spinner` over the label, keeps the width, blocks presses and sets `a11y.busy`. */
   pending?: boolean;
-}
+} & Omit<PressableProps, 'children'>;

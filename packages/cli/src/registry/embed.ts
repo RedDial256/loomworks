@@ -10,12 +10,12 @@ import { dirname, join } from 'node:path';
 
 import { manifestFiles, parseManifest } from './schema';
 
-interface EmbedOptions {
+type EmbedOptions = {
   /** Root of the UI package: holds `manifest.json` and `src/`. */
   uiRoot: string;
   /** Output folder; receives `manifest.json` and `files/`. */
   outDir: string;
-}
+};
 
 /** Validates the UI manifest and copies exactly the files it references into `outDir`. */
 export const embedRegistry = async ({

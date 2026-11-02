@@ -8,16 +8,16 @@ import type {
 export type AccessibilityActionName =
   'activate' | 'increment' | 'decrement' | 'longpress' | 'magicTap' | 'escape';
 
-export interface A11yAction {
+export type A11yAction = {
   /** Standard action (`activate`, `increment`, …) or a custom name. */
   name: AccessibilityActionName | (string & {});
   /** Announced by the screen reader; needed for custom actions. */
   label?: string;
   action: () => void;
-}
+};
 
 /** Simplified accessibility props (ADR 0003). */
-export interface A11y {
+export type A11y = {
   /** Sets `nativeID` and `testID`. */
   id?: string;
   label?: string;
@@ -39,7 +39,7 @@ export interface A11y {
   live?: NonNullable<ViewProps['accessibilityLiveRegion']>;
   /** Replaces the component's actions; spread its exported defaults to extend them. */
   actions?: readonly A11yAction[];
-}
+};
 
 /** Legacy native props produced by `easyA11y`. */
 export type A11yProps = Pick<

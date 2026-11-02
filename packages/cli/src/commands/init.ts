@@ -38,7 +38,7 @@ const ASYNC_STORAGE_PLUGIN =
 // Outside Expo's validated set (ADR 0001); excluded so `expo install --check` and `expo-doctor` stop flagging it.
 const INSTALL_EXCLUDE = ['@react-native-async-storage/async-storage'];
 
-export interface InitOptions extends ConflictOptions {
+export type InitOptions = {
   cwd: string;
   source?: RegistrySource;
   /** Install npm dependencies (default true). */
@@ -49,9 +49,9 @@ export interface InitOptions extends ConflictOptions {
   /** Sandbox folder for a new `loom.json`; ignored when one exists. */
   sandbox?: string;
   version?: string;
-}
+} & ConflictOptions;
 
-export interface InitResult {
+export type InitResult = {
   config: LoomConfig;
   files: WriteReport;
   /** Project files edited or created besides the theme. */
@@ -60,7 +60,7 @@ export interface InitResult {
   packages: string[];
   /** Manual steps left to the user. */
   notes: string[];
-}
+};
 
 /** Sets up loom in an Expo project: theme, Unistyles, `@/theme` alias, `loom.json`, dependencies. */
 export const init = async ({

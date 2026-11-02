@@ -1,5 +1,5 @@
 import type { DemoSection } from '../demos.types';
 
-export interface DemoSectionViewProps {
+export type DemoSectionViewProps = {
   section: DemoSection;
-}
+};

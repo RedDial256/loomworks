@@ -37,7 +37,7 @@ export const TEMPLATE_SANDBOX = 'src/sandbox';
 
 const NAME = /^[a-z][a-z0-9-]*$/;
 
-export interface CreateOptions {
+export type CreateOptions = {
   /** Project folder; its name is the project name. */
   dir: string;
   /** Install npm dependencies (default true). */
@@ -51,9 +51,9 @@ export interface CreateOptions {
   /** Registry for `loom init` and `loom add` (default: the one bundled with loom). */
   source?: RegistrySource;
   run?: RunCommand;
-}
+};
 
-export interface CreateResult {
+export type CreateResult = {
   name: string;
   dir: string;
   packageManager: PackageManager;
@@ -63,7 +63,7 @@ export interface CreateResult {
   packages: string[];
   /** Manual steps left to the user. */
   notes: string[];
-}
+};
 
 /** Creates a project from the template: copy, name, tooling, install, `loom init`, `loom add`, git. */
 export const create = async ({

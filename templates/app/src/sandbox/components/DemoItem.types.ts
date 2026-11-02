@@ -1,5 +1,5 @@
 import type { DemoEntry } from '../demos.types';
 
-export interface DemoItemProps {
+export type DemoItemProps = {
   demo: DemoEntry;
-}
+};

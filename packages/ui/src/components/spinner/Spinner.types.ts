@@ -14,14 +14,11 @@ export type SpinnerColor =
   | `hsl(${string})`
   | `hsla(${string})`;
 
-export interface SpinnerProps extends Omit<
-  ActivityIndicatorProps,
-  'color' | 'size'
-> {
+export type SpinnerProps = {
   /** `S` 20, `M` 36, `L` 48 (pt); `M` when unset. A user `transform` replaces the `L` scale. */
   size?: SpinnerSize;
   /** Color role or raw color; `primary` when unset. */
   color?: SpinnerColor;
   /** Simplified accessibility props; native props still win. Defaults to the `progressbar` role, "Loading" and busy while animating. */
   a11y?: A11y;
-}
+} & Omit<ActivityIndicatorProps, 'color' | 'size'>;

@@ -8,12 +8,12 @@ import { type LoomConfig, targetPath } from './config';
 /** The index file inside the sandbox folder, next to the template's `demos.types.ts`. */
 export const SANDBOX_INDEX = 'demos.ts';
 
-export interface IndexedDemo {
+export type IndexedDemo = {
   /** Item name, also the route segment `/sandbox/<id>`. */
   id: string;
   /** Project-relative path of the demo file. */
   target: string;
-}
+};
 
 const identifier = (id: string) =>
   `${id.replace(/-([a-z0-9])/g, (_, c: string) => c.toUpperCase())}Demo`;

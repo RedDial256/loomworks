@@ -22,16 +22,22 @@ export default [
   ...base,
   ...typescript,
   ...expo,
+  {
+    // Object shapes are \`type\`, never \`interface\` (the UI kit's code follows it).
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+    },
+  },
 ];
 `;
 
 const PRETTIER_CONFIG = `export { default } from '@red_dial/rn-tooling-config/prettier';
 `;
 
-interface ProjectPackageJson {
+type ProjectPackageJson = {
   scripts?: Record<string, string>;
   devDependencies?: Record<string, string>;
-}
+};
 
 /** Sets up ESLint and Prettier with `@red_dial/rn-tooling-config`: config files, scripts and dev dependencies. */
 export const setupTooling = async (

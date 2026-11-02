@@ -32,7 +32,7 @@ export type ColorRole = NeutralRole | FamilyRole<ColorFamily>;
 /** Every role is required, so a theme missing one fails to typecheck. */
 export type ThemeColors = Record<ColorRole, string>;
 
-export interface Theme {
+export type Theme = {
   colors: ThemeColors;
   spacing: typeof spacing;
   radii: typeof radii;
@@ -46,4 +46,4 @@ export interface Theme {
     hairline: string;
   };
   touchTarget: typeof touchTarget;
-}
+};

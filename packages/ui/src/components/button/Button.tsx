@@ -50,11 +50,11 @@ const LABELS = {
   L: 'body',
 } as const satisfies Record<ButtonSize, keyof typeof typography>;
 
-interface ButtonColors {
+type ButtonColors = {
   background: string;
   content: string;
   border: string;
-}
+};
 
 /** Colors of a variant × family, in the theme's roles. */
 export const buttonColors = (

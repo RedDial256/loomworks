@@ -4,7 +4,7 @@ import type { radii, TypographyVariant } from '@/theme';
 
 import type { A11y } from '../../utils/a11y/easyA11y.types';
 
-export interface SkeletonProps extends ViewProps {
+export type SkeletonProps = {
   /** Fills the parent when unset. */
   width?: DimensionValue;
   /** Fixed height; when unset the bar is sized like one line of `variant`. */
@@ -15,4 +15,4 @@ export interface SkeletonProps extends ViewProps {
   radius?: keyof typeof radii;
   /** Simplified accessibility props; hidden from screen readers unless set otherwise. */
   a11y?: A11y;
-}
+} & ViewProps;
