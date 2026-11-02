@@ -8,7 +8,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 
 ## Where things are
 
-- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T16) is #17 to #23 and #26, milestone "Phase 2". Phase 3 (T17 to T23) is #37 to #43, milestone "Phase 3 — Interactive components". Phase 4 (T24 to T32) is #53 to #61, no milestone yet; blockers are listed in each issue body.
+- GitHub: `RedDial256/loomworks`, issues #1 to #9 with milestones "Phase 0" and "Phase 1" and native blocking links. Issue number = ticket number for T01 to T08 (#1 to #8); #9 is the follow-up to the T02 spike. Phase 2 (T09 to T16) is #17 to #23 and #26, milestone "Phase 2". Phase 3 (T17 to T23) is #37 to #43, milestone "Phase 3 — Interactive components". Phase 4 (T24 to T34) is #53 to #61, #69 and #70, no milestone yet; blockers are listed in each issue body.
 - Local repo: `~/Desktop/projects/pers/loomworks`, branch `main`. The `origin` remote is SSH.
 
 ## State
@@ -22,7 +22,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 | T08 integration test | Merged (#16). `integration` CI job running `scripts/integration.sh`: fresh SDK 57 app (`create-expo-app@5.0.0`), `loom init`, `loom add box text`, `tsc --noEmit`, `expo lint` on the files loom wrote (the template itself fails `expo lint`). Runnable locally after building the CLI |
 | Phase 2 (T09 to T16) | Ticketed: #17 to #23 and #26 (T16) with blocking links. T09, T10, T14, T15 and T16 have no blockers |
 | Phase 3 (T17 to T23) | Done and merged (#45 to #51); code style enforced with ESLint and tsconfig (#52). Interactive components covered by unit tests only, not yet seen in an app (first visual pass in T29) |
-| Phase 4 (T24 to T32) | Ticketed: #53 to #61. SDK 58 only from T24. T24 has no blockers; T30's extraction step can start before T24 lands |
+| Phase 4 (T24 to T34) | Ticketed: #53 to #61, #69 (T33) and #70 (T34). SDK 58 only from T24. T24 has no blockers; T30's extraction step can start before T24 lands |
 | Phase 5 | Outlined in the roadmap, not ticketed on purpose |
 
 Notes:
