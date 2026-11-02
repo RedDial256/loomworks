@@ -23,7 +23,7 @@ Loomworks: an open-ended React Native UI kit (Unistyles 3) copied into projects 
 | Phase 2 (T09 to T16) | Ticketed: #17 to #23 and #26 (T16) with blocking links. T09, T10, T14, T15 and T16 have no blockers |
 | Phase 3 (T17 to T23) | Done and merged (#45 to #51); code style enforced with ESLint and tsconfig (#52). Interactive components covered by unit tests only, not yet seen in an app (first visual pass in T29) |
 | Phase 4 (T24 to T36) | Ticketed: #53 to #61, #69 (T33), #70 (T34), #72 (T35) and #73 (T36). SDK 58 only from T24. T24 has no blockers; T30's extraction step can start before T24 lands |
-| Phase 5 | Outlined in the roadmap; only T37 (#77, deploy and preview spike) is ticketed |
+| Phase 5 | Outlined in the roadmap; only T38 (#77, deploy and preview spike) is ticketed |
 
 Notes:
 - A fresh Expo template fails `tsc --noEmit` until `expo-env.d.ts` exists (Expo writes it on `expo start`). `scripts/integration.sh` creates it.
