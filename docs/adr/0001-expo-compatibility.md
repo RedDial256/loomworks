@@ -24,7 +24,7 @@ What `loom init` sets up, and why:
 1. React Native 0.88 ships its strict TypeScript API by default: props are read-only, the `TextInput` ref type is `TextInputInstance`, and `AccessibilityActionName` is not exported.
 2. The SDK 58 `default` template fails `tsc` in its own `src/components/app-tabs.web.tsx` (expo-router's `TabTrigger` slot props against the strict `Pressable` ref). `scripts/integration.sh` leaves that file out of the typecheck.
 3. Reanimated 4.7 runs a UI-runtime worklet when it loads, so Jest also needs Reanimated's web-only resolver rule (`packages/ui/test/resolver.cjs`).
-4. iOS builds need Xcode 27: on Xcode 26.3 (Swift 6.2), `expo-modules-jsi` fails to compile (`sending 'slot' risks causing data races`). Launched on the iOS 27.2 simulator with Xcode 27.2 (T31, #60). Not verified yet on Android.
+4. iOS builds need Xcode 27: on Xcode 26.3 (Swift 6.2), `expo-modules-jsi` fails to compile (`sending 'slot' risks causing data races`). Launched on the iOS 27.2 simulator with Xcode 27.2 and on an Android API 37 emulator (T31, #60).
 
 ## History
 

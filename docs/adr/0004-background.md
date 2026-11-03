@@ -1,6 +1,6 @@
 # ADR 0004: `Background` with `backgroundImage`
 
-- Status: Proposed. Verified on the iOS simulator; accepted once the Android column is filled from the test app.
+- Status: Accepted (2026-11-03), verified on the iOS simulator and the Android emulator.
 - Date: 2026-10-30
 - Issues: #60 (T31 spike), #61 (T32)
 
@@ -8,18 +8,18 @@
 
 Stack: Expo SDK 58, React Native 0.88.1, Unistyles 3.7.0. Letters are the tiles of the test app, which states what each one should show.
 
-Evidence used: React Native and Unistyles sources at those versions, React Native's JS style processing run in Jest against both themes, and the test app passing `tsc` and `expo export` for iOS and Android. The iOS column comes from the test app on the iPhone 18 Pro simulator (Xcode 27.2), driven with Argent through every tile in both themes and both variants; theme and variant changes applied live, without a reload. The two platforms share the style parsing (JS and C++); only the drawing differs, and both draw the cases below the same way in source.
+Evidence used: React Native and Unistyles sources at those versions, React Native's JS style processing run in Jest against both themes, and the test app passing `tsc` and `expo export` for iOS and Android. The platform columns come from the test app on the iPhone 18 Pro simulator (Xcode 27.2) and an API 37 emulator, driven with Argent through every tile in both themes and both variants; theme and variant changes applied live, without a reload. The two platforms share the style parsing (JS and C++); only the drawing differs, and both draw the cases below the same way in source.
 
-| Case | Tiles | Result (iOS and Android) | iOS 27.2 simulator | Android |
+| Case | Tiles | Result (iOS and Android) | iOS 27.2 simulator | Android API 37 emulator |
 |---|---|---|---|---|
-| CSS string syntax in `StyleSheet.create` (linear, radial, several layers, `rgba` stops), theme colors | A, B, F | Works and follows theme changes | Confirmed | Pending |
-| String gradient inside a variant | E | Works | Confirmed | Pending |
-| Object syntax (`[{ type: 'linear-gradient', colorStops }]`) in `StyleSheet.create` | C | **Does not work**, silently: `tsc` accepts it, no gradient is drawn | Confirmed | Pending |
-| Object syntax in an inline `style` | D | Works, but follows the theme only through a React re-render | Confirmed; theme follow not observable (primary and success are the same in both themes) | Pending |
-| `borderRadius` on the view itself, uniform or per corner | G, H | Gradient is clipped to the view's own shape, without `overflow: 'hidden'` | Confirmed | Pending |
-| Wrapper with children | I, J | Children are clipped only with `overflow: 'hidden'`, as for any view | Confirmed | Pending |
-| Child that fills its parent (`absoluteFill`) | K, L | Does not take the parent's radius; the parent needs `overflow: 'hidden'` | Confirmed | Pending |
-| `backgroundSize`, `backgroundPosition`, `backgroundRepeat` as arrays or CSS strings | M, N | Work; each list is indexed per layer, wrapping around | Confirmed | Pending |
+| CSS string syntax in `StyleSheet.create` (linear, radial, several layers, `rgba` stops), theme colors | A, B, F | Works and follows theme changes | Confirmed | Confirmed |
+| String gradient inside a variant | E | Works | Confirmed | Confirmed |
+| Object syntax (`[{ type: 'linear-gradient', colorStops }]`) in `StyleSheet.create` | C | **Does not work**, silently: `tsc` accepts it, no gradient is drawn | Confirmed | Confirmed |
+| Object syntax in an inline `style` | D | Works, but follows the theme only through a React re-render | Confirmed; theme follow not observable (primary and success are the same in both themes) | Confirmed |
+| `borderRadius` on the view itself, uniform or per corner | G, H | Gradient is clipped to the view's own shape, without `overflow: 'hidden'` | Confirmed | Confirmed |
+| Wrapper with children | I, J | Children are clipped only with `overflow: 'hidden'`, as for any view | Confirmed | Confirmed |
+| Child that fills its parent (`absoluteFill`) | K, L | Does not take the parent's radius; the parent needs `overflow: 'hidden'` | Confirmed | Confirmed |
+| `backgroundSize`, `backgroundPosition`, `backgroundRepeat` as arrays or CSS strings | M, N | Work; each list is indexed per layer, wrapping around | Confirmed | Confirmed |
 
 Why:
 
