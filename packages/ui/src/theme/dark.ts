@@ -1,5 +1,6 @@
-import type { Theme } from './contract';
+import type { Theme, ThemeColors } from './contract';
 import { createElevation } from './elevation';
+import { linearGradient } from './gradients';
 import { motion } from './motion';
 import { palette } from './palette';
 import { radii, spacing, touchTarget } from './spacing';
@@ -7,50 +8,61 @@ import { typography } from './typography';
 
 const { slate, indigo, green, amber, red, sky, white, black } = palette;
 
+const colors: ThemeColors = {
+  background: slate[950],
+  surface: slate[900],
+  surfaceRaised: slate[800],
+  surfaceSunken: black,
+  text: slate[50],
+  textMuted: slate[400],
+  textDisabled: slate[600],
+  border: slate[800],
+  borderStrong: slate[500],
+  focusRing: indigo[400],
+  overlay: 'rgba(0, 0, 0, 0.6)',
+  shadow: black,
+
+  primary: indigo[600],
+  onPrimary: white,
+  primarySubtle: indigo[950],
+  onPrimarySubtle: indigo[200],
+  primaryBorder: indigo[800],
+
+  success: green[700],
+  onSuccess: white,
+  successSubtle: green[950],
+  onSuccessSubtle: green[200],
+  successBorder: green[800],
+
+  warning: amber[400],
+  onWarning: amber[950],
+  warningSubtle: amber[950],
+  onWarningSubtle: amber[200],
+  warningBorder: amber[800],
+
+  danger: red[600],
+  onDanger: white,
+  dangerSubtle: red[950],
+  onDangerSubtle: red[200],
+  dangerBorder: red[800],
+
+  info: sky[400],
+  onInfo: sky[950],
+  infoSubtle: sky[950],
+  onInfoSubtle: sky[200],
+  infoBorder: sky[800],
+};
+
 export const dark: Theme = {
-  colors: {
-    background: slate[950],
-    surface: slate[900],
-    surfaceRaised: slate[800],
-    surfaceSunken: black,
-    text: slate[50],
-    textMuted: slate[400],
-    textDisabled: slate[600],
-    border: slate[800],
-    borderStrong: slate[500],
-    focusRing: indigo[400],
-    overlay: 'rgba(0, 0, 0, 0.6)',
-    shadow: black,
-
-    primary: indigo[600],
-    onPrimary: white,
-    primarySubtle: indigo[950],
-    onPrimarySubtle: indigo[200],
-    primaryBorder: indigo[800],
-
-    success: green[700],
-    onSuccess: white,
-    successSubtle: green[950],
-    onSuccessSubtle: green[200],
-    successBorder: green[800],
-
-    warning: amber[400],
-    onWarning: amber[950],
-    warningSubtle: amber[950],
-    onWarningSubtle: amber[200],
-    warningBorder: amber[800],
-
-    danger: red[600],
-    onDanger: white,
-    dangerSubtle: red[950],
-    onDangerSubtle: red[200],
-    dangerBorder: red[800],
-
-    info: sky[400],
-    onInfo: sky[950],
-    infoSubtle: sky[950],
-    onInfoSubtle: sky[200],
-    infoBorder: sky[800],
+  colors,
+  gradients: {
+    primary: linearGradient('to bottom right', indigo[600], indigo[800]),
+    success: linearGradient('to bottom right', green[700], green[900]),
+    warning: linearGradient('to bottom right', amber[300], amber[500]),
+    danger: linearGradient('to bottom right', red[600], red[800]),
+    info: linearGradient('to bottom right', sky[300], sky[500]),
+    surface: linearGradient('to bottom', colors.surface, colors.surfaceSunken),
+    scrim: linearGradient('to bottom', 'transparent', colors.overlay),
   },
   spacing,
   radii,

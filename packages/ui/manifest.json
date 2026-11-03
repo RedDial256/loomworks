@@ -21,6 +21,7 @@
         "theme/contract.ts",
         "theme/dark.ts",
         "theme/elevation.ts",
+        "theme/gradients.ts",
         "theme/index.ts",
         "theme/light.ts",
         "theme/motion.ts",
@@ -57,6 +58,20 @@
         "hooks/reduced-motion/useReducedMotion.types.ts"
       ],
       "sdkPackages": ["react-native-reanimated", "react-native-worklets"]
+    },
+    "background": {
+      "kind": "component",
+      "description": "A theme color or gradient (backgroundImage) as a wrapper around its children, or as a fill layer behind the parent's content, hidden from screen readers.",
+      "files": [
+        "components/background/Background.tsx",
+        "components/background/Background.types.ts",
+        "components/background/Background.utils.ts"
+      ],
+      "demo": "components/background/Background.demo.tsx",
+      "dependencies": ["a11y"],
+      "packages": {
+        "react-native-unistyles": "^3.7.0"
+      }
     },
     "box": {
       "kind": "component",

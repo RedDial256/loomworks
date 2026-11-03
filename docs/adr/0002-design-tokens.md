@@ -27,6 +27,12 @@ Evidence: color, typography, and motion, touch target and elevation benchmarks a
 
 - The dark solid steps stay at the light ones because `onX` is light in both themes and lighter steps (indigo 500, green 600) fall below 4.5:1 with white. The visual pass on real components is T29.
 
+### Gradients
+
+- `theme.gradients`: one per color family plus `surface` (surface to surfaceSunken) and `scrim` (transparent to overlay), for `Background` (ADR 0004).
+- Values are two-stop CSS `linear-gradient` strings, built with `linearGradient` from the palette and roles in `light.ts` and `dark.ts`. CSS strings are the only form Unistyles updates on a theme change.
+- Families run from the solid step to two steps darker (amber and sky, which carry dark content, run 300 to 500 instead), so `onX` stays readable over the whole gradient. The unit test checks `onX` over every family stop and `text` / `textMuted` over `surface` at 4.5:1.
+
 ### Spacing, radii and sizes
 
 | Spacing | `3xs` 2 · `2xs` 4 · `xs` 8 · `sm` 12 · `md` 16 · `lg` 20 · `xl` 24 · `2xl` 28 · `3xl` 32 · `4xl` 36 · `5xl` 40 |

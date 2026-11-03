@@ -11,6 +11,7 @@ export {
   type ElevationLevel,
   type ShadowStyle,
 } from './elevation';
+export { type GradientName, linearGradient } from './gradients';
 export { light } from './light';
 export { motion, type ReducedMotionBehavior } from './motion';
 export { palette } from './palette';
