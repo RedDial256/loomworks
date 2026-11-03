@@ -1,6 +1,6 @@
 # ADR 0004: `Background` with `backgroundImage`
 
-- Status: Proposed. Accepted once the Device column below is filled from the test app on the iOS simulator and an Android device or emulator.
+- Status: Proposed. Verified on the iOS simulator; accepted once the Android column is filled from the test app.
 - Date: 2026-10-30
 - Issues: #60 (T31 spike), #61 (T32)
 
@@ -8,18 +8,18 @@
 
 Stack: Expo SDK 58, React Native 0.88.1, Unistyles 3.7.0. Letters are the tiles of the test app, which states what each one should show.
 
-Evidence used: React Native and Unistyles sources at those versions, React Native's JS style processing run in Jest against both themes, and the test app passing `tsc` and `expo export` for iOS and Android. The two platforms share the style parsing (JS and C++); only the drawing differs, and both draw the cases below the same way in source.
+Evidence used: React Native and Unistyles sources at those versions, React Native's JS style processing run in Jest against both themes, and the test app passing `tsc` and `expo export` for iOS and Android. The iOS column comes from the test app on the iPhone 18 Pro simulator (Xcode 27.2), driven with Argent through every tile in both themes and both variants; theme and variant changes applied live, without a reload. The two platforms share the style parsing (JS and C++); only the drawing differs, and both draw the cases below the same way in source.
 
-| Case | Tiles | Result (iOS and Android) | Device |
-|---|---|---|---|
-| CSS string syntax in `StyleSheet.create` (linear, radial, several layers, `rgba` stops), theme colors | A, B, F | Works and follows theme changes | Pending |
-| String gradient inside a variant | E | Works | Pending |
-| Object syntax (`[{ type: 'linear-gradient', colorStops }]`) in `StyleSheet.create` | C | **Does not work**, silently: `tsc` accepts it, no gradient is drawn | Pending |
-| Object syntax in an inline `style` | D | Works, but follows the theme only through a React re-render | Pending |
-| `borderRadius` on the view itself, uniform or per corner | G, H | Gradient is clipped to the view's own shape, without `overflow: 'hidden'` | Pending |
-| Wrapper with children | I, J | Children are clipped only with `overflow: 'hidden'`, as for any view | Pending |
-| Child that fills its parent (`absoluteFill`) | K, L | Does not take the parent's radius; the parent needs `overflow: 'hidden'` | Pending |
-| `backgroundSize`, `backgroundPosition`, `backgroundRepeat` as arrays or CSS strings | M, N | Work; each list is indexed per layer, wrapping around | Pending |
+| Case | Tiles | Result (iOS and Android) | iOS 27.2 simulator | Android |
+|---|---|---|---|---|
+| CSS string syntax in `StyleSheet.create` (linear, radial, several layers, `rgba` stops), theme colors | A, B, F | Works and follows theme changes | Confirmed | Pending |
+| String gradient inside a variant | E | Works | Confirmed | Pending |
+| Object syntax (`[{ type: 'linear-gradient', colorStops }]`) in `StyleSheet.create` | C | **Does not work**, silently: `tsc` accepts it, no gradient is drawn | Confirmed | Pending |
+| Object syntax in an inline `style` | D | Works, but follows the theme only through a React re-render | Confirmed; theme follow not observable (primary and success are the same in both themes) | Pending |
+| `borderRadius` on the view itself, uniform or per corner | G, H | Gradient is clipped to the view's own shape, without `overflow: 'hidden'` | Confirmed | Pending |
+| Wrapper with children | I, J | Children are clipped only with `overflow: 'hidden'`, as for any view | Confirmed | Pending |
+| Child that fills its parent (`absoluteFill`) | K, L | Does not take the parent's radius; the parent needs `overflow: 'hidden'` | Confirmed | Pending |
+| `backgroundSize`, `backgroundPosition`, `backgroundRepeat` as arrays or CSS strings | M, N | Work; each list is indexed per layer, wrapping around | Confirmed | Pending |
 
 Why:
 
@@ -54,4 +54,4 @@ One component with a `fill` variant, not two components: both forms take the sam
 
 ## Test app
 
-`scripts/spikes/background.sh` builds it (fresh SDK 58 app, `loom init`, `loom add box text`, the spike screen as the only route). Run it with `npx expo run:ios` and `npx expo run:android`, toggle the theme and the variant, and record each tile in the Device column.
+`scripts/spikes/background.sh` builds it (fresh SDK 58 app, `loom init`, `loom add box text`, the spike screen as the only route). Run it with `npx expo run:ios` and `npx expo run:android`, toggle the theme and the variant, and record each tile in its platform column.
