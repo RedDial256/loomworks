@@ -4,6 +4,11 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { Background } from './Background';
 
+// Values outside the theme, as an app would pass them.
+const sky = '#7dd3fc';
+const indigo = '#4338ca';
+const amber = '#fcd34d';
+
 // Above the demo: its sections are built when the module loads.
 const styles = StyleSheet.create((theme) => ({
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
@@ -58,6 +63,30 @@ export const demo = {
           <Background gradient="info" style={styles.swatch} />
           <Background gradient="surface" style={styles.swatch} />
           <Background gradient="scrim" style={styles.swatch} />
+        </View>
+      ),
+    },
+    {
+      title: 'Custom values',
+      description:
+        'Any color or backgroundImage besides the tokens: a hex color, a CSS string and gradient objects.',
+      content: (
+        <View style={styles.row}>
+          <Background color={sky} style={styles.swatch} />
+          <Background
+            gradient={`radial-gradient(circle, ${amber}, ${indigo})`}
+            style={styles.swatch}
+          />
+          <Background
+            gradient={[
+              {
+                type: 'linear-gradient',
+                direction: 'to right',
+                colorStops: [{ color: sky }, { color: indigo }],
+              },
+            ]}
+            style={styles.swatch}
+          />
         </View>
       ),
     },

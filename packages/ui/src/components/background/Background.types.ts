@@ -1,19 +1,30 @@
-import type { ViewProps } from 'react-native';
+import type { ViewProps, ViewStyle } from 'react-native';
 
 import type { ColorRole, GradientName } from '@/theme';
 
 import type { A11y } from '../../utils/a11y/easyA11y.types';
 
-/** A theme color or a theme gradient, never both. */
+/** A theme color role, or any React Native color. */
+// `string & {}` keeps the role names in autocomplete.
+export type BackgroundColor = ColorRole | (string & {});
+
+/** A theme gradient name, or any React Native `backgroundImage` (CSS string or gradient objects). */
+export type BackgroundGradient =
+  GradientName | NonNullable<ViewStyle['backgroundImage']>;
+
+/**
+ * A color or a gradient, never both. Theme tokens follow theme changes from
+ * the stylesheet; other values are an inline style and follow the theme only
+ * through a re-render (ADR 0004).
+ */
 export type BackgroundPaint =
   | {
-      /** Theme color role. */
-      color: ColorRole;
+      color: BackgroundColor;
       gradient?: never;
     }
   | {
-      /** Theme gradient, drawn with `backgroundImage`. */
-      gradient: GradientName;
+      /** Drawn with `backgroundImage`. */
+      gradient: BackgroundGradient;
       color?: never;
     };
 

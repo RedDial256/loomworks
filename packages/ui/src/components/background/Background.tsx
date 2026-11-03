@@ -7,7 +7,12 @@ import { easyA11y } from '../../utils/a11y/easyA11y';
 import type { A11yProps } from '../../utils/a11y/easyA11y.types';
 
 import type { BackgroundProps } from './Background.types';
-import { variantsOf } from './Background.utils';
+import {
+  customPaint,
+  isColorRole,
+  isGradientName,
+  variantsOf,
+} from './Background.utils';
 
 // Decorative layer: no touches, hidden from screen readers.
 const FILL_PROPS: A11yProps & Pick<ViewProps, 'pointerEvents'> = {
@@ -16,8 +21,8 @@ const FILL_PROPS: A11yProps & Pick<ViewProps, 'pointerEvents'> = {
 };
 
 /**
- * A theme color or gradient behind its children (wrapper), or behind the
- * parent's content (`fill`). Gradients are CSS strings in the theme, so they
+ * A color or gradient behind its children (wrapper), or behind the parent's
+ * content (`fill`). Theme tokens are CSS strings in the stylesheet, so they
  * follow theme changes (ADR 0004).
  */
 export const Background: FC<BackgroundProps> = ({
@@ -28,18 +33,33 @@ export const Background: FC<BackgroundProps> = ({
   style,
   ...rest
 }) => {
-  styles.useVariants({ color, gradient, fill });
-  if (fill) {
-    return (
-      <View {...rest} {...FILL_PROPS} style={[styles.background, style]} />
-    );
-  }
+  styles.useVariants({
+    color: tokenOrUndefined(color, isColorRole),
+    gradient: tokenOrUndefined(gradient, isGradientName),
+    fill,
+  });
 
-  // Like `Box`: a container stays out of the way unless `a11y` opts in.
-  const wrapperA11y = easyA11y({ accessible: false, ...a11y });
+  // A wrapper's native props win over `a11y`, like `Box`; a fill's own props win over everything.
+  const wrapperA11y = fill
+    ? undefined
+    : easyA11y({ accessible: false, ...a11y });
+  const fillProps = fill ? FILL_PROPS : undefined;
+  const paint = customPaint(color, gradient);
 
-  return <View {...wrapperA11y} {...rest} style={[styles.background, style]} />;
+  return (
+    <View
+      {...wrapperA11y}
+      {...rest}
+      {...fillProps}
+      style={[styles.background, paint, style]}
+    />
+  );
 };
+
+const tokenOrUndefined = <V, T extends V>(
+  value: V | undefined,
+  isToken: (value?: V) => value is T
+): T | undefined => (isToken(value) ? value : undefined);
 
 const styles = StyleSheet.create((theme) => ({
   background: {
@@ -51,13 +71,7 @@ const styles = StyleSheet.create((theme) => ({
         backgroundImage,
       })),
       fill: {
-        true: {
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-        },
+        true: StyleSheet.absoluteFill,
         false: {},
       },
     },

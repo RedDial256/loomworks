@@ -47,7 +47,7 @@ One component with a `fill` variant, not two components: both forms take the sam
 </Card>
 ```
 
-- `color` (a theme color role) or `gradient` (a theme gradient name), mutually exclusive in the types.
+- `color` (a theme color role or any color) or `gradient` (a theme gradient name or any `backgroundImage`), mutually exclusive in the types. Theme tokens go through `StyleSheet.create` variants; other values are an inline style, the case that follows the theme only through a re-render (tile D).
 - `fill`: `absoluteFill`, `pointerEvents="none"`, hidden from accessibility, no `children` in the types.
 - Gradients are theme tokens written as CSS strings from the theme colors, so they follow theme changes through `StyleSheet.create`. T32 names them and adds them to the theme contract and ADR 0002.
 - Rule for the implementation: CSS string syntax only in `StyleSheet.create`; layer props as strings or arrays.

@@ -9,6 +9,7 @@ import { demo } from './Background.demo';
 import type { BackgroundProps } from './Background.types';
 
 const custom = '#ff0000';
+const other = '#00ff00';
 
 // Fill is hidden from screen readers, so queries must include hidden elements.
 const getBackground = () =>
@@ -37,6 +38,38 @@ describe('Background', () => {
       expect(getBackground()).not.toHaveStyle({ position: 'absolute' });
     }
   );
+
+  it('paints a custom color inline', async () => {
+    await render(<Background testID="bg" color={custom} />);
+    expect(getBackground()).toHaveStyle({ backgroundColor: custom });
+  });
+
+  it.each([
+    ['a CSS string', `linear-gradient(to right, ${custom}, #0000ff)`],
+    [
+      'gradient objects',
+      [
+        {
+          type: 'linear-gradient' as const,
+          colorStops: [{ color: custom }, { color: '#0000ff' }],
+        },
+      ],
+    ],
+  ])('paints a custom gradient from %s inline', async (_, backgroundImage) => {
+    await render(<Background testID="bg" gradient={backgroundImage} />);
+    expect(getBackground()).toHaveStyle({ backgroundImage });
+  });
+
+  it('puts the user style after a custom value', async () => {
+    await render(
+      <Background
+        testID="bg"
+        color={custom}
+        style={{ backgroundColor: other }}
+      />
+    );
+    expect(getBackground()).toHaveStyle({ backgroundColor: other });
+  });
 
   it('wraps its children', async () => {
     await render(
