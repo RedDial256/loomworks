@@ -6,7 +6,7 @@ Status: accepted (design session, values to be tuned with real components)
 
 Loom components must look uniform, support light and dark themes, and be easy for users to customize after the CLI copies them into their project. The theme is consumed through Unistyles 3 and must share one typed `Theme` contract across themes.
 
-Evidence: [color benchmark](../research/theme-color-benchmark.md), [typography benchmark](../research/typography-scale-benchmark.md), [motion, touch target and elevation benchmark](../research/motion-and-touch-target-benchmark.md). Compatibility constraints are in [ADR 0001](0001-expo-compatibility.md). Numbers marked "proposed" in the benchmarks are derivations, not published tokens.
+Evidence: color, typography, and motion, touch target and elevation benchmarks against primary sources (2026-10-09), kept in [git history](https://github.com/RedDial256/loomworks/tree/4cd639ca7b2f8746c7820bb932a78e4b17dffff4/docs/research). Compatibility constraints are in [ADR 0001](0001-expo-compatibility.md).
 
 ## Decision
 
@@ -23,23 +23,9 @@ Evidence: [color benchmark](../research/theme-color-benchmark.md), [typography b
 - Per family, five roles: `x`, `onX`, `xSubtle`, `onXSubtle`, `xBorder`. `onWarning` and `onInfo` are dark in both themes (amber and sky need dark content on the solid step); the other `onX` are light.
 - Neutrals: `background`, `surface`, `surfaceRaised`, `surfaceSunken`, `text`, `textMuted`, `textDisabled`, `border`, `borderStrong`, `focusRing`, `overlay`, `shadow`.
 - About 37 roles in total. Dark mode has its own surface ladder. Alpha roles (`overlay`, disabled) are precomputed strings.
-- Final per-role values (decided in T05, `packages/ui/src/theme/light.ts` and `dark.ts`). Rule: solid on step 600 (700 for green, the first step where white text passes AA; 500/400 for amber and sky, which carry dark text), subtle fill on 50 (light) / 950 (dark), subtle content on 800 / 200, border on 300 / 800. A unit test checks WCAG contrast: every `onX` / `onXSubtle` pair and `text`/`textMuted` on every surface at 4.5:1, `borderStrong` and `focusRing` at 3:1.
+- Per-role values live in `packages/ui/src/theme/light.ts` and `dark.ts`. Rule: solid on step 600 (700 for green, the first step where white text passes AA; 500/400 for amber and sky, which carry dark text), subtle fill on 50 (light) / 950 (dark), subtle content on 800 / 200, border on 300 / 800. A unit test checks WCAG contrast: every `onX` / `onXSubtle` pair and `text`/`textMuted` on every surface at 4.5:1, `borderStrong` and `focusRing` at 3:1.
 
-| Role | Light | Dark |
-|---|---|---|
-| `primary` / `onPrimary` | indigo 600 / white | indigo 600 / white |
-| `success` / `onSuccess` | green 700 / white | green 700 / white |
-| `warning` / `onWarning` | amber 500 / amber 950 | amber 400 / amber 950 |
-| `danger` / `onDanger` | red 600 / white | red 600 / white |
-| `info` / `onInfo` | sky 500 / sky 950 | sky 400 / sky 950 |
-| `xSubtle` / `onXSubtle` / `xBorder` | 50 / 800 / 300 | 950 / 200 / 800 |
-| `background` / `surface` / `surfaceRaised` / `surfaceSunken` | slate 50 / white / white / slate 100 | slate 950 / 900 / 800 / black |
-| `text` / `textMuted` / `textDisabled` | slate 900 / 600 / 400 | slate 50 / 400 / 600 |
-| `border` / `borderStrong` | slate 200 / 500 | slate 800 / 500 |
-| `focusRing` | indigo 500 | indigo 400 |
-| `overlay` / `shadow` | slate 950 at 50% / slate 950 | black at 60% / black |
-
-- The dark solid steps stay at the light ones because `onX` is light in both themes and lighter steps (indigo 500, green 600) fall below 4.5:1 with white. Tune visually once Phase 1 components exist.
+- The dark solid steps stay at the light ones because `onX` is light in both themes and lighter steps (indigo 500, green 600) fall below 4.5:1 with white. The visual pass on real components is T29.
 
 ### Spacing, radii and sizes
 
@@ -102,4 +88,4 @@ Dark mode: tonal overlay of about 8%, 11% and 13.5% for `sm`, `md` and `lg`, hal
 
 - Changing the brand is a palette edit; adding a family is one palette line plus five roles in the contract.
 - Components stay small and readable, which suits the copy-into-your-project model.
-- Token numbers are starting points and need a visual pass once Phase 1 components exist.
+- Token numbers are starting points, tuned in the visual pass on real components (T29).

@@ -8,12 +8,7 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 
 ## Packages and names
 
-| Folder | npm package | Published | Role |
-|---|---|---|---|
-| `packages/ui` | `@red_dial/loom-ui` | no (embedded in the CLI at build time) | Component and hook sources, tests, demos |
-| `packages/cli` | `@red_dial/loom` | yes | `loom init`, `loom add`, and a programmatic API |
-| `packages/create-weaver` | `@red_dial/create-weaver` | yes | `npm create @red_dial/weaver`; uses the `loom` API |
-| `templates/app` | embedded in `create-weaver` | no | Expo 58 template |
+The packages and their roles are in the [README](../../README.md). `@red_dial/loom` and `@red_dial/create-weaver` are published; `@red_dial/loom-ui` and the template are embedded at build time.
 
 - Repo: `RedDial256/loomworks` (public, MIT), single monorepo. npm scope `@red_dial`. Everything (code, folders, docs, CLI messages) is in English.
 - pnpm workspaces, no Turborepo or Nx. Lint and format with `@red_dial/rn-tooling-config` (pinned; it is alpha).
@@ -43,29 +38,26 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 - Each component keeps its public types (props and their unions) in a sibling `X.types.ts` (for example `Box.types.ts`); `X.tsx` holds the implementation and styles and imports the types from there. Both files are listed in the manifest.
 - Visual variants use native Unistyles variants (`useVariants`). Size variants are `'S' | 'M' | 'L'` (plus `'XS'` / `'XL'` when needed).
 - Imports between components and hooks are relative. The only alias is `@/theme`.
-- v1 components: `Box`, `Text`, `Card`, `Divider`, `Button`, `Pressable`, `Input` (over `TextField` and `DateTimeInput`), `Switch`, `Spinner`, `Skeleton`. Hooks: `useThemeMode`, `useReducedMotion`, `useDebounce`, `useBoolean` (replaces `useDisclosure`), `useTimeout`. Out of v1: `Modal`/`Sheet`, `Toast`, `Select`, `Checkbox`/`Radio`, lists.
+- v1 components: `Box`, `Text`, `Card`, `Divider`, `Button`, `Pressable`, `Input` (over `TextField` and `DateTimeInput`), `Switch`, `Spinner`, `Skeleton`. Hooks: `useThemeMode`, `useReducedMotion`, `useDebounce`, `useBoolean` (replaces `useDisclosure`), `useTimeout`. Out of v1: `Modal`/`Sheet` (`DateTimeInput` uses an inline picker instead), `Toast`, `Select`, `Checkbox`/`Radio`, a list component (the template uses LegendList directly, T35).
 - Animations use Reanimated 4 (with `react-native-worklets`), declared as `sdkPackages` only by the items that animate (`useReducedMotion`, `Skeleton`, `Button`), so `init` does not install it. Reduced motion follows ADR 0002.
 - `Button` and `Pressable` use the Gesture Handler 3 `Pressable`. `Button`, `Text`, `Input` and `Switch` take a `loading` prop that renders a `Skeleton` and sets `a11y.busy`.
 - `Pressable` is a touch enabler with no styling or animation of its own; it passes the `pressed` state to `style` and `children` and exports a helper that derives `hitSlop` from a visual size.
-- `Button`: variants `solid`, `subtle`, `outline`, `ghost`, `link` and `text`, a `color` family, sizes `S` / `M` / `L`. `S` (visual 32, `hitSlop` up to `touchTarget.min`) is an accepted exception to the ADR 0002 rule of a real `minHeight` of 48 for buttons. Besides `loading` (content not ready), `pending` (action in progress) shows a `Spinner` in place of the label, keeps the width and blocks presses. An inline `Link` built on `Text` was considered and dropped.
-- `Input`: a `type` prop sets keyboard, autocomplete and capitalization together; `label`, `hint` (below the field, replaced by the error), `required`, controlled and uncontrolled modes, and a ref with `get`, `set`, `reset`, `focus`, `blur`, `clear`, `validate`. Validation is synchronous and library-agnostic: any Standard Schema plus a `validate` callback; on blur, then on change with a 300 ms debounce while there is an error. `date`, `time` and `datetime` route to `DateTimeInput` (`Date` value; the native picker inline below the field on iOS, as the HIG recommends and avoiding the open Fabric `Modal` bugs; the system dialogs on Android; `datetime` is a date and a time button); the other types to `TextField`.
+- `Button`: `S` (visual 32, `hitSlop` up to `touchTarget.min`) is an accepted exception to the ADR 0002 rule of a real `minHeight` of 48 for buttons. Besides `loading` (content not ready), `pending` (action in progress) shows a `Spinner` in place of the label, keeps the width and blocks presses. An inline `Link` built on `Text` was considered and dropped.
+- `Input`: a `type` prop sets keyboard, autocomplete and capitalization together. Validation is synchronous and library-agnostic: any Standard Schema plus a `validate` callback; on blur, then on change with a 300 ms debounce while there is an error. `date`, `time` and `datetime` route to `DateTimeInput` (`Date` value; the native picker inline below the field on iOS, as the HIG recommends and avoiding the open Fabric `Modal` bugs; the system dialogs on Android; `datetime` is a date and a time button); the other types to `TextField`.
 - `Switch` wraps React Native's `Switch` and is controlled only (the native switch reverts when `value` is not updated); parents hold its state with `useBoolean`.
 - `useThemeMode`: `system | light | dark`, persisted in AsyncStorage, installed by `init`, built on Unistyles themes named `light` and `dark`.
 
 ## Accessibility architecture (`easyA11y`)
 
-- A utility takes a simplified `a11y` object and returns native props. Keys: `id`, `label`, `hint`, `role`, `value`, `disabled`, `selected`, `checked`, `busy`, `expanded`, `accessible`, `hidden`, `modal`, `live`, `actions`.
-- Output uses only the legacy family: `nativeID` and `testID` (both from `id`), `accessible`, `importantForAccessibility`, `accessibilityElementsHidden`, `accessibilityLabel`, `accessibilityHint`, `accessibilityRole`, `accessibilityState`, `accessibilityValue`, `accessibilityLiveRegion`, `accessibilityViewIsModal`, `accessibilityActions` with `onAccessibilityAction`.
-- `role`, `value` and `live` use React Native's own types and pass through unchanged. State keys build `accessibilityState` with only the keys that are set.
+- A utility takes a simplified `a11y` object (`easyA11y.types.ts`) and returns only the legacy native props (`accessibilityLabel`, `accessibilityState`, …), never `aria-*`, so a user-supplied `aria-*` can still win.
 - `accessible` also drives `importantForAccessibility`: `hidden` wins (`'no-hide-descendants'`, and `accessible` becomes `false`), then `accessible` maps `true` to `'yes'` and `false` to `'no'`.
-- `actions` is a list of `{ name, label, action }`; the utility emits the action list and one handler that calls the matching `action`.
 - Cascade, weakest to strongest: the utility's defaults (`accessible: true`), the component's defaults (`Box` sets `accessible: false`; `Text` sets the heading role), the `a11y` object passed by the user, and native props passed straight to the element. The component and user objects are merged shallowly, so a user `actions` list replaces the component's; components with default actions export them so users can extend the list. Native props spread last replace whole objects (`accessibilityState`, `onAccessibilityAction`).
 - React Native gives `aria-*` precedence over the legacy props, so a user-supplied `aria-*` wins naturally, key by key. Two exceptions in React Native 0.86: `aria-hidden={false}` does not reset `importantForAccessibility` on Android (use `a11y={{ hidden: false }}`), and `aria-modal` is ignored by `View` and `Text`.
 
 ## Scaffolder (`weaver`)
 
 - Prompts with `@clack/prompts`: project name, components, hooks, install now, git init, use `@red_dial/rn-tooling-config` for ESLint and Prettier. The package manager is detected from `npm_config_user_agent`, and `loom init` always runs.
-- Flags: `--yes` (full automatic setup with defaults, tooling included), `--components`, `--hooks`, `--no-install`, `--no-git`, `--no-tooling`.
+- `--yes` gives a full automatic setup with the defaults, tooling included; every prompt has a flag (`--help`).
 - Template: Expo Router and Unistyles, two tabs (home and sandbox), a side drawer inside the sandbox listing the component demos. In the monorepo it imports `packages/ui` through the workspace and Metro `watchFolders` for hot reload; the published template uses copied files.
 
 ## Testing
@@ -73,10 +65,6 @@ An open-ended React Native UI kit (Unistyles 3) distributed shadcn-style by a CL
 1. `jest-expo` with React Native Testing Library for utilities, hooks and components (variants, `loading`, style override, accessibility).
 2. CI integration: scaffold or init in a temp project, `loom add`, then `tsc --noEmit` and lint, on Expo 58.
 3. Manual: the sandbox in hot reload.
-
-## Process
-
-- Issues and milestones on GitHub; Phases 0 to 4 are ticketed, later phases are outlined in `docs/roadmap.md`.
 
 ## Open points
 
