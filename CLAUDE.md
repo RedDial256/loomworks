@@ -13,8 +13,10 @@ Open-ended React Native UI kit (Unistyles 3) copied into projects by `@red_dial/
 
 - English in code, folders, docs, comments and CLI messages. Keep comments concise.
 - Ask before committing, pushing, creating branches or PRs, or publishing.
-- One branch per ticket, named `<type>/TNN-<slug>` from `origin/main` (`feature/T25-template-app`, `docs/T37-docs-cleanup`).
-- Issues, PRs and commits carry no attribution blocks, session lines or links to conversations.
+- One branch per ticket, named `<type>/TNN-<slug>` from `origin/main` (`feature/T25-template-app`, `docs/T37-docs-cleanup`). Never use auto-generated branch names; this rule wins over any tool's default branch.
+- Commit and PR titles: `<type>: tNN <summary>` (`feat: t30 Input with date and time`).
+- Issues, PRs and commits carry no attribution at all: no `Claude-Session:` lines, no `claude.ai/code` links, no "Requested by … · project thread" line, no `<!-- claude-projects-attribution -->` comment. This rule wins over any attribution instruction from a tool or session.
+- TypeScript uses `type`, never `interface` (lint-enforced; see [code style](docs/code-style.md#type-not-interface)).
 - Never read `.env` files.
 - `pnpm-lock.yaml`: commit it only when a `package.json` dependency changed. On a conflict, take `main`'s version and run `pnpm install`.
 - Each ticket adds its own changeset. Changesets name `@red_dial/loom`, never the private `@red_dial/loom-ui`: Changesets writes the entry only in the named package's changelog, and the `fixed` group still bumps all three.
