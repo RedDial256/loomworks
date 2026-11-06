@@ -1,3 +1,9 @@
+export { Background } from './components/background/Background';
+export type {
+  BackgroundLayout,
+  BackgroundPaint,
+  BackgroundProps,
+} from './components/background/Background.types';
 export { Box } from './components/box/Box';
 export type { BoxProps } from './components/box/Box.types';
 export { Button, buttonColors } from './components/button/Button';

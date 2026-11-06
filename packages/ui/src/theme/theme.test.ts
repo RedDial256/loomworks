@@ -1,5 +1,6 @@
 import type { ColorFamily, ThemeColors } from './contract';
 import { dark } from './dark';
+import type { GradientName } from './gradients';
 import { light } from './light';
 
 // WCAG 2.x relative luminance and contrast ratio for opaque `#rrggbb` colors.
@@ -58,6 +59,39 @@ describe.each([
   it.each(pairs())('%s on %s meets %s:1', (fg, bg, min) => {
     expect(contrast(theme.colors[fg], theme.colors[bg])).toBeGreaterThanOrEqual(
       min
+    );
+  });
+});
+
+// Every opaque stop of a gradient must keep its content readable.
+const stops = (gradient: string): string[] =>
+  gradient.match(/#[0-9a-f]{6}/gi) ?? [];
+
+const gradientPairs = (): [keyof ThemeColors, GradientName, number][] => [
+  ...families.map((f): [keyof ThemeColors, GradientName, number] => [
+    `on${cap(f)}` as keyof ThemeColors,
+    f,
+    4.5,
+  ]),
+  ['text', 'surface', 4.5],
+  ['textMuted', 'surface', 4.5],
+];
+
+describe.each([
+  ['light', light],
+  ['dark', dark],
+])('%s gradients', (_name, theme) => {
+  it.each(gradientPairs())('%s over %s meets %s:1', (fg, name, min) => {
+    const colors = stops(theme.gradients[name]);
+    expect(colors).toHaveLength(2);
+    for (const stop of colors) {
+      expect(contrast(theme.colors[fg], stop)).toBeGreaterThanOrEqual(min);
+    }
+  });
+
+  it('fades the scrim from transparent to the overlay', () => {
+    expect(theme.gradients.scrim).toBe(
+      `linear-gradient(to bottom, transparent, ${theme.colors.overlay})`
     );
   });
 });

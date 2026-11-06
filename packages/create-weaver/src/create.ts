@@ -23,6 +23,7 @@ import { setupTooling } from './tooling';
 
 /** Kit items the template imports; `loom add` copies them with their dependencies. */
 export const TEMPLATE_ITEMS = [
+  'background',
   'box',
   'button',
   'capitalize',

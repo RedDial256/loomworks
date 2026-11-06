@@ -1,4 +1,5 @@
 import type { ElevationLevel, ShadowStyle } from './elevation';
+import type { GradientName } from './gradients';
 import type { motion } from './motion';
 import type { radii, spacing, touchTarget } from './spacing';
 import type { TypographyPreset, TypographyVariant } from './typography';
@@ -34,6 +35,8 @@ export type ThemeColors = Record<ColorRole, string>;
 
 export type Theme = {
   colors: ThemeColors;
+  /** CSS `backgroundImage` strings built from the palette. */
+  gradients: Record<GradientName, string>;
   spacing: typeof spacing;
   radii: typeof radii;
   typography: Record<TypographyVariant, TypographyPreset>;

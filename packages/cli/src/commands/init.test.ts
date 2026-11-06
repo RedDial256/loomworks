@@ -95,7 +95,7 @@ describe('init', () => {
 
     const { result } = await runInit({ install: false });
     expect(result.files.written).toEqual([]);
-    expect(result.files.unchanged).toHaveLength(12);
+    expect(result.files.unchanged).toHaveLength(13);
     expect(result.configured).toEqual([]);
     expect(await read(cwd, 'tsconfig.json')).toBe(before);
     expect(await read(cwd, 'index.ts')).toBe(
