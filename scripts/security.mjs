@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Security audit (T16): runs rnsec on packages/ and on an Expo app built by scripts/integration.sh,
-// then compares the findings with security/rnsec-baseline.json.
+// plus `npm audit` on the app, then compares the findings with security/rnsec-baseline.json.
 // Fails on HIGH findings missing from the baseline; other new or resolved findings are warnings.
 // Usage: node scripts/security.mjs [--app <dir>] [--reports <dir>] [--update]
 //   --app      app to scan; without it, one is built with scripts/integration.sh (slow)
@@ -23,6 +23,8 @@ import { parseArgs } from 'node:util';
 const ROOT = resolve(import.meta.dirname, '..');
 const BASELINE = join(ROOT, 'security/rnsec-baseline.json');
 const NPM_RULE = 'NPM_VULNERABLE_DEPENDENCY';
+const NPM_AUDIT_TIMEOUT = 120_000;
+const NPM_SEVERITY = { critical: 'HIGH', high: 'HIGH', moderate: 'MEDIUM' };
 
 const buildApp = () => {
   const workdir = mkdtempSync(join(tmpdir(), 'loom-security-'));
@@ -33,28 +35,73 @@ const buildApp = () => {
   return join(workdir, 'app');
 };
 
-const scanTarget = ({ name, dir }) => {
-  let findings = scan(name, dir);
-  // rnsec runs `npm audit` with a 10 s timeout and silently skips it on timeout.
-  const expectsNpm = baseline.some(
-    (f) => f.target === name && f.ruleId === NPM_RULE
-  );
-  const hasNpm = () => findings.some((f) => f.ruleId === NPM_RULE);
-  if (expectsNpm && !hasNpm()) {
-    findings = scan(name, dir);
+const scanTarget = ({ name, dir, npmAudit }) => {
+  if (!npmAudit) return scan(name, dir);
+  skipRnsecNpmAudit(dir);
+  return [...scan(name, dir), ...audit(name, dir)];
+};
+
+// rnsec runs `npm audit` with a fixed 10 s timeout, which the app exceeds on CI runners,
+// so the script runs it instead. `hardcoded` keeps rnsec's offline package checks.
+const skipRnsecNpmAudit = (dir) => {
+  const path = join(dir, '.rnsec.json');
+  const config = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : {};
+  config.npmVulnerabilityScanning = {
+    ...config.npmVulnerabilityScanning,
+    dataSource: 'hardcoded',
+  };
+  writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`);
+};
+
+// Same findings as rnsec's npm audit: direct dependencies only, same description and severity.
+const audit = (name, dir) => {
+  const result = spawnSync('npm', ['audit', '--json'], {
+    cwd: dir,
+    encoding: 'utf8',
+    timeout: NPM_AUDIT_TIMEOUT,
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  writeFileSync(join(reports, `${name}-npm-audit.json`), result.stdout ?? '');
+  let output;
+  try {
+    output = JSON.parse(result.stdout);
+  } catch {
+    output = undefined;
   }
-  if (expectsNpm && !hasNpm()) {
+  if (result.error || !output?.vulnerabilities) {
     warnings.push(
-      `${name}: npm audit returned no findings (rnsec times out after 10 s); dependency findings were not checked.`
+      `${name}: npm audit failed (${auditError(result, output)}); dependency findings were not checked.`
     );
     // Keep the baseline entries so they are not reported as resolved.
-    findings.push(
-      ...baseline
-        .filter((f) => f.target === name && f.ruleId === NPM_RULE)
-        .map((f) => ({ ...f, unchecked: true }))
-    );
+    return baseline
+      .filter((f) => f.target === name && f.ruleId === NPM_RULE)
+      .map((f) => ({ ...f, unchecked: true }));
   }
-  return findings;
+  const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
+  const direct = { ...pkg.dependencies, ...pkg.devDependencies };
+  return Object.entries(output.vulnerabilities)
+    .filter(([pkgName]) => direct[pkgName])
+    .map(([pkgName, vuln]) => {
+      const via = vuln.via?.[0];
+      const description = `${via?.title ?? `Vulnerability in ${pkgName}`} (${vuln.severity})`;
+      return {
+        key: [name, NPM_RULE, 'package.json', description].join(' | '),
+        target: name,
+        ruleId: NPM_RULE,
+        severity: NPM_SEVERITY[vuln.severity] ?? 'LOW',
+        file: 'package.json',
+        description,
+      };
+    });
+};
+
+const auditError = (result, output) => {
+  if (result.error?.code === 'ETIMEDOUT') {
+    return `timed out after ${NPM_AUDIT_TIMEOUT / 1000} s`;
+  }
+  if (result.error) return result.error.message;
+  if (output?.error?.summary) return output.error.summary;
+  return `exited with ${result.status}`;
 };
 
 const scan = (name, dir) => {
@@ -183,7 +230,7 @@ mkdirSync(reports, { recursive: true });
 const app = values.app ? resolve(values.app) : buildApp();
 const targets = [
   { name: 'packages', dir: join(ROOT, 'packages') },
-  { name: 'app', dir: app },
+  { name: 'app', dir: app, npmAudit: true },
 ];
 
 const baseline = existsSync(BASELINE)

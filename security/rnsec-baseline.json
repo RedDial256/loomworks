@@ -32,6 +32,14 @@
       "severity": "MEDIUM",
       "file": "cli/src/version.ts",
       "description": "JSON.parse() on potentially untrusted data without validation"
+    },
+    {
+      "key": "packages | INSECURE_DESERIALIZATION | create-weaver/src/version.ts | JSON.parse() on potentially untrusted data without validation",
+      "target": "packages",
+      "ruleId": "INSECURE_DESERIALIZATION",
+      "severity": "MEDIUM",
+      "file": "create-weaver/src/version.ts",
+      "description": "JSON.parse() on potentially untrusted data without validation"
     }
   ]
 }
