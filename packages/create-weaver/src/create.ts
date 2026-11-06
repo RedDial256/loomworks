@@ -38,9 +38,17 @@ export const TEMPLATE_SANDBOX = 'src/sandbox';
 
 const NAME = /^[a-z][a-z0-9-]*$/;
 
+/** Why a project name is invalid, or `undefined` when it is valid. */
+export const invalidName = (name: string): string | undefined =>
+  NAME.test(name)
+    ? undefined
+    : `Invalid project name "${name}": use lowercase letters, digits and dashes, starting with a letter.`;
+
 export type CreateOptions = {
   /** Project folder; its name is the project name. */
   dir: string;
+  /** Kit items to add on top of the ones the template imports. */
+  items?: string[];
   /** Install npm dependencies (default true). */
   install?: boolean;
   /** Run `git init` and commit (default true). */
@@ -69,6 +77,7 @@ export type CreateResult = {
 /** Creates a project from the template: copy, name, tooling, install, `loom init`, `loom add`, git. */
 export const create = async ({
   dir,
+  items = [],
   install = true,
   git = true,
   tooling = true,
@@ -78,11 +87,8 @@ export const create = async ({
 }: CreateOptions): Promise<CreateResult> => {
   const target = resolve(dir);
   const name = basename(target);
-  if (!NAME.test(name)) {
-    throw new Error(
-      `Invalid project name "${name}": use lowercase letters, digits and dashes, starting with a letter.`
-    );
-  }
+  const nameError = invalidName(name);
+  if (nameError) throw new Error(nameError);
   await ensureEmpty(target);
 
   await cp(join(embedDir, 'template'), target, { recursive: true });
@@ -100,7 +106,10 @@ export const create = async ({
 
   const loom = { cwd: target, install, run, source };
   const initResult = await init({ ...loom, sandbox: TEMPLATE_SANDBOX });
-  const addResult = await add({ ...loom, items: TEMPLATE_ITEMS });
+  const addResult = await add({
+    ...loom,
+    items: [...new Set([...TEMPLATE_ITEMS, ...items])],
+  });
 
   // Settles the JSON files edited above to the project's Prettier config.
   if (tooling && install) {
