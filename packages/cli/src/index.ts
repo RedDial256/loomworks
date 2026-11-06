@@ -25,6 +25,7 @@ export {
   type RunCommand,
   runCommand,
 } from './project/packages';
+export { isInteractive } from './prompt';
 export { embedRegistry } from './registry/embed';
 export {
   type Manifest,

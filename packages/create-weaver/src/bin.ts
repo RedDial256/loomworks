@@ -1,21 +1,28 @@
 #!/usr/bin/env node
 import { intro, log, outro } from '@clack/prompts';
+import { createEmbeddedSource, isInteractive } from '@red_dial/loom';
 import { isAbsolute, relative } from 'node:path';
 import { parseArgs } from 'node:util';
 
 import { create } from './create';
+import { resolveChoices } from './prompts';
 import { WEAVER_VERSION } from './version';
 
 const HELP = `weaver ${WEAVER_VERSION}
 
 Usage:
-  npm create @red_dial/weaver <dir> -- --yes   (npm needs the -- before flags)
+  npm create @red_dial/weaver [dir] -- [options]   (npm needs the -- before flags)
+
+Asks for whatever the flags leave out. Without a terminal, pass every flag or --yes.
 
 Options:
-  -y, --yes               Full setup with the defaults (tooling, install and git included)
-  --no-install            Do not install npm dependencies
-  --no-git                Do not run git init
-  --no-tooling            Do not set up ESLint and Prettier (@red_dial/rn-tooling-config)
+  -y, --yes               Use the defaults for what the flags leave out: every
+                          component and hook, install, git and tooling
+  --components <names>    Components to add on top of the template's, comma-separated ("" for none)
+  --hooks <names>         Hooks to add on top of the template's, comma-separated ("" for none)
+  --[no-]install          Install npm dependencies
+  --[no-]git              Run git init and commit
+  --[no-]tooling          Set up ESLint and Prettier (@red_dial/rn-tooling-config)
   -h, --help              Show this help
   -v, --version           Show the version
 `;
@@ -26,9 +33,11 @@ const main = async () => {
     allowNegative: true,
     options: {
       yes: { type: 'boolean', short: 'y' },
-      install: { type: 'boolean', default: true },
-      git: { type: 'boolean', default: true },
-      tooling: { type: 'boolean', default: true },
+      components: { type: 'string' },
+      hooks: { type: 'string' },
+      install: { type: 'boolean' },
+      git: { type: 'boolean' },
+      tooling: { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
     },
@@ -37,24 +46,22 @@ const main = async () => {
 
   if (values.version) return console.log(WEAVER_VERSION);
   if (values.help) return console.log(HELP);
-  // The prompts (T27) will ask for whatever is missing; until then the folder and --yes are required.
-  if (!dir || !values.yes) {
-    throw new Error(`Pass a folder and --yes.\n\n${HELP}`);
-  }
 
   intro('weaver');
-  const result = await create({
-    dir,
-    install: values.install,
-    git: values.git,
-    tooling: values.tooling,
-  });
+  const choices = await resolveChoices(
+    { ...values, dir },
+    {
+      manifest: await createEmbeddedSource().getManifest(),
+      interactive: isInteractive(),
+    }
+  );
+  const result = await create(choices);
   log.success(`Created ${result.name} with ${result.items.join(', ')}`);
   for (const note of result.notes) log.warn(note);
 
   const pm = result.packageManager;
   const steps = [`cd ${shortPath(result.dir)}`];
-  if (!values.install) steps.push(`${pm} install`);
+  if (!choices.install) steps.push(`${pm} install`);
   if (result.packages.length) {
     steps.push(
       `${pm} ${pm === 'npm' ? 'install' : 'add'} ${result.packages.join(' ')}`

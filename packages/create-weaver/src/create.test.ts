@@ -158,6 +158,21 @@ describe('create', () => {
     expect(await exists('loom.json')).toBe(true);
   });
 
+  it('adds the chosen items to the template ones', async () => {
+    const { result } = await runCreate({
+      items: ['switch', 'box', 'boolean'],
+      install: false,
+      git: false,
+    });
+
+    expect(result.items).toEqual(expect.arrayContaining(['switch', 'boolean']));
+    expect(result.items.filter((item) => item === 'box')).toHaveLength(1);
+    expect(await exists('src/components/switch/Switch.tsx')).toBe(true);
+    expect(Object.keys((await readJson('loom.json')).items)).toContain(
+      'boolean'
+    );
+  });
+
   it('installs with the package manager that launched it', async () => {
     vi.stubEnv('npm_config_user_agent', 'pnpm/10.34.4 npm/? node/v22.22.0');
     const { result, calls } = await runCreate({ git: false });
