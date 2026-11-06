@@ -9,7 +9,7 @@ Tickets, their scope and blockers live in the [GitHub issues](https://github.com
 | 2 | Accessibility and primitives | T09 to T16 |
 | 3 | Interactive components | T17 to T23 |
 | 4 | Expo SDK 58, template app, `weaver`, demos, `Input` with date and time, `Background` | T24 to T32, T35 to T37 |
-| 5 | Quality, visual proof, deploy and release, first alpha | T33, T34, T38 to T44 |
+| 5 | Quality, visual proof, deploy and release, first alpha | T33, T34, T38 to T45 |
 
 ## Not ticketed yet
 
