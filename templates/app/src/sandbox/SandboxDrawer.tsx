@@ -1,7 +1,10 @@
 import { type FC, useMemo, useState } from 'react';
-import { FlatList, type ListRenderItem } from 'react-native';
 import type { DrawerContentComponentProps } from 'expo-router/drawer';
 
+import {
+  LegendList,
+  type LegendListRenderItemProps,
+} from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native-unistyles';
 
@@ -17,7 +20,7 @@ import { filterDemos, SEARCH_DELAY } from './sandbox.utils';
 
 const keyOf = (demo: DemoEntry) => demo.id;
 
-const renderDemo: ListRenderItem<DemoEntry> = ({ item }) => (
+const renderDemo = ({ item }: LegendListRenderItemProps<DemoEntry>) => (
   <DemoItem demo={item} />
 );
 
@@ -42,7 +45,7 @@ export const SandboxDrawer: FC<DrawerContentComponentProps> = () => {
           onChangeText={setQuery}
         />
       </Box>
-      <FlatList
+      <LegendList
         data={results}
         keyExtractor={keyOf}
         renderItem={renderDemo}
