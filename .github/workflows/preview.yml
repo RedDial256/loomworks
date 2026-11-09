@@ -18,8 +18,9 @@ permissions:
   pull-requests: write
 
 env:
-  # The Expo account that owns the example app. app.json stays owner-free, as weaver copies it.
+  # The Expo account and app ids of the example app. app.json stays free of them, as weaver copies it.
   EXPO_OWNER: reddial
+  APP_ID: dev.reddial.loomworks
 
 jobs:
   web:
@@ -89,6 +90,10 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - run: eas init --account "$EXPO_OWNER" --force --non-interactive
+      - name: Set the app ids
+        run: |
+          jq --arg id "$APP_ID" '.expo.android.package = $id | .expo.ios.bundleIdentifier = $id' app.json > app.tmp.json
+          mv app.tmp.json app.json
       # Queues the builds and returns; they finish on EAS (free tier: low priority queue).
       - name: Build
         id: build

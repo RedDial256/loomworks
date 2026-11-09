@@ -44,7 +44,7 @@ EAS Update channels per PR were weighed against a build per PR. Updates are chea
   - Web, on every PR from this repository: `expo export` and `eas deploy --alias pr-<number>`, with the URL in a sticky PR comment. On `main`: `eas deploy --prod`.
   - Native, on `main`, on a manual run, or when a PR gets the `native-preview` label: `eas build --platform all --profile preview --no-wait`, with links to the builds in a sticky PR comment. Not on every PR, to stay within the 15 builds.
 - `templates/app/eas.json` holds the `preview` profile. Weaver drops it, as it does the monorepo Babel and Metro configs.
-- `app.json` carries no `owner` or `projectId`, since weaver copies it into every new app: the workflow runs `eas init --account reddial --force --non-interactive`, which creates or links the project and writes both into the CI checkout only.
+- `app.json` carries no `owner`, `projectId` or app ids, since weaver copies it into every new app: the workflow runs `eas init --account reddial --force --non-interactive`, which creates or links the project, and sets `android.package` and `ios.bundleIdentifier` (`dev.reddial.loomworks`), all in the CI checkout only.
 - Fork PRs get no deploy, as GitHub gives them no secrets.
 
 Store submission (TestFlight, Play internal testing) needs a `production` profile, store credentials in EAS and `eas submit`; it waits for the store accounts.
