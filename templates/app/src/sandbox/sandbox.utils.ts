@@ -1,4 +1,4 @@
-import type { DemoEntry } from './demos.types';
+import type { DemoEntry, DemoGroup } from './demos.types';
 
 /** Wait before filtering, so the list does not rebuild on every keystroke. */
 export const SEARCH_DELAY = 200;
@@ -42,3 +42,28 @@ export const gridLayout = (width: number) => {
   const cardWidth = (inner - GRID_GAP * (columns - 1)) / columns;
   return { columns, cardWidth };
 };
+
+/** A grid row: a section header spanning every column, or a demo card. */
+export type GridRow =
+  | { kind: 'header'; key: string; title: string }
+  | { kind: 'demo'; key: string; demo: DemoEntry };
+
+const GROUPS: readonly { group: DemoGroup; title: string }[] = [
+  { group: 'theme', title: 'Theme' },
+  { group: 'components', title: 'Components' },
+];
+
+/** Rows for the grid: each non-empty group under its header, in `GROUPS` order. */
+export const gridRows = (entries: readonly DemoEntry[]): GridRow[] =>
+  GROUPS.flatMap(({ group, title }) => {
+    const members = entries.filter((entry) => entry.group === group);
+    if (!members.length) return [];
+    return [
+      { kind: 'header' as const, key: `header-${group}`, title },
+      ...members.map((demo) => ({
+        kind: 'demo' as const,
+        key: demo.id,
+        demo,
+      })),
+    ];
+  });

@@ -8,7 +8,7 @@ import type { DemoListEmptyProps } from './DemoListEmpty.types';
 
 export const DemoListEmpty: FC<DemoListEmptyProps> = ({ query }) => {
   const message = query.trim()
-    ? `No component matches "${query.trim()}".`
+    ? `No demo matches "${query.trim()}".`
     : 'No components installed yet.';
   return (
     <Text tone="muted" a11y={{ live: 'polite' }} style={styles.message}>

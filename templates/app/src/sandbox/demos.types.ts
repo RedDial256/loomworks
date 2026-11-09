@@ -13,8 +13,12 @@ export type Demo = {
   sections: readonly DemoSection[];
 };
 
+/** Sandbox section: theme tokens, then components. */
+export type DemoGroup = 'theme' | 'components';
+
 /** One entry of the sandbox index (`demos.ts`, written by `loom add`). */
 export type DemoEntry = {
-  /** Item name and route segment: `/sandbox/<id>`. */
+  /** Route segment `/sandbox/<id>`: the item name, plus the file name for an item with several demos. */
   id: string;
+  group: DemoGroup;
 } & Demo;

@@ -44,7 +44,9 @@ Why:
 - Thumbnails are live renders of each demo's first section. Pre-generated screenshots are not used for the sandbox; T33 keeps them for PR review.
 - `Link.AppleZoom` on iOS 18+, a plain push elsewhere. No Reanimated flag in the template.
 - Search moves to the native header search bar (`headerSearchBarOptions`), and the list sets `contentInsetAdjustmentBehavior="automatic"`: the iOS 26 header is translucent, and a search field in the screen body sat under it in the first device run. Search matches part of the title only; demos have no keywords, so "b" finds Background, Box, Button and Pressable and nothing else.
-- `loom add` needs no change: the grid reads `demos.ts`, which it already rewrites when `sandbox` is set, and a live thumbnail has nothing to generate.
+- The grid has two sections, Theme then Components, each under a header that spans the row (LegendList `overrideItemLayout`). The theme item carries token demos (colors, typography, spacing and radii, elevation and gradients) in the theme folder. They use only React Native and the theme, so the theme keeps no item dependencies, and `init` copies them when `sandbox` is set.
+- The manifest's `demo` becomes `demos`, a list. An item with one demo keeps its name as the route id; an item with several gets `<item>-<file name>` (`theme-colors`). The generated index records each entry's `group`, `theme` for the theme item and `components` for the rest.
+- `loom add` and `init` keep the cards up to date: the grid reads `demos.ts`, which both rewrite when `sandbox` is set, and a live thumbnail has nothing to generate.
 - The grid uses as many columns as fit a 150 pt card, with a 16 pt gap and padding.
 
 ## What does not work

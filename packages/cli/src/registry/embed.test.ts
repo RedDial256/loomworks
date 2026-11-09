@@ -47,7 +47,7 @@ const manifest = {
     box: {
       kind: 'component',
       files: ['components/box/Box.tsx'],
-      demo: 'components/box/Box.demo.tsx',
+      demos: ['components/box/Box.demo.tsx'],
     },
   },
 };
@@ -73,9 +73,9 @@ describe('embedRegistry', () => {
     ]);
 
     const source = createFsSource(out);
-    expect((await source.getManifest()).items.box?.demo).toBe(
-      'components/box/Box.demo.tsx'
-    );
+    expect((await source.getManifest()).items.box?.demos).toEqual([
+      'components/box/Box.demo.tsx',
+    ]);
     expect(await source.getFile('components/box/Box.tsx')).toBe(
       'export const Box = 1;'
     );

@@ -12,38 +12,52 @@ import { useDebounce } from '@/hooks/debounce/useDebounce';
 
 import { DemoCard } from './components/DemoCard';
 import { DemoListEmpty } from './components/DemoListEmpty';
+import { GridHeader } from './components/GridHeader';
 import { demos } from './demos';
-import type { DemoEntry } from './demos.types';
 import {
   filterDemos,
   GRID_GAP,
   gridLayout,
+  type GridRow,
+  gridRows,
   SEARCH_DELAY,
 } from './sandbox.utils';
 
-const keyOf = (demo: DemoEntry) => demo.id;
+const keyOf = (row: GridRow) => row.key;
+const typeOf = (row: GridRow) => row.kind;
+
+// Headers take the whole row.
+const spanHeaders = (
+  layout: { span?: number },
+  row: GridRow,
+  _index: number,
+  columns: number
+) => {
+  if (row.kind === 'header') layout.span = columns;
+};
 
 const COLUMN_GAP = { gap: GRID_GAP };
 
-/** Sandbox screen: a grid of demo cards, searched from the native header. */
+/** Sandbox screen: theme and component demo cards in a grid, searched from the native header. */
 export const SandboxGrid: FC = () => {
   const [query, setQuery] = useState('');
 
   const search = useDebounce(query, SEARCH_DELAY);
   const { width } = useWindowDimensions();
 
-  const results = useMemo(() => filterDemos(demos, search), [search]);
+  const rows = useMemo(() => gridRows(filterDemos(demos, search)), [search]);
   const { columns, cardWidth } = useMemo(() => gridLayout(width), [width]);
 
-  const renderDemo = ({ item }: LegendListRenderItemProps<DemoEntry>) => (
-    <DemoCard demo={item} width={cardWidth} />
-  );
+  const renderRow = ({ item }: LegendListRenderItemProps<GridRow>) => {
+    if (item.kind === 'header') return <GridHeader title={item.title} />;
+    return <DemoCard demo={item.demo} width={cardWidth} />;
+  };
   const changeQuery = (event: { nativeEvent: { text: string } }) =>
     setQuery(event.nativeEvent.text);
 
   const options = {
     headerSearchBarOptions: {
-      placeholder: 'Search components',
+      placeholder: 'Search',
       onChangeText: changeQuery,
     },
   };
@@ -53,10 +67,12 @@ export const SandboxGrid: FC = () => {
       <Stack.Screen options={options} />
       <LegendList
         key={columns}
-        data={results}
+        data={rows}
         numColumns={columns}
         keyExtractor={keyOf}
-        renderItem={renderDemo}
+        getItemType={typeOf}
+        overrideItemLayout={spanHeaders}
+        renderItem={renderRow}
         columnWrapperStyle={COLUMN_GAP}
         style={styles.screen}
         contentContainerStyle={styles.grid}

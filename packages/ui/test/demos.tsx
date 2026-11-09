@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { render, screen } from '@testing-library/react-native';
 
-type ManifestItems = Record<string, { kind: string; demo?: string }>;
+type ManifestItems = Record<string, { kind: string; demos?: string[] }>;
 
 /** What the sandbox reads from a demo module (`DemoEntry` lives in the template). */
 type DemoModule = {
@@ -15,10 +15,10 @@ export const manifestItems = (): ManifestItems =>
 
 export const describeDemos = () => {
   const demos = Object.entries(manifestItems()).flatMap(([id, item]) =>
-    item.demo ? [[id, item.demo] as const] : []
+    (item.demos ?? []).map((path) => [id, path] as const)
   );
 
-  describe.each(demos)('the %s demo', (_, path) => {
+  describe.each(demos)('the %s demo %s', (_, path) => {
     const { demo } = jest.requireActual<DemoModule>(`../src/${path}`);
 
     it.each(demo.sections.map((section) => [section.title, section]))(

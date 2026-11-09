@@ -21,7 +21,8 @@ const itemSchema = z.strictObject({
   kind: z.enum(['component', 'hook', 'util', 'theme']),
   description: z.string().optional(),
   files: z.array(registryPath).min(1),
-  demo: registryPath.optional(),
+  // Sandbox demos: copied only when `sandbox` is set in loom.json.
+  demos: z.array(registryPath).default([]),
   dependencies: z.array(itemName).default([]),
   packages: z.record(z.string().min(1), z.string().min(1)).default({}),
   // Versions pinned per Expo SDK (Reanimated, Worklets): installed with `expo install`.
@@ -73,24 +74,24 @@ export const manifestSchema = z
         }
       });
 
-      if (item.demo !== undefined) {
-        const where = ['items', name, 'demo'];
-        if (!isDemoFile(item.demo)) {
+      item.demos.forEach((demo, i) => {
+        const where = ['items', name, 'demos', i];
+        if (!isDemoFile(demo)) {
           ctx.addIssue({
             code: 'custom',
             path: where,
             message: 'demo must be a *.demo.* file',
           });
         }
-        if (item.files.includes(item.demo)) {
+        if (item.files.includes(demo)) {
           ctx.addIssue({
             code: 'custom',
             path: where,
             message: 'demo must not be listed in files',
           });
         }
-        check(item.demo, where);
-      }
+        check(demo, where);
+      });
 
       item.sdkPackages.forEach((pkg, i) => {
         if (pkg in item.packages) {
@@ -139,7 +140,7 @@ export const manifestFiles = (manifest: Manifest): string[] => {
   const paths = new Set<string>();
   for (const item of Object.values(manifest.items)) {
     item.files.forEach((f) => paths.add(f));
-    if (item.demo) paths.add(item.demo);
+    item.demos.forEach((d) => paths.add(d));
   }
   return [...paths];
 };

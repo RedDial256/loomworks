@@ -10,20 +10,28 @@ import { demo as skeletonDemo } from '@/components/skeleton/Skeleton.demo';
 import { demo as spinnerDemo } from '@/components/spinner/Spinner.demo';
 import { demo as switchDemo } from '@/components/switch/Switch.demo';
 import { demo as textDemo } from '@/components/text/Text.demo';
+import { demo as themeColorsDemo } from '@/theme/colors.demo';
+import { demo as themeElevationDemo } from '@/theme/elevation.demo';
+import { demo as themeSpacingDemo } from '@/theme/spacing.demo';
+import { demo as themeTypographyDemo } from '@/theme/typography.demo';
 
 import type { DemoEntry } from './demos.types';
 
-/** Sandbox index, filtered by the sandbox search. */
+/** Sandbox index, grouped and filtered by the sandbox screen. */
 export const demos: readonly DemoEntry[] = [
-  { id: 'background', ...backgroundDemo },
-  { id: 'box', ...boxDemo },
-  { id: 'button', ...buttonDemo },
-  { id: 'card', ...cardDemo },
-  { id: 'divider', ...dividerDemo },
-  { id: 'input', ...inputDemo },
-  { id: 'pressable', ...pressableDemo },
-  { id: 'skeleton', ...skeletonDemo },
-  { id: 'spinner', ...spinnerDemo },
-  { id: 'switch', ...switchDemo },
-  { id: 'text', ...textDemo },
+  { id: 'background', group: 'components', ...backgroundDemo },
+  { id: 'box', group: 'components', ...boxDemo },
+  { id: 'button', group: 'components', ...buttonDemo },
+  { id: 'card', group: 'components', ...cardDemo },
+  { id: 'divider', group: 'components', ...dividerDemo },
+  { id: 'input', group: 'components', ...inputDemo },
+  { id: 'pressable', group: 'components', ...pressableDemo },
+  { id: 'skeleton', group: 'components', ...skeletonDemo },
+  { id: 'spinner', group: 'components', ...spinnerDemo },
+  { id: 'switch', group: 'components', ...switchDemo },
+  { id: 'text', group: 'components', ...textDemo },
+  { id: 'theme-colors', group: 'theme', ...themeColorsDemo },
+  { id: 'theme-elevation', group: 'theme', ...themeElevationDemo },
+  { id: 'theme-spacing', group: 'theme', ...themeSpacingDemo },
+  { id: 'theme-typography', group: 'theme', ...themeTypographyDemo },
 ];
