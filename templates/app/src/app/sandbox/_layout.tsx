@@ -1,20 +1,15 @@
 import type { FC } from 'react';
-import { Drawer, type DrawerContentComponentProps } from 'expo-router/drawer';
+import { Stack } from 'expo-router';
 
-import { SandboxDrawer } from '@/sandbox/SandboxDrawer';
+const INDEX_OPTIONS = { title: 'Sandbox' };
 
-const SCREEN_OPTIONS = { title: 'Sandbox' };
-
-const renderDrawer = (props: DrawerContentComponentProps) => (
-  <SandboxDrawer {...props} />
-);
-
+/** Native stack: shared element and zoom transitions only run on it. */
 const SandboxLayout: FC = () => {
   return (
-    <Drawer drawerContent={renderDrawer} screenOptions={SCREEN_OPTIONS}>
-      <Drawer.Screen name="index" />
-      <Drawer.Screen name="[id]" />
-    </Drawer>
+    <Stack>
+      <Stack.Screen name="index" options={INDEX_OPTIONS} />
+      <Stack.Screen name="[id]" />
+    </Stack>
   );
 };
 

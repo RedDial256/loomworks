@@ -58,7 +58,7 @@ The packages and their roles are in the [README](../../README.md). `@red_dial/lo
 
 - Prompts with `@clack/prompts`: project name, components, hooks, install now, git init, use `@red_dial/rn-tooling-config` for ESLint and Prettier. The package manager is detected from `npm_config_user_agent`, and `loom init` always runs.
 - `--yes` gives a full automatic setup with the defaults, tooling included; every prompt has a flag (`--help`).
-- Template: Expo Router and Unistyles, two tabs (home and sandbox), a side drawer inside the sandbox listing the component demos. In the monorepo it imports `packages/ui` through the workspace and Metro `watchFolders` for hot reload; the published template uses copied files.
+- Template: Expo Router and Unistyles, two tabs (home and sandbox), the sandbox a native stack whose first screen is a searchable grid of demo cards with live thumbnails ([ADR 0005](0005-sandbox-cards.md)). In the monorepo it imports `packages/ui` through the workspace and Metro `watchFolders` for hot reload; the published template uses copied files.
 
 ## Testing
 

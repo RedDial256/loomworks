@@ -13,7 +13,7 @@ import { demo as textDemo } from '@/components/text/Text.demo';
 
 import type { DemoEntry } from './demos.types';
 
-/** Sandbox index, filtered by the drawer search. */
+/** Sandbox index, filtered by the sandbox search. */
 export const demos: readonly DemoEntry[] = [
   { id: 'background', ...backgroundDemo },
   { id: 'box', ...boxDemo },

@@ -59,7 +59,7 @@ beforeEach(() => {
 
 describe('offeredItems', () => {
   it('offers only what the template does not bring', () => {
-    expect(components).toEqual(['card', 'divider', 'switch']);
+    expect(components).toEqual(['divider', 'switch']);
     expect(hooks).toEqual(['boolean', 'timeout']);
   });
 
