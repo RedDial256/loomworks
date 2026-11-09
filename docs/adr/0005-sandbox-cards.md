@@ -43,7 +43,7 @@ Why:
 - The cards are the sandbox screen. The sandbox tab holds a native `Stack` (index: search field and grid; `[id]`: demo) in place of the drawer. A drawer is about 300 pt wide, too narrow for a grid, and the transitions need a native stack.
 - Thumbnails are live renders of each demo's first section. Pre-generated screenshots are not used for the sandbox; T33 keeps them for PR review.
 - `Link.AppleZoom` on iOS 18+, a plain push elsewhere. No Reanimated flag in the template.
-- Search moves to the native header search bar (`headerSearchBarOptions`), and the list sets `contentInsetAdjustmentBehavior="automatic"`: the iOS 26 header is translucent, and a search field in the screen body sat under it in the first device run. Search matches the start of a word in the title or a keyword, so "b" no longer finds "Label" or "Pressable".
+- Search moves to the native header search bar (`headerSearchBarOptions`), and the list sets `contentInsetAdjustmentBehavior="automatic"`: the iOS 26 header is translucent, and a search field in the screen body sat under it in the first device run. Search matches part of the title only; demos have no keywords, so "b" finds Background, Box, Button and Pressable and nothing else.
 - `loom add` needs no change: the grid reads `demos.ts`, which it already rewrites when `sandbox` is set, and a live thumbnail has nothing to generate.
 - The grid uses as many columns as fit a 150 pt card, with a 16 pt gap and padding.
 

@@ -16,7 +16,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Button',
-  keywords: ['action', 'press', 'cta', 'link', 'pending', 'loading'],
   sections: [
     {
       title: 'Variants',

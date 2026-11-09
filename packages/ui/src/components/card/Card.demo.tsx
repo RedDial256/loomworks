@@ -14,7 +14,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Card',
-  keywords: ['surface', 'elevation', 'shadow', 'container', 'panel'],
   sections: [
     {
       title: 'Elevation',

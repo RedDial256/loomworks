@@ -28,7 +28,6 @@ const bluetoothA11y = { label: 'Bluetooth' };
 
 export const demo = {
   title: 'Switch',
-  keywords: ['toggle', 'checkbox', 'on', 'off', 'boolean', 'setting'],
   sections: [
     {
       title: 'With a label',

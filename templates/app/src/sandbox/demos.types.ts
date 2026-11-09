@@ -10,8 +10,6 @@ export type DemoSection = {
 /** What a `*.demo.tsx` exports as `demo`. */
 export type Demo = {
   title: string;
-  /** Extra search terms besides the title. */
-  keywords: readonly string[];
   sections: readonly DemoSection[];
 };
 

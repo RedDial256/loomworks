@@ -15,7 +15,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Spinner',
-  keywords: ['loading', 'activity', 'progress', 'busy', 'indicator'],
   sections: [
     {
       title: 'Sizes',

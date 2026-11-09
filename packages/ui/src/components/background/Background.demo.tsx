@@ -36,7 +36,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Background',
-  keywords: ['gradient', 'color', 'fill', 'backgroundImage', 'surface'],
   sections: [
     {
       title: 'Colors',
