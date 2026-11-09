@@ -19,7 +19,8 @@ Evidence used: the sources of those versions in `node_modules`, the [React Navig
 Why:
 
 - `loom` copies source the user is meant to change (ADR 0003). A shipped screenshot is stale as soon as the user edits a token or a component, and `loom add` would have to copy two images per item. A live render cannot drift.
-- The live thumbnail lays the section out at 360 pt and scales it to the card width with `transformOrigin: 'left top'`, so it keeps a phone layout. The frame clips with `overflow: 'hidden'`.
+- The live thumbnail lays the section out at 360 pt, measures its height, and scales it down until it fits the frame both ways, centered, so nothing is cropped. The scale uses `translate` and `scale` only: with `transformOrigin: 'left top'` in `StyleSheet.create` the content landed off center in the light theme of the first device run (cause not confirmed).
+- The card uses the screen background with a hairline border, not the raised `Card` surface, so each thumbnail looks as it does on its demo screen.
 - `Input` and `Switch` need no special case: `pointerEvents: 'none'` on the frame blocks focus and toggles, and each thumbnail keeps its own state. The frame sets `accessibilityElementsHidden` and `importantForAccessibility="no-hide-descendants"`, so a screen reader stops only on the card link.
 - LegendList does not recycle items unless `recycleItems` is set, so a thumbnail's state never moves to another demo.
 
@@ -42,7 +43,8 @@ Why:
 - The cards are the sandbox screen. The sandbox tab holds a native `Stack` (index: search field and grid; `[id]`: demo) in place of the drawer. A drawer is about 300 pt wide, too narrow for a grid, and the transitions need a native stack.
 - Thumbnails are live renders of each demo's first section. Pre-generated screenshots are not used for the sandbox; T33 keeps them for PR review.
 - `Link.AppleZoom` on iOS 18+, a plain push elsewhere. No Reanimated flag in the template.
-- `loom add` needs no change: the grid reads `demos.ts`, which it already rewrites when `sandbox` is set, and a live thumbnail has nothing to generate. The template now imports `Card`, so weaver installs it with the template items.
+- Search moves to the native header search bar (`headerSearchBarOptions`), and the list sets `contentInsetAdjustmentBehavior="automatic"`: the iOS 26 header is translucent, and a search field in the screen body sat under it in the first device run. Search matches the start of a word in the title or a keyword, so "b" no longer finds "Label" or "Pressable".
+- `loom add` needs no change: the grid reads `demos.ts`, which it already rewrites when `sandbox` is set, and a live thumbnail has nothing to generate.
 - The grid uses as many columns as fit a 150 pt card, with a 16 pt gap and padding.
 
 ## What does not work

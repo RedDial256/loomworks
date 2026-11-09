@@ -1,5 +1,5 @@
-import type { FC } from 'react';
-import { View } from 'react-native';
+import { type FC, useCallback, useState } from 'react';
+import { type LayoutChangeEvent, View } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native-unistyles';
@@ -7,24 +7,31 @@ import { StyleSheet } from 'react-native-unistyles';
 import { sharedTagFor } from '../sandbox.transition';
 
 import type { DemoThumbnailProps } from './DemoThumbnail.types';
-
-/** Width the demo is laid out at before scaling: a small phone. */
-export const THUMBNAIL_LAYOUT_WIDTH = 360;
-
-/** Visible thumbnail height, in pt. */
-export const THUMBNAIL_HEIGHT = 112;
+import {
+  fitThumbnail,
+  THUMBNAIL_HEIGHT,
+  THUMBNAIL_LAYOUT_WIDTH,
+} from './DemoThumbnail.utils';
 
 /**
- * Live render of the demo's first section, scaled down to `width`. It is
- * decoration: no touches and hidden from screen readers (the card is the link).
+ * Live render of the demo's first section, laid out at a phone width and
+ * scaled down until it fits the frame, centered. It is decoration: no touches
+ * and hidden from screen readers (the card is the link).
  */
 export const DemoThumbnail: FC<DemoThumbnailProps> = ({ demo, width }) => {
-  const scale = width / THUMBNAIL_LAYOUT_WIDTH;
+  const [contentHeight, setContentHeight] = useState(0);
+
+  const measure = useCallback(
+    (event: LayoutChangeEvent) =>
+      setContentHeight(event.nativeEvent.layout.height),
+    []
+  );
+
   const frame = { width, height: THUMBNAIL_HEIGHT };
+  // Hidden until measured, so the first frame does not flash unscaled.
   const canvas = {
-    width: THUMBNAIL_LAYOUT_WIDTH,
-    height: THUMBNAIL_HEIGHT / scale,
-    transform: [{ scale }],
+    opacity: contentHeight > 0 ? 1 : 0,
+    transform: fitThumbnail(width, contentHeight),
   };
   return (
     <Animated.View
@@ -32,22 +39,20 @@ export const DemoThumbnail: FC<DemoThumbnailProps> = ({ demo, width }) => {
       importantForAccessibility="no-hide-descendants"
       sharedTransitionTag={sharedTagFor(demo.id)}
       style={[styles.frame, frame]}>
-      <View style={[styles.canvas, canvas]}>{demo.sections[0]?.content}</View>
+      <View onLayout={measure} style={[styles.canvas, canvas]}>
+        {demo.sections[0]?.content}
+      </View>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create((theme) => ({
-  frame: {
-    overflow: 'hidden',
-    pointerEvents: 'none',
-    backgroundColor: theme.colors.background,
-    borderTopLeftRadius: theme.radii.lg,
-    borderTopRightRadius: theme.radii.lg,
-  },
+  frame: { overflow: 'hidden', pointerEvents: 'none' },
   canvas: {
-    justifyContent: 'center',
-    padding: theme.spacing.xl,
-    transformOrigin: 'left top',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: THUMBNAIL_LAYOUT_WIDTH,
+    padding: theme.spacing.md,
   },
 }));

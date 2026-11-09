@@ -27,7 +27,6 @@ export const TEMPLATE_ITEMS = [
   'box',
   'button',
   'capitalize',
-  'card',
   'debounce',
   'input',
   'pressable',

@@ -27,7 +27,10 @@ const DemoScreen: FC = () => {
   // The first section is what the card thumbnail shows.
   const [first, ...rest] = demo.sections;
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      style={styles.screen}
+      contentContainerStyle={styles.content}>
       <Stack.Screen options={options} />
       {first ? (
         <Animated.View sharedTransitionTag={sharedTagFor(demo.id)}>

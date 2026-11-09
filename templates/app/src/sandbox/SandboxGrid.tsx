@@ -1,5 +1,6 @@
 import { type FC, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
+import { Stack } from 'expo-router';
 
 import {
   LegendList,
@@ -7,8 +8,6 @@ import {
 } from '@legendapp/list/react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { Box } from '@/components/box/Box';
-import { Input } from '@/components/input/Input';
 import { useDebounce } from '@/hooks/debounce/useDebounce';
 
 import { DemoCard } from './components/DemoCard';
@@ -26,7 +25,7 @@ const keyOf = (demo: DemoEntry) => demo.id;
 
 const COLUMN_GAP = { gap: GRID_GAP };
 
-/** Sandbox screen: a search field over a grid of demo cards. */
+/** Sandbox screen: a grid of demo cards, searched from the native header. */
 export const SandboxGrid: FC = () => {
   const [query, setQuery] = useState('');
 
@@ -39,18 +38,19 @@ export const SandboxGrid: FC = () => {
   const renderDemo = ({ item }: LegendListRenderItemProps<DemoEntry>) => (
     <DemoCard demo={item} width={cardWidth} />
   );
+  const changeQuery = (event: { nativeEvent: { text: string } }) =>
+    setQuery(event.nativeEvent.text);
 
+  const options = {
+    headerSearchBarOptions: {
+      placeholder: 'Search components',
+      onChangeText: changeQuery,
+    },
+  };
   const empty = <DemoListEmpty query={search} />;
   return (
-    <Box surface="background" style={styles.screen}>
-      <Box padding="M">
-        <Input
-          type="search"
-          label="Search components"
-          value={query}
-          onChangeText={setQuery}
-        />
-      </Box>
+    <>
+      <Stack.Screen options={options} />
       <LegendList
         key={columns}
         data={results}
@@ -58,19 +58,18 @@ export const SandboxGrid: FC = () => {
         keyExtractor={keyOf}
         renderItem={renderDemo}
         columnWrapperStyle={COLUMN_GAP}
+        style={styles.screen}
         contentContainerStyle={styles.grid}
+        contentInsetAdjustmentBehavior="automatic"
         ListEmptyComponent={empty}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
       />
-    </Box>
+    </>
   );
 };
 
 const styles = StyleSheet.create((theme) => ({
-  screen: { flex: 1 },
-  grid: {
-    paddingHorizontal: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
-  },
+  screen: { flex: 1, backgroundColor: theme.colors.background },
+  grid: { padding: theme.spacing.md },
 }));

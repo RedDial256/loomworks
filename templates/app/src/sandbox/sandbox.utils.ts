@@ -17,7 +17,19 @@ const normalize = (text: string) =>
     .toLowerCase()
     .trim();
 
-/** Entries whose title or a keyword contains `query`; all of them for an empty query. */
+// Words of a term, camelCase split: "backgroundImage" gives "background" and "image".
+const words = (term: string) =>
+  term
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(/[^\p{L}\p{N}]+/u)
+    .map(normalize)
+    .filter(Boolean);
+
+/**
+ * Entries with a title or keyword word that starts with `query`; all of them
+ * for an empty query. Matching word starts, not any substring, keeps "b" from
+ * finding "Label" or "Pressable".
+ */
 export const filterDemos = (
   entries: readonly DemoEntry[],
   query: string
@@ -25,8 +37,10 @@ export const filterDemos = (
   const needle = normalize(query);
   if (!needle) return entries;
   return entries.filter((entry) =>
-    [entry.title, ...entry.keywords].some((term) =>
-      normalize(term).includes(needle)
+    [entry.title, ...entry.keywords].some(
+      (term) =>
+        normalize(term).startsWith(needle) ||
+        words(term).some((word) => word.startsWith(needle))
     )
   );
 };
