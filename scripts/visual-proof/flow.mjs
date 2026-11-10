@@ -33,6 +33,10 @@ const lines = [
   '---',
   '- launchApp:',
   '    clearState: true',
+  // A link sent before the router is ready lands on Home (seen on Android).
+  '- extendedWaitUntil:',
+  '    visible: Sandbox',
+  '    timeout: 15000',
 ];
 for (const [name, route] of screens) {
   lines.push(
@@ -49,7 +53,15 @@ for (const [name, route] of screens) {
   );
   for (let page = 1; page <= pages; page += 1) {
     if (page > 1) {
-      lines.push('- scroll', '- waitForAnimationToEnd:', '    timeout: 2000');
+      lines.push(
+        // A slow swipe instead of `scroll`, whose fling varied the offset between runs.
+        '- swipe:',
+        '    start: 50%, 75%',
+        '    end: 50%, 25%',
+        '    duration: 1500',
+        '- waitForAnimationToEnd:',
+        '    timeout: 2000'
+      );
     }
     lines.push(`- takeScreenshot: ${theme}/${name}-${page}`);
   }
