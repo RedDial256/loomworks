@@ -14,10 +14,10 @@ import { DemoThumbnail } from './DemoThumbnail';
 
 const LINK_A11Y = { role: 'link' } as const;
 
-const pressedStyle = ({ pressed }: { pressed: boolean }) => [
-  styles.card,
-  pressed && styles.pressed,
-];
+// Only the pressed feedback goes through the Pressable: on web Unistyles does
+// not map a style function on it (ADR 0005), so the card look stays on the Box.
+const pressedStyle = ({ pressed }: { pressed: boolean }) =>
+  pressed && styles.pressed;
 
 /**
  * Grid card: a live thumbnail and the title, linking to the demo screen. It
@@ -37,7 +37,7 @@ export const DemoCard: FC<DemoCardProps> = ({ demo, width }) => {
   return (
     <Link asChild href={href}>
       <Pressable a11y={LINK_A11Y} style={pressedStyle}>
-        <Box style={size}>
+        <Box style={[styles.card, size]}>
           {source}
           <Text variant="label" style={styles.title}>
             {demo.title}

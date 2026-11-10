@@ -24,8 +24,8 @@ const styles = StyleSheet.create((theme) => ({
   // Same as Card: shadow, and in dark mode a tonal tint and a hairline.
   raised: (level: ElevationLevel) => ({
     ...theme.elevation.shadow[level],
-    width: 72,
-    height: 72,
+    width: 64,
+    height: 64,
     borderRadius: theme.radii.lg,
     borderWidth: level === 'none' ? 0 : 1,
     borderColor: theme.elevation.hairline,
@@ -37,8 +37,8 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.elevation.tint[level],
   }),
   gradient: (name: GradientName) => ({
-    width: 72,
-    height: 72,
+    width: 64,
+    height: 64,
     borderRadius: theme.radii.lg,
     backgroundImage: theme.gradients[name],
   }),

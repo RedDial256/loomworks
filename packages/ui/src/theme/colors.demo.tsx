@@ -44,7 +44,7 @@ const rolesOf = (family: ColorFamily): ColorRole[] => {
 const styles = StyleSheet.create((theme) => ({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.md },
   stack: { gap: theme.spacing.lg },
-  item: { width: 72, gap: theme.spacing['2xs'] },
+  item: { width: 100, gap: theme.spacing['2xs'] },
   swatch: (role: ColorRole) => ({
     height: 48,
     borderRadius: theme.radii.md,

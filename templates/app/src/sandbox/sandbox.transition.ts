@@ -1,5 +1,5 @@
 /**
- * Card to demo transition, a T34 spike switch (ADR 0005).
+ * Card to demo transition, a T34 spike switch (ADR 0006).
  * - `zoom`: Expo Router's Apple zoom; iOS 18+ only, a plain push elsewhere.
  * - `shared`: Reanimated shared element transition; needs
  *   `reanimated.staticFeatureFlags.ENABLE_SHARED_ELEMENT_TRANSITIONS` in

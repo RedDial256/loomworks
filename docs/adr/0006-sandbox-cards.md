@@ -1,4 +1,4 @@
-# ADR 0005: Sandbox cards with live thumbnails
+# ADR 0006: Sandbox cards with live thumbnails
 
 - Status: Proposed (2026-11-09). The code findings below are verified; the device columns are pending a run on iOS and Android.
 - Issues: #70 (T34 spike); relates to #69 (T33), #73 (T36)
