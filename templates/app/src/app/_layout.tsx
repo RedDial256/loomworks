@@ -4,13 +4,16 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, withUnistyles } from 'react-native-unistyles';
 
 import { useNavigationTheme } from '@/navigation/useNavigationTheme';
 import { restoreThemeMode } from '@/theme';
 
 // Kept up until the stored theme mode is applied, so the app does not flash the system theme.
 void SplashScreen.preventAutoHideAsync();
+
+// Third-party view: on web, Unistyles styles reach it only through `withUnistyles`.
+const Root = withUnistyles(GestureHandlerRootView);
 
 const SANDBOX_OPTIONS = { title: 'Sandbox', headerShown: false };
 const HOME_OPTIONS = { title: 'Home' };
@@ -26,7 +29,7 @@ const RootLayout: FC = () => {
 
   const statusBarStyle = navigationTheme.dark ? 'light' : 'dark';
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <Root style={styles.root}>
       <ThemeProvider value={navigationTheme}>
         <StatusBar style={statusBarStyle} />
         <Tabs screenOptions={TABS_OPTIONS}>
@@ -34,7 +37,7 @@ const RootLayout: FC = () => {
           <Tabs.Screen name="sandbox" options={SANDBOX_OPTIONS} />
         </Tabs>
       </ThemeProvider>
-    </GestureHandlerRootView>
+    </Root>
   );
 };
 

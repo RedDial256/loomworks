@@ -1,0 +1,119 @@
+name: Preview
+
+# Deploys the example app (templates/app) with EAS: web on every PR and on main,
+# native builds on main, on demand, or on a PR labelled `native-preview` (ADR 0005).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: preview-${{ github.ref }}-${{ github.event.action == 'labeled' && 'native' || 'web' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  # The Expo account and app ids of the example app. app.json stays free of them, as weaver copies it.
+  EXPO_OWNER: reddial
+  APP_ID: dev.reddial.loomworks
+
+jobs:
+  web:
+    # Fork PRs get no secrets.
+    if: >-
+      github.event.action != 'labeled' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: templates/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: eas init --account "$EXPO_OWNER" --force --non-interactive
+      - run: npx expo export --platform web
+      - name: Deploy
+        id: deploy
+        env:
+          TARGET: ${{ github.event_name == 'pull_request' && format('--alias=pr-{0}', github.event.number) || '--prod' }}
+        run: |
+          eas deploy $TARGET --json > deploy.json
+          echo "url=$(jq -r '.production.url // .aliases[0].url // .url' deploy.json)" >> "$GITHUB_OUTPUT"
+      - run: echo "Web preview - $URL" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+      - if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: web-preview
+          message: |
+            **Web preview:** ${{ steps.deploy.outputs.url }}
+
+            Native-only pieces (the date and time picker) do nothing on web. Label the PR `native-preview` for an Android APK and an iOS simulator build.
+
+  native:
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.label.name == 'native-preview' &&
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: templates/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: eas init --account "$EXPO_OWNER" --force --non-interactive
+      - name: Set the app ids
+        run: |
+          jq --arg id "$APP_ID" '.expo.android.package = $id | .expo.ios.bundleIdentifier = $id' app.json > app.tmp.json
+          mv app.tmp.json app.json
+      # Queues the builds and returns; they finish on EAS (free tier: low priority queue).
+      - name: Build
+        id: build
+        run: |
+          eas build --platform all --profile preview --non-interactive --no-wait --json > builds.json
+          {
+            echo 'links<<EOF'
+            jq -r --arg owner "$EXPO_OWNER" --arg slug "$(jq -r .expo.slug app.json)" '.[] | "- \(.platform): https://expo.dev/accounts/\($owner)/projects/\($slug)/builds/\(.id)"' builds.json
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+      - run: echo "$LINKS" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          LINKS: ${{ steps.build.outputs.links }}
+      - if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: native-preview
+          message: |
+            **Native builds** for ${{ github.event.pull_request.head.sha }} (queued on EAS):
+
+            ${{ steps.build.outputs.links }}
+
+            Android: an APK to install on a device. iOS: a simulator build (no Apple account yet). Re-add the label to build again.
