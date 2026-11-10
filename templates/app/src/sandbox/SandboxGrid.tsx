@@ -6,7 +6,8 @@ import {
   LegendList,
   type LegendListRenderItemProps,
 } from '@legendapp/list/react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { useDebounce } from '@/hooks/debounce/useDebounce';
 
@@ -44,9 +45,16 @@ export const SandboxGrid: FC = () => {
 
   const search = useDebounce(query, SEARCH_DELAY);
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  // LegendList is a third-party view: a `StyleSheet` style keeps its first
+  // theme, so the background comes from the theme on each render.
+  const { theme } = useUnistyles();
 
   const rows = useMemo(() => gridRows(filterDemos(demos, search)), [search]);
-  const { columns, cardWidth } = useMemo(() => gridLayout(width), [width]);
+  // In landscape the cards stay clear of the notch: LegendList lays out its
+  // columns from the content width and ignores the scroll view's side insets.
+  const visible = width - insets.left - insets.right;
+  const { columns, cardWidth } = useMemo(() => gridLayout(visible), [visible]);
 
   const renderRow = ({ item }: LegendListRenderItemProps<GridRow>) => {
     if (item.kind === 'header') return <GridHeader title={item.title} />;
@@ -62,6 +70,11 @@ export const SandboxGrid: FC = () => {
     },
   };
   const empty = <DemoListEmpty query={search} />;
+  const background = { backgroundColor: theme.colors.background };
+  const sides = {
+    paddingLeft: GRID_GAP + insets.left,
+    paddingRight: GRID_GAP + insets.right,
+  };
   return (
     <>
       <Stack.Screen options={options} />
@@ -74,8 +87,8 @@ export const SandboxGrid: FC = () => {
         overrideItemLayout={spanHeaders}
         renderItem={renderRow}
         columnWrapperStyle={COLUMN_GAP}
-        style={styles.screen}
-        contentContainerStyle={styles.grid}
+        style={[styles.screen, background]}
+        contentContainerStyle={[styles.grid, sides]}
         contentInsetAdjustmentBehavior="automatic"
         ListEmptyComponent={empty}
         keyboardDismissMode="on-drag"
@@ -86,6 +99,6 @@ export const SandboxGrid: FC = () => {
 };
 
 const styles = StyleSheet.create((theme) => ({
-  screen: { flex: 1, backgroundColor: theme.colors.background },
+  screen: { flex: 1 },
   grid: { padding: theme.spacing.md },
 }));

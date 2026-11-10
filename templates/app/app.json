@@ -3,7 +3,7 @@
     "name": "Loom",
     "slug": "loom-app",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "scheme": "loom",
     "userInterfaceStyle": "automatic",
     "plugins": [
