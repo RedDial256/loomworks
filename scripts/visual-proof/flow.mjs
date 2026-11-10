@@ -39,7 +39,8 @@ const lines = [
   '          clearState: true',
   // A link sent before the router is ready lands on Home (seen on Android).
   '- extendedWaitUntil:',
-  '    visible: Sandbox',
+  // Maestro matches the whole text as a regex; a plain `Sandbox` failed on iOS.
+  "    visible: '.*Sandbox.*'",
   '    timeout: 15000',
 ];
 for (const [name, route] of screens) {
