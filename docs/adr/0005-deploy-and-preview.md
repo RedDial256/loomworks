@@ -36,12 +36,14 @@ EAS Update channels per PR were weighed against a build per PR. Updates are chea
 
 - Builds: 15 Android and 15 iOS, low-priority queue (90+ minute waits at peak), 45 minute timeout. Whether the 15 reset monthly is not stated on the page; not verified.
 - Hosting: 100,000 requests per month, 1 GB storage. Preview deployments without an alias or production promotion are deleted after 30 days.
+- Hosting aliases: 5 per project. Not on the pricing page; the web deploy of #104 failed on it (T50).
 - GitHub Actions minutes: only the export and the EAS CLI calls; builds run on EAS.
 
 ## Decision
 
 - `.github/workflows/preview.yml` deploys with an `EXPO_TOKEN` repository secret and the Expo account `reddial`:
-  - Web, on every PR from this repository: `expo export` and `eas deploy --alias pr-<number>`, with the URL in a sticky PR comment. On `main`: `eas deploy --prod`.
+  - Web, on every PR from this repository: `expo export` and `eas deploy --alias pr`, with the deployment URL and id in a sticky PR comment. On `main`: `eas deploy --prod`.
+  - Web aliases (T50): only `production` (`main`, https://loom-app.expo.app) and `pr` (the latest PR deploy of any PR). An alias per PR ran out at the 5-alias limit; a PR is identified by its deployment id instead. Each push deletes the PR's previous deployment, and closing or merging the PR deletes the last one (the `cleanup` job). The 3 free aliases stay for one-off needs, and are removed after use.
   - Native, on `main`, on a manual run, or when a PR gets the `native-preview` label: `eas build --platform all --profile preview --no-wait`, with links to the builds in a sticky PR comment. Not on every PR, to stay within the 15 builds.
 - `templates/app/eas.json` holds the `preview` profile. Weaver drops it, as it does the monorepo Babel and Metro configs.
 - `app.json` carries no `owner`, `projectId` or app ids, since weaver copies it into every new app: the workflow runs `eas init --account reddial --force --non-interactive`, which creates or links the project, and sets `android.package` and `ios.bundleIdentifier` (`dev.reddial.loomworks`), all in the CI checkout only.
