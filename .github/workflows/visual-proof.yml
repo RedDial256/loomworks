@@ -87,6 +87,12 @@ jobs:
           mkdir -p shots/android
           for dir in "$HOME"/.maestro/tests/*/*/takeScreenshot; do cp -R "$dir/." shots/android/; done
       - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: maestro-debug-android
+          path: ~/.maestro/tests
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: shots-android
@@ -149,6 +155,12 @@ jobs:
         run: |
           mkdir -p shots/ios
           for dir in "$HOME"/.maestro/tests/*/*/takeScreenshot; do cp -R "$dir/." shots/ios/; done
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: maestro-debug-ios
+          path: ~/.maestro/tests
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:

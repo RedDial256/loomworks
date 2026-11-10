@@ -31,8 +31,12 @@ const screens = [
 const lines = [
   `appId: ${appId}`,
   '---',
-  '- launchApp:',
-  '    clearState: true',
+  // Android failed a launch right after the night mode switch once, without a reason.
+  '- retry:',
+  '    maxRetries: 2',
+  '    commands:',
+  '      - launchApp:',
+  '          clearState: true',
   // A link sent before the router is ready lands on Home (seen on Android).
   '- extendedWaitUntil:',
   '    visible: Sandbox',
