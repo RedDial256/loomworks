@@ -18,7 +18,7 @@ Evidence: color, typography, and motion, touch target and elevation benchmarks a
 
 ### Color
 
-- Palette: own `palette.ts`, 11-step scales (`50`…`950`), values taken from the Tailwind palette (MIT). Hues: `indigo`, `green`, `amber`, `red`, `sky`, `slate`.
+- Palette: own `palette.ts`, 11-step scales (`50`…`950`), values taken from the Tailwind palette (MIT). Hues: `indigo`, `green`, `amber`, `red`, `sky`, `zinc`. Neutrals use `zinc`, not the blue-tinted `slate`, so dark surfaces read as neutral grey.
 - Families and hues: `primary` (indigo), `success` (green), `warning` (amber), `danger` (red), `info` (sky). No `secondary` in v1.
 - Per family, five roles: `x`, `onX`, `xSubtle`, `onXSubtle`, `xBorder`. `onWarning` and `onInfo` are dark in both themes (amber and sky need dark content on the solid step); the other `onX` are light.
 - Neutrals: `background`, `surface`, `surfaceRaised`, `surfaceSunken`, `text`, `textMuted`, `textDisabled`, `border`, `borderStrong`, `focusRing`, `overlay`, `shadow`.

@@ -6,18 +6,18 @@ import { palette } from './palette';
 import { radii, spacing, touchTarget } from './spacing';
 import { typography } from './typography';
 
-const { slate, indigo, green, amber, red, sky, white, black } = palette;
+const { zinc, indigo, green, amber, red, sky, white, black } = palette;
 
 const colors: ThemeColors = {
-  background: slate[950],
-  surface: slate[900],
-  surfaceRaised: slate[800],
+  background: zinc[950],
+  surface: zinc[900],
+  surfaceRaised: zinc[800],
   surfaceSunken: black,
-  text: slate[50],
-  textMuted: slate[400],
-  textDisabled: slate[600],
-  border: slate[800],
-  borderStrong: slate[500],
+  text: zinc[50],
+  textMuted: zinc[400],
+  textDisabled: zinc[600],
+  border: zinc[800],
+  borderStrong: zinc[500],
   focusRing: indigo[400],
   overlay: 'rgba(0, 0, 0, 0.6)',
   shadow: black,
