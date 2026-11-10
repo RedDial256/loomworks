@@ -54,4 +54,4 @@ Nothing is written until every conflict is decided. `--overwrite` or `--skip-exi
 
 ## Getting a newer version of a component
 
-There is no `update` command in v1. Run `add` again with a newer loom (`npx @red_dial/loom@<version> add button`) and decide each changed file in the conflict flow; **Show diff** shows your version against loom's. Since the code is yours, an automatic update could overwrite your changes, so loom shows them to you instead ([ADR 0003](https://github.com/RedDial256/loomworks/blob/main/docs/adr/0003-product-decisions.md#cli-behavior)). A `loom diff` command and a remote registry come later.
+There is no `update` command in v1. Run `add` again with a newer loom (`npx @red_dial/loom@<version> add button`) and decide each changed file in the conflict flow; **Show diff** shows your version against loom's. Since the code is yours, an automatic update could overwrite your changes, so loom shows them to you instead. A `loom diff` command and a remote registry come later.
