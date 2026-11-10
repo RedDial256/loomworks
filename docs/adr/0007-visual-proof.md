@@ -38,7 +38,7 @@ What did not work, and the fix:
 - Maestro saves `takeScreenshot` files under `~/.maestro/tests/<run>/<flow>/takeScreenshot/`, not next to the flow or in the working directory. The workflow copies them from there.
 - Maestro's `setDarkMode` did not reach the app: iOS stayed light and Android stayed dark. The workflow sets the appearance itself (`xcrun simctl ui <udid> appearance`, `adb shell cmd uimode night`) and runs one flow per theme.
 - The API 35 Google APIs image showed "Pixel Launcher isn't responding" over the app, which also swallowed the scroll. The workflow disables the launcher and sets `hide_error_dialogs`.
-- A link sent right after `launchApp` landed on Home (Android), and the first link of a run could leave Home only after the screenshot (iOS). The flow waits for the tab bar, then for the Home text to go.
+- The first link after `launchApp` could leave the app on Home, on both platforms (on iOS even after the prompt below was answered). The flow waits for the tab bar before it, and reaches the grid, which is also the Sandbox tab, by tapping the tab label; the demo links after it worked.
 - iOS asks "Open in Loom?" for a custom scheme link, sometimes only after a delay, which shifted every later screenshot by one screen. The flow waits up to 4 s for the prompt on iOS and taps `Open`.
 - Once each, outside the app: the iOS driver missed Maestro's default start timeout (raised with `MAESTRO_DRIVER_STARTUP_TIMEOUT`), an Android launch failed after the night mode switch (the launch is retried), and the emulator image download came back corrupt ("Error on ZipFile unknown archive"; a re-run passed).
 - Each link pushes a screen, so the iOS back button shows the previous demo's title. Cosmetic; left as is.

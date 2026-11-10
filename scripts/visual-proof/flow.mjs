@@ -37,7 +37,7 @@ const lines = [
   '    commands:',
   '      - launchApp:',
   '          clearState: true',
-  // A link sent before the router is ready lands on Home (seen on Android).
+  // Wait for the tab bar before the first link.
   '- extendedWaitUntil:',
   // Maestro matches the whole text as a regex; a plain `Sandbox` failed on iOS.
   "    visible: '.*Sandbox.*'",
@@ -61,10 +61,9 @@ for (const [name, route] of screens) {
     '            visible: Open',
     '          commands:',
     '            - tapOn: Open',
-    // The first link can take a moment to leave Home.
-    '- extendedWaitUntil:',
-    "    notVisible: 'Browse the installed components.*'",
-    '    timeout: 10000',
+    // The first link after the launch can leave the app on Home (seen on
+    // both platforms); the grid is also the Sandbox tab, so tap it.
+    ...(route === 'sandbox' ? ["- tapOn: '.*Sandbox.*'"] : []),
     '- waitForAnimationToEnd:',
     '    timeout: 3000'
   );
