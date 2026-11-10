@@ -21,8 +21,9 @@ const SKIPPED = new Set([
   'android',
   'expo-env.d.ts',
 ]);
-// Monorepo-only setup: `loom init` writes the standalone Babel config, and Expo's default Metro config is enough.
-const MONOREPO_FILES = ['babel.config.js', 'metro.config.js'];
+// Monorepo-only setup: `loom init` writes the standalone Babel config, Expo's default Metro config is enough,
+// and eas.json builds the example app (ADR 0005).
+const MONOREPO_FILES = ['babel.config.js', 'metro.config.js', 'eas.json'];
 // The alias reaches packages/ui in the monorepo; the copied setup is the path `loom init` looks for in the entry.
 const MONOREPO_ENTRY_IMPORT = "import '@/theme/unistyles';";
 const ENTRY_IMPORT = "import './src/theme/unistyles';";

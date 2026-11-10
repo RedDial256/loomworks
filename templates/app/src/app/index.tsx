@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { Image } from 'expo-image';
 
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, withUnistyles } from 'react-native-unistyles';
 
 import { Box } from '@/components/box/Box';
 import { Text } from '@/components/text/Text';
@@ -11,10 +11,13 @@ import { ThemeModePicker } from '@/home/ThemeModePicker';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const loomMark = require('../../assets/loom-mark.png') as number;
 
+// Third-party view: on web, Unistyles styles reach it only through `withUnistyles`.
+const Mark = withUnistyles(Image);
+
 const HomeScreen: FC = () => {
   return (
     <Box padding="L" surface="background" style={styles.screen}>
-      <Image
+      <Mark
         accessibilityIgnoresInvertColors
         alt="Loom"
         contentFit="contain"
