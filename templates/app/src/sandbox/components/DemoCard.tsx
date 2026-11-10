@@ -12,8 +12,6 @@ import { CARD_TRANSITION } from '../sandbox.transition';
 import type { DemoCardProps } from './DemoCard.types';
 import { DemoThumbnail } from './DemoThumbnail';
 
-const LINK_A11Y = { role: 'link' } as const;
-
 // Only the pressed feedback goes through the Pressable: on web Unistyles does
 // not map a style function on it (ADR 0005), so the card look stays on the Box.
 const pressedStyle = ({ pressed }: { pressed: boolean }) =>
@@ -34,9 +32,11 @@ export const DemoCard: FC<DemoCardProps> = ({ demo, width }) => {
       thumbnail
     );
   const size = { width };
+  // VoiceOver otherwise reads the text inside the hidden thumbnail too.
+  const a11y = { role: 'link', label: demo.title } as const;
   return (
     <Link asChild href={href}>
-      <Pressable a11y={LINK_A11Y} style={pressedStyle}>
+      <Pressable a11y={a11y} style={pressedStyle}>
         <Box style={[styles.card, size]}>
           {source}
           <Text variant="label" style={styles.title}>
