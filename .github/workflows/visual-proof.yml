@@ -85,6 +85,7 @@ jobs:
         if: always()
         run: |
           mkdir -p shots/android
+          shopt -s nullglob
           for dir in "$HOME"/.maestro/tests/*/*/takeScreenshot; do cp -R "$dir/." shots/android/; done
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -144,6 +145,9 @@ jobs:
             node scripts/visual-proof/flow.mjs "$APP_ID" "$theme" > "$RUNNER_TEMP/$theme.yaml"
           done
       - name: Capture
+        env:
+          # The default (about 3 min) ran out once while the runner installed the driver.
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 600000
         run: |
           for theme in light dark; do
             xcrun simctl ui "$UDID" appearance "$theme"
@@ -154,6 +158,7 @@ jobs:
         if: always()
         run: |
           mkdir -p shots/ios
+          shopt -s nullglob
           for dir in "$HOME"/.maestro/tests/*/*/takeScreenshot; do cp -R "$dir/." shots/ios/; done
       - uses: actions/upload-artifact@v4
         if: failure()
