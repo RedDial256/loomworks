@@ -1,0 +1,170 @@
+name: Visual proof
+
+# T33 spike: screenshots of every sandbox demo, iOS and Android, light and dark, on the PR.
+on:
+  pull_request:
+    paths:
+      - packages/ui/**
+      - templates/app/**
+      - scripts/visual-proof/**
+      - .github/workflows/visual-proof.yml
+  workflow_dispatch:
+
+concurrency:
+  group: visual-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Same ids as preview.yml (ADR 0005); set in the CI checkout only.
+  APP_ID: dev.reddial.loomworks
+  CI: 1
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+      - run: pnpm install --frozen-lockfile
+      - name: Prebuild
+        working-directory: templates/app
+        run: |
+          jq --arg id "$APP_ID" '.expo.android.package = $id' app.json > app.tmp && mv app.tmp app.json
+          npx expo prebuild --platform android --no-install
+      - name: Build release APK
+        working-directory: templates/app/android
+        run: ./gradlew assembleRelease -PreactNativeArchitectures=x86_64 --no-daemon
+      - name: Install Maestro
+        run: |
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - run: node scripts/visual-proof/flow.mjs "$APP_ID" > "$RUNNER_TEMP/flow.yaml"
+      - name: Capture
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          disable-animations: true
+          script: |
+            adb install -r templates/app/android/app/build/outputs/apk/release/app-release.apk
+            adb shell settings put global sysui_demo_allowed 1
+            adb shell am broadcast -a com.android.systemui.demo -e command enter
+            adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
+            adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false
+            adb shell am broadcast -a com.android.systemui.demo -e command battery -e level 100 -e plugged false
+            mkdir -p shots/android/light shots/android/dark && cd shots/android && maestro test "$RUNNER_TEMP/flow.yaml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shots-android
+          path: shots/android
+
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+      - run: xcodebuild -version
+      - run: pnpm install --frozen-lockfile
+      - name: Prebuild
+        working-directory: templates/app
+        env:
+          LANG: en_US.UTF-8
+        run: |
+          jq --arg id "$APP_ID" '.expo.ios.bundleIdentifier = $id' app.json > app.tmp && mv app.tmp app.json
+          npx expo prebuild --platform ios
+      - name: Build for the simulator
+        working-directory: templates/app/ios
+        run: |
+          xcodebuild -workspace Loom.xcworkspace -scheme Loom -configuration Release \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO -quiet
+      - name: Install Maestro
+        run: |
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Boot the simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID"
+          xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
+          xcrun simctl install "$UDID" templates/app/ios/build/Build/Products/Release-iphonesimulator/Loom.app
+      - run: node scripts/visual-proof/flow.mjs "$APP_ID" > "$RUNNER_TEMP/flow.yaml"
+      - name: Capture
+        run: mkdir -p shots/ios/light shots/ios/dark && cd shots/ios && maestro --device "$UDID" test "$RUNNER_TEMP/flow.yaml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shots-ios
+          path: shots/ios
+
+  report:
+    # Publishes the images on the orphan `visual-proof` branch and keeps one comment on the PR.
+    needs: [android, ios]
+    if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: shots-*
+          path: shots
+      - name: Arrange
+        run: |
+          mkdir -p proof
+          for platform in ios android; do
+            [ -d "shots/shots-$platform" ] && mv "shots/shots-$platform" "proof/$platform"
+          done
+          find proof -type f | sort
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          DEST="pr-$PR/$SHA"
+          BASE="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/visual-proof/$DEST"
+          node scripts/visual-proof/report.mjs proof "$BASE" > comment.md
+          git clone --quiet --depth 1 --branch visual-proof "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git" pages \
+            || { git init --quiet -b visual-proof pages && git -C pages remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"; }
+          mkdir -p "pages/$DEST" && cp -R proof/. "pages/$DEST/"
+          cd pages
+          git config user.name github-actions && git config user.email github-actions@users.noreply.github.com
+          git add -A && git commit --quiet -m "visual proof: PR #$PR at $SHA" && git push --quiet origin visual-proof
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: visual-proof
+          path: comment.md
