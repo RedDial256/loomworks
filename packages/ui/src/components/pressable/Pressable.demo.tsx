@@ -51,7 +51,6 @@ const dotA11y = { label: 'Small target' };
 
 export const demo = {
   title: 'Pressable',
-  keywords: ['touch', 'press', 'tap', 'hitslop', 'gesture'],
   sections: [
     {
       title: 'Pressed state',

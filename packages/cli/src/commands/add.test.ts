@@ -23,7 +23,7 @@ const manifest = {
     box: {
       kind: 'component',
       files: ['components/box/Box.tsx'],
-      demo: 'components/box/Box.demo.tsx',
+      demos: ['components/box/Box.demo.tsx'],
       dependencies: ['cn'],
       packages: { 'react-native-unistyles': '^3.7.0' },
     },

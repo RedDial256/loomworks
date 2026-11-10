@@ -6,7 +6,12 @@ import { Card } from './Card';
 
 // Above the demo: its sections are built when the module loads.
 const styles = StyleSheet.create((theme) => ({
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.lg },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: theme.spacing.lg,
+  },
   card: { width: 120 },
   label: { ...theme.typography.label, color: theme.colors.text },
   body: { ...theme.typography.bodySmall, color: theme.colors.textMuted },
@@ -14,7 +19,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Card',
-  keywords: ['surface', 'elevation', 'shadow', 'container', 'panel'],
   sections: [
     {
       title: 'Elevation',

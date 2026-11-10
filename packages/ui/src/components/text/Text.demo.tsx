@@ -11,7 +11,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Text',
-  keywords: ['typography', 'font', 'heading', 'label', 'caption', 'loading'],
   sections: [
     {
       title: 'Variants',

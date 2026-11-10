@@ -31,17 +31,6 @@ const nineAm = new Date(
 
 export const demo = {
   title: 'Input',
-  keywords: [
-    'text field',
-    'textinput',
-    'form',
-    'email',
-    'password',
-    'date',
-    'time',
-    'picker',
-    'validation',
-  ],
   sections: [
     {
       title: 'Text types',

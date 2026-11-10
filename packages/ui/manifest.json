@@ -17,6 +17,12 @@
     "theme": {
       "kind": "theme",
       "description": "Light and dark themes, design tokens, the Unistyles setup and useThemeMode (system / light / dark, persisted in AsyncStorage). Installed by `loom init`.",
+      "demos": [
+        "theme/colors.demo.tsx",
+        "theme/typography.demo.tsx",
+        "theme/spacing.demo.tsx",
+        "theme/elevation.demo.tsx"
+      ],
       "files": [
         "theme/contract.ts",
         "theme/dark.ts",
@@ -67,7 +73,7 @@
         "components/background/Background.types.ts",
         "components/background/Background.utils.ts"
       ],
-      "demo": "components/background/Background.demo.tsx",
+      "demos": ["components/background/Background.demo.tsx"],
       "dependencies": ["a11y"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -77,7 +83,7 @@
       "kind": "component",
       "description": "Layout primitive: a View with theme spacing and surfaces.",
       "files": ["components/box/Box.tsx", "components/box/Box.types.ts"],
-      "demo": "components/box/Box.demo.tsx",
+      "demos": ["components/box/Box.demo.tsx"],
       "dependencies": ["a11y"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -87,7 +93,7 @@
       "kind": "component",
       "description": "Raised surface built on Box: lg radius and an elevation level, with the dark-mode tint and hairline.",
       "files": ["components/card/Card.tsx", "components/card/Card.types.ts"],
-      "demo": "components/card/Card.demo.tsx",
+      "demos": ["components/card/Card.demo.tsx"],
       "dependencies": ["box"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -100,7 +106,7 @@
         "components/divider/Divider.tsx",
         "components/divider/Divider.types.ts"
       ],
-      "demo": "components/divider/Divider.demo.tsx",
+      "demos": ["components/divider/Divider.demo.tsx"],
       "dependencies": ["a11y"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -165,7 +171,7 @@
         "components/input/Input.types.ts",
         "components/input/Input.utils.ts"
       ],
-      "demo": "components/input/Input.demo.tsx",
+      "demos": ["components/input/Input.demo.tsx"],
       "dependencies": ["date-time-input", "text-field"]
     },
     "skeleton": {
@@ -175,7 +181,7 @@
         "components/skeleton/Skeleton.tsx",
         "components/skeleton/Skeleton.types.ts"
       ],
-      "demo": "components/skeleton/Skeleton.demo.tsx",
+      "demos": ["components/skeleton/Skeleton.demo.tsx"],
       "dependencies": ["a11y", "reduced-motion"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -189,7 +195,7 @@
         "components/spinner/Spinner.tsx",
         "components/spinner/Spinner.types.ts"
       ],
-      "demo": "components/spinner/Spinner.demo.tsx",
+      "demos": ["components/spinner/Spinner.demo.tsx"],
       "dependencies": ["a11y"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -207,7 +213,7 @@
         "components/switch/components/SwitchRow.tsx",
         "components/switch/components/ThemedSwitch.tsx"
       ],
-      "demo": "components/switch/Switch.demo.tsx",
+      "demos": ["components/switch/Switch.demo.tsx"],
       "dependencies": ["a11y", "skeleton", "text"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -217,7 +223,7 @@
       "kind": "component",
       "description": "Themed text with typography presets and a loading skeleton.",
       "files": ["components/text/Text.tsx", "components/text/Text.types.ts"],
-      "demo": "components/text/Text.demo.tsx",
+      "demos": ["components/text/Text.demo.tsx"],
       "dependencies": ["a11y", "skeleton"],
       "packages": {
         "react-native-unistyles": "^3.7.0"
@@ -230,7 +236,7 @@
         "components/pressable/Pressable.tsx",
         "components/pressable/Pressable.types.ts"
       ],
-      "demo": "components/pressable/Pressable.demo.tsx",
+      "demos": ["components/pressable/Pressable.demo.tsx"],
       "dependencies": ["a11y"],
       "packages": {
         "react-native-gesture-handler": "^3.3.0"
@@ -243,7 +249,7 @@
         "components/button/Button.tsx",
         "components/button/Button.types.ts"
       ],
-      "demo": "components/button/Button.demo.tsx",
+      "demos": ["components/button/Button.demo.tsx"],
       "dependencies": [
         "a11y",
         "capitalize",

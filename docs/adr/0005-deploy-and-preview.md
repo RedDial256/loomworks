@@ -15,9 +15,9 @@ Stack: Expo SDK 58, React Native 0.88.1, Unistyles 3.7.0, eas-cli 27.5.
 Checked with `expo export --platform web` and the export served and driven in Chromium (Playwright) through the home screen and every sandbox demo, light and dark.
 
 - It bundles once `react-dom`, `react-native-web` and `@expo/metro-runtime` are added at the SDK 58 pins. No runtime errors or warnings.
-- Unistyles, Reanimated, Gesture Handler, the drawer, `Background` gradients, `Skeleton`, `Spinner`, `Switch`, `Input`, `Card`, `Text` and theme switching render as on native.
+- Unistyles, Reanimated, Gesture Handler, `Background` gradients, `Skeleton`, `Spinner`, `Switch`, `Input`, `Card`, `Text` and theme switching render as on native.
 - Unistyles styles do not reach third-party views on web unless they go through `withUnistyles`: on web Unistyles turns `StyleSheet.create` into CSS classes that only the React Native views it wraps apply. In the template, `GestureHandlerRootView` collapsed to zero height (a blank app) and the `expo-image` mark had no size; both now use `withUnistyles`.
-- Still broken on web, left to follow-up tickets: `Button` and the sandbox drawer items lose their styles (Gesture Handler `Pressable` is a third-party view, and its `style` can be a function of the pressed state, which `withUnistyles` does not map); `DateTimeInput` opens nothing, as `@react-native-community/datetimepicker` has no web implementation.
+- Still broken on web, left to follow-up tickets: `Button` loses its styles (Gesture Handler `Pressable` is a third-party view, and its `style` can be a function of the pressed state, which `withUnistyles` does not map); `DateTimeInput` opens nothing, as `@react-native-community/datetimepicker` has no web implementation.
 
 ### Snack
 

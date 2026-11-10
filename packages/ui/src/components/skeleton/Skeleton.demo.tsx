@@ -13,7 +13,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Skeleton',
-  keywords: ['loading', 'placeholder', 'shimmer', 'pulse'],
   sections: [
     {
       title: 'Text presets',

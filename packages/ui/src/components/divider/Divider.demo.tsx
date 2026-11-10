@@ -17,7 +17,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Divider',
-  keywords: ['separator', 'line', 'hairline', 'rule'],
   sections: [
     {
       title: 'Variants',
