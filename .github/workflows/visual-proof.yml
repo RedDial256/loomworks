@@ -55,7 +55,8 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - run: node scripts/visual-proof/flow.mjs "$APP_ID" > "$RUNNER_TEMP/flow.yaml"
+      # Maestro saves screenshots next to the flow file, so the flow goes in the output folder.
+      - run: mkdir -p shots/android/light shots/android/dark && node scripts/visual-proof/flow.mjs "$APP_ID" > shots/android/flow.yaml
       - name: Capture
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -71,7 +72,10 @@ jobs:
             adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
             adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false
             adb shell am broadcast -a com.android.systemui.demo -e command battery -e level 100 -e plugged false
-            mkdir -p shots/android/light shots/android/dark && cd shots/android && maestro test "$RUNNER_TEMP/flow.yaml"
+            maestro test shots/android/flow.yaml
+      - name: Where the screenshots went
+        if: always()
+        run: find "$GITHUB_WORKSPACE" "$HOME/.maestro" "$RUNNER_TEMP" -name 'box-1.png' 2>/dev/null | head
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -119,9 +123,12 @@ jobs:
           xcrun simctl bootstatus "$UDID"
           xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
           xcrun simctl install "$UDID" templates/app/ios/build/Build/Products/Release-iphonesimulator/Loom.app
-      - run: node scripts/visual-proof/flow.mjs "$APP_ID" > "$RUNNER_TEMP/flow.yaml"
+      - run: mkdir -p shots/ios/light shots/ios/dark && node scripts/visual-proof/flow.mjs "$APP_ID" > shots/ios/flow.yaml
       - name: Capture
-        run: mkdir -p shots/ios/light shots/ios/dark && cd shots/ios && maestro --device "$UDID" test "$RUNNER_TEMP/flow.yaml"
+        run: maestro --device "$UDID" test shots/ios/flow.yaml
+      - name: Where the screenshots went
+        if: always()
+        run: find "$GITHUB_WORKSPACE" "$HOME/.maestro" "$RUNNER_TEMP" -name 'box-1.png' 2>/dev/null | head
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -146,9 +153,11 @@ jobs:
         run: |
           mkdir -p proof
           for platform in ios android; do
-            [ -d "shots/shots-$platform" ] && mv "shots/shots-$platform" "proof/$platform"
+            if [ -d "shots/shots-$platform" ]; then mv "shots/shots-$platform" "proof/$platform"; fi
           done
+          find proof -name flow.yaml -delete
           find proof -type f | sort
+          [ -n "$(find proof -name '*.png')" ] || { echo "No screenshots to publish" >&2; exit 1; }
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}

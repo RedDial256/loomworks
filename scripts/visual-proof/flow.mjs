@@ -41,6 +41,7 @@ for (const theme of ['light', 'dark']) {
       // iOS asks before opening a custom scheme from outside the app.
       '- runFlow:',
       '    when:',
+      '      platform: iOS',
       '      visible: Open',
       '    commands:',
       '      - tapOn: Open',
