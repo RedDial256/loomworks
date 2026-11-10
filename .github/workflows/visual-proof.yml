@@ -55,7 +55,10 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - run: node scripts/visual-proof/flow.mjs "$APP_ID" > "$RUNNER_TEMP/flow.yaml"
+      - run: |
+          for theme in light dark; do
+            node scripts/visual-proof/flow.mjs "$APP_ID" "$theme" > "$RUNNER_TEMP/$theme.yaml"
+          done
       - name: Capture
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -71,11 +74,18 @@ jobs:
             adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
             adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false
             adb shell am broadcast -a com.android.systemui.demo -e command battery -e level 100 -e plugged false
-            maestro test "$RUNNER_TEMP/flow.yaml"
+            adb shell settings put global hide_error_dialogs 1
+            adb shell pm disable-user --user 0 com.google.android.apps.nexuslauncher
+            adb shell cmd uimode night no
+            maestro test "$RUNNER_TEMP/light.yaml"
+            adb shell cmd uimode night yes
+            maestro test "$RUNNER_TEMP/dark.yaml"
       # Maestro writes screenshots under ~/.maestro/tests/<run>/<flow>/takeScreenshot/.
       - name: Collect
         if: always()
-        run: mkdir -p shots && cp -R "$HOME"/.maestro/tests/*/flow/takeScreenshot shots/android
+        run: |
+          mkdir -p shots/android
+          for dir in "$HOME"/.maestro/tests/*/*/takeScreenshot; do cp -R "$dir/." shots/android/; done
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -123,13 +133,22 @@ jobs:
           xcrun simctl bootstatus "$UDID"
           xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
           xcrun simctl install "$UDID" templates/app/ios/build/Build/Products/Release-iphonesimulator/Loom.app
-      - run: node scripts/visual-proof/flow.mjs "$APP_ID" > "$RUNNER_TEMP/flow.yaml"
+      - run: |
+          for theme in light dark; do
+            node scripts/visual-proof/flow.mjs "$APP_ID" "$theme" > "$RUNNER_TEMP/$theme.yaml"
+          done
       - name: Capture
-        run: maestro --device "$UDID" test "$RUNNER_TEMP/flow.yaml"
+        run: |
+          for theme in light dark; do
+            xcrun simctl ui "$UDID" appearance "$theme"
+            maestro --device "$UDID" test "$RUNNER_TEMP/$theme.yaml"
+          done
       # Maestro writes screenshots under ~/.maestro/tests/<run>/<flow>/takeScreenshot/.
       - name: Collect
         if: always()
-        run: mkdir -p shots && cp -R "$HOME"/.maestro/tests/*/flow/takeScreenshot shots/ios
+        run: |
+          mkdir -p shots/ios
+          for dir in "$HOME"/.maestro/tests/*/*/takeScreenshot; do cp -R "$dir/." shots/ios/; done
       - uses: actions/upload-artifact@v4
         if: always()
         with:
