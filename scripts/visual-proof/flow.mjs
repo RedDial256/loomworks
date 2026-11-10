@@ -46,13 +46,21 @@ const lines = [
 for (const [name, route] of screens) {
   lines.push(
     `- openLink: loom://${route}`,
-    // iOS asks before opening a custom scheme from outside the app.
+    // iOS asks before opening a custom scheme from outside the app, sometimes
+    // only after a delay: wait for the prompt a little, then answer it.
     '- runFlow:',
     '    when:',
     '      platform: iOS',
-    '      visible: Open',
     '    commands:',
-    '      - tapOn: Open',
+    '      - extendedWaitUntil:',
+    '          visible: Open',
+    '          timeout: 4000',
+    '          optional: true',
+    '      - runFlow:',
+    '          when:',
+    '            visible: Open',
+    '          commands:',
+    '            - tapOn: Open',
     '- waitForAnimationToEnd:',
     '    timeout: 3000'
   );
