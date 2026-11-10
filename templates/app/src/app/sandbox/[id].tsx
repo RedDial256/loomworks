@@ -46,7 +46,13 @@ const DemoScreen: FC = () => {
 
 export default DemoScreen;
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme, rt) => ({
   screen: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.spacing.xl, gap: theme.spacing['3xl'] },
+  // A vertical scroll view does not inset its content by the side safe areas.
+  content: {
+    padding: theme.spacing.xl,
+    paddingLeft: theme.spacing.xl + rt.insets.left,
+    paddingRight: theme.spacing.xl + rt.insets.right,
+    gap: theme.spacing['3xl'],
+  },
 }));

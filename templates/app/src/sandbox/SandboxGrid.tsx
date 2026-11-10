@@ -51,7 +51,8 @@ export const SandboxGrid: FC = () => {
   const { theme } = useUnistyles();
 
   const rows = useMemo(() => gridRows(filterDemos(demos, search)), [search]);
-  // In landscape the scroll view insets its content by the side safe areas.
+  // In landscape the cards stay clear of the notch: LegendList lays out its
+  // columns from the content width and ignores the scroll view's side insets.
   const visible = width - insets.left - insets.right;
   const { columns, cardWidth } = useMemo(() => gridLayout(visible), [visible]);
 
@@ -70,6 +71,10 @@ export const SandboxGrid: FC = () => {
   };
   const empty = <DemoListEmpty query={search} />;
   const background = { backgroundColor: theme.colors.background };
+  const sides = {
+    paddingLeft: GRID_GAP + insets.left,
+    paddingRight: GRID_GAP + insets.right,
+  };
   return (
     <>
       <Stack.Screen options={options} />
@@ -83,7 +88,7 @@ export const SandboxGrid: FC = () => {
         renderItem={renderRow}
         columnWrapperStyle={COLUMN_GAP}
         style={[styles.screen, background]}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={[styles.grid, sides]}
         contentInsetAdjustmentBehavior="automatic"
         ListEmptyComponent={empty}
         keyboardDismissMode="on-drag"
