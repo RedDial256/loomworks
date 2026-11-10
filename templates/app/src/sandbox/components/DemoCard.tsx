@@ -7,8 +7,6 @@ import { Box } from '@/components/box/Box';
 import { Pressable } from '@/components/pressable/Pressable';
 import { Text } from '@/components/text/Text';
 
-import { CARD_TRANSITION } from '../sandbox.transition';
-
 import type { DemoCardProps } from './DemoCard.types';
 import { DemoThumbnail } from './DemoThumbnail';
 
@@ -23,14 +21,6 @@ const pressedStyle = ({ pressed }: { pressed: boolean }) =>
  */
 export const DemoCard: FC<DemoCardProps> = ({ demo, width }) => {
   const href = { pathname: '/sandbox/[id]', params: { id: demo.id } } as const;
-  const thumbnail = <DemoThumbnail demo={demo} width={width} />;
-  // Outside iOS 18+ `Link.AppleZoom` renders its child as is.
-  const source =
-    CARD_TRANSITION === 'zoom' ? (
-      <Link.AppleZoom>{thumbnail}</Link.AppleZoom>
-    ) : (
-      thumbnail
-    );
   const size = { width };
   // VoiceOver otherwise reads the text inside the hidden thumbnail too.
   const a11y = { role: 'link', label: demo.title } as const;
@@ -38,7 +28,10 @@ export const DemoCard: FC<DemoCardProps> = ({ demo, width }) => {
     <Link asChild href={href}>
       <Pressable a11y={a11y} style={pressedStyle}>
         <Box style={[styles.card, size]}>
-          {source}
+          {/* Outside iOS 18+ it renders its child as is (ADR 0006). */}
+          <Link.AppleZoom>
+            <DemoThumbnail demo={demo} width={width} />
+          </Link.AppleZoom>
           <Text variant="label" style={styles.title}>
             {demo.title}
           </Text>

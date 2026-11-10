@@ -1,10 +1,7 @@
 import { type FC, useCallback, useState } from 'react';
 import { type LayoutChangeEvent, View } from 'react-native';
 
-import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native-unistyles';
-
-import { sharedTagFor } from '../sandbox.transition';
 
 import type { DemoThumbnailProps } from './DemoThumbnail.types';
 import {
@@ -34,15 +31,14 @@ export const DemoThumbnail: FC<DemoThumbnailProps> = ({ demo, width }) => {
     transform: fitThumbnail(width, contentHeight),
   };
   return (
-    <Animated.View
+    <View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      sharedTransitionTag={sharedTagFor(demo.id)}
       style={[styles.frame, frame]}>
       <View onLayout={measure} style={[styles.canvas, canvas]}>
         {demo.sections[0]?.content}
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
