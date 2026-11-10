@@ -13,6 +13,7 @@ export type A11yAction = {
   name: AccessibilityActionName | (string & {});
   /** Announced by the screen reader; needed for custom actions. */
   label?: string;
+  /** Runs when the screen reader triggers the action. */
   action: () => void;
 };
 
@@ -20,14 +21,23 @@ export type A11yAction = {
 export type A11y = {
   /** Sets `nativeID` and `testID`. */
   id?: string;
+  /** Accessible name, read by screen readers. */
   label?: string;
+  /** What happens on activation, read after the label. */
   hint?: string;
+  /** What the element is (`button`, `header`, …). */
   role?: AccessibilityRole;
+  /** Range or text value, for sliders and progress. */
   value?: AccessibilityValue;
+  /** Announced as dimmed or unavailable. */
   disabled?: boolean;
+  /** Announced as selected, for tabs and options. */
   selected?: boolean;
+  /** Checked state; `mixed` for a partly checked group. */
   checked?: boolean | 'mixed';
+  /** Announced as loading or updating. */
   busy?: boolean;
+  /** Whether the element's content is shown, for disclosures and menus. */
   expanded?: boolean;
   /** Groups the element and its children into one focus stop; `true` unless a component says otherwise. */
   accessible?: boolean;

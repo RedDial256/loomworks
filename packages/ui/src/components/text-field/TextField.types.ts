@@ -20,6 +20,7 @@ export type TextFieldProps = FieldBaseProps<string> &
   Omit<TextInputProps, 'ref'> & {
     /** Sets keyboard, autocomplete, content type, secure entry and capitalization together; `text` when unset. */
     type?: TextFieldType;
+    /** Imperative handle: get, set, reset, focus, blur, clear and validate. */
     ref?: Ref<TextFieldRef>;
   };
 
