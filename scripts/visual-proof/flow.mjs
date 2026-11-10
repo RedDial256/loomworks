@@ -61,6 +61,10 @@ for (const [name, route] of screens) {
     '            visible: Open',
     '          commands:',
     '            - tapOn: Open',
+    // The first link can take a moment to leave Home.
+    '- extendedWaitUntil:',
+    "    notVisible: 'Browse the installed components.*'",
+    '    timeout: 10000',
     '- waitForAnimationToEnd:',
     '    timeout: 3000'
   );
