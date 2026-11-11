@@ -28,6 +28,21 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
+  pack:
+    # pnpm pack loom and weaver -> tarball contents and metadata -> packed bins start (T39).
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @red_dial/loom --filter @red_dial/create-weaver build
+      - run: pnpm pack:check
+
   integration:
     # Fresh Expo project -> loom init -> loom add box text -> tsc + lint (T08).
     runs-on: ubuntu-latest

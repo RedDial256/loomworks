@@ -17,7 +17,9 @@
     "format:check": "prettier --check .",
     "changeset": "changeset",
     "security": "node scripts/security.mjs",
-    "security:baseline": "node scripts/security.mjs --update"
+    "security:baseline": "node scripts/security.mjs --update",
+    "pack:check": "node scripts/pack-check.mjs",
+    "release": "pnpm --filter @red_dial/loom --filter @red_dial/create-weaver build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.1",

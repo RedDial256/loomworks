@@ -3,6 +3,21 @@
   "version": "0.0.0",
   "description": "Weaver: creates an Expo Router project.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedDial256/loomworks.git",
+    "directory": "packages/create-weaver"
+  },
+  "homepage": "https://github.com/RedDial256/loomworks/tree/main/packages/create-weaver#readme",
+  "bugs": "https://github.com/RedDial256/loomworks/issues",
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-router",
+    "unistyles",
+    "create",
+    "scaffold"
+  ],
   "type": "module",
   "bin": {
     "create-weaver": "./dist/bin.mjs"
@@ -10,6 +25,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsdown --config-loader unrun",
     "test": "vitest run",
