@@ -57,4 +57,4 @@ agent-device screenshot shots/ios/light/button.png --platform ios
 node scripts/visual-proof/publish.mjs shots <pr-number> > comment.md
 ```
 
-It pushes the files to `pr-<n>/<sha>/` on the orphan `visual-proof` branch (never `main`), with the checkout's `core.sshCommand` if it has one, and prints a table for the PR comment. Post the comment as the same GitHub account that owns that key. Post it as one comment and, on later pushes, edit that comment instead of adding new ones. Delete `shots/` and `comment.md` afterwards; they are not committed.
+It pushes the files to `pr-<n>/<sha>/` on the orphan `visual-proof` branch (never `main`), through a clone inside `.git`, so per-folder git config (`includeIf`) picks the account, and prints a table for the PR comment. `gh` ignores git config: post as the repository owner's account, e.g. `GH_TOKEN=$(gh auth token --user <owner>) gh pr comment <pr-number> --body-file comment.md`. Post it as one comment and, on later pushes, edit that comment instead of adding new ones. Delete `shots/` and `comment.md` afterwards; they are not committed.
