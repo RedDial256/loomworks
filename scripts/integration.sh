@@ -38,14 +38,14 @@ echo "::group::tsc --noEmit"
 npx tsc --noEmit -p tsconfig.check.json
 echo "::endgroup::"
 
+# Set up ESLint in its own process: in CI on Node 24, the `expo lint` run that installs ESLint cannot load it ("requires ESLint version 8.57.0").
+echo "::group::expo customize eslint.config.js"
+npx expo customize eslint.config.js
+echo "::endgroup::"
+
 # Only the files loom wrote: the template itself fails `expo lint` (react-hooks/set-state-in-effect on SDK 57).
 echo "::group::expo lint"
-npx expo lint src/theme src/components/background src/components/box src/components/text src/components/skeleton src/components/divider src/components/card src/components/field src/components/text-field src/components/date-time-input src/components/input src/components/switch src/components/spinner src/utils/a11y src/utils/capitalize src/hooks/reduced-motion src/hooks/debounce src/hooks/boolean src/components/pressable src/hooks/timeout src/components/button index.ts babel.config.js || { node -e '
-const ru=require(require.resolve("@expo/require-utils",{paths:[require.resolve("expo/package.json")]}));
-const r=ru.resolveFrom(process.cwd(),"eslint",{skipNodePath:false});console.log("DEBUG resolved",r);
-try{const m=ru.loadModuleSync(r);console.log("DEBUG keys",Object.keys(m));}catch(e){console.log("DEBUG load error",e);}
-console.log("DEBUG exts",Object.keys(require("module")._extensions));
-'; ls node_modules/eslint; exit 1; }
+npx expo lint src/theme src/components/background src/components/box src/components/text src/components/skeleton src/components/divider src/components/card src/components/field src/components/text-field src/components/date-time-input src/components/input src/components/switch src/components/spinner src/utils/a11y src/utils/capitalize src/hooks/reduced-motion src/hooks/debounce src/hooks/boolean src/components/pressable src/hooks/timeout src/components/button index.ts babel.config.js
 echo "::endgroup::"
 
 echo "Integration test passed (SDK $SDK) in $APP"
