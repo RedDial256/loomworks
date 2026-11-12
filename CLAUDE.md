@@ -19,6 +19,7 @@ Open-ended React Native UI kit (Unistyles 3) copied into projects by `@red_dial/
 - TypeScript uses `type`, never `interface` (lint-enforced; see [code style](docs/code-style.md#type-not-interface)).
 - Never read `.env` files.
 - `pnpm-lock.yaml`: commit it only when a `package.json` dependency changed. On a conflict, take `main`'s version and run `pnpm install`.
+- A PR that changes `packages/ui` or `templates/app` carries visual proof of the affected screens: [`visual-proof` skill](.claude/skills/visual-proof/SKILL.md).
 - Each ticket adds its own changeset. Changesets name `@red_dial/loom`, never the private `@red_dial/loom-ui`: Changesets writes the entry only in the named package's changelog, and the `fixed` group still bumps all three.
 - Feature branches do not edit `docs/roadmap.md`; update it on `main` after merging.
 - Decisions one at a time, with a recommendation. Look up facts that can be looked up instead of asking.
