@@ -1,6 +1,6 @@
 # ADR 0007: Visual proof in PRs
 
-- Status: Proposed. Both runs are on PR #104: the CI run below, and a sample of the agent workflow (Button and Switch, both platforms and themes, plus switch recordings) done with agent-device on a Mac in 17 min, mostly cold native builds.
+- Status: Proposed. The runs are on PR #104: the CI run below, and two samples of the agent workflow with agent-device on a Mac (Button and Switch with switch recordings in 17 min, mostly cold native builds; then five screens, both platforms and themes).
 - Date: 2026-11-12
 - Issue: #69 (T33 spike)
 

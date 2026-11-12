@@ -3,7 +3,14 @@
 // Usage: node scripts/visual-proof/publish.mjs <dir> <pr-number> > comment.md
 // <dir> holds <platform>/<theme>/<screen>.<png|mp4|gif>, e.g. ios/dark/button-pending.png.
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  rmSync,
+  statSync,
+} from 'node:fs';
 import { join, parse, resolve } from 'node:path';
 
 const [dirArg, pr] = process.argv.slice(2);
@@ -19,8 +26,9 @@ const BRANCH = 'visual-proof';
 const git = (args, cwd) =>
   execFileSync('git', args, { cwd, encoding: 'utf8', stdio: 'pipe' }).trim();
 
-// screen -> column -> relative path
+// screen -> column -> relative path; rows in capture order (earliest file first)
 const table = new Map();
+const taken = new Map();
 for (const platform of PLATFORMS) {
   for (const theme of THEMES) {
     const folder = join(dir, platform, theme);
@@ -31,6 +39,8 @@ for (const platform of PLATFORMS) {
       const row = table.get(name) ?? {};
       row[`${platform}-${theme}`] = `${platform}/${theme}/${file}`;
       table.set(name, row);
+      const time = statSync(join(folder, file)).mtimeMs;
+      taken.set(name, Math.min(taken.get(name) ?? time, time));
     }
   }
 }
@@ -83,9 +93,11 @@ const out = [
   '',
   `| screen | ${columns.join(' | ')} |`,
   `| --- | ${columns.map(() => '---').join(' | ')} |`,
-  ...[...table].map(
-    ([name, row]) =>
-      `| \`${name}\` | ${columns.map((column) => cell(row[column])).join(' | ')} |`
-  ),
+  ...[...table]
+    .sort(([a], [b]) => taken.get(a) - taken.get(b))
+    .map(
+      ([name, row]) =>
+        `| \`${name}\` | ${columns.map((column) => cell(row[column])).join(' | ')} |`
+    ),
 ];
 console.log(out.join('\n'));
