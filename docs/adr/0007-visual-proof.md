@@ -1,6 +1,6 @@
 # ADR 0007: Visual proof in PRs
 
-- Status: Proposed. The agent workflow is pending its first real run; the CI run below was done on PR #104.
+- Status: Proposed. Both runs are on PR #104: the CI run below, and a sample of the agent workflow (Button and Switch, both platforms and themes, plus switch recordings) done with agent-device on a Mac in 17 min, mostly cold native builds.
 - Date: 2026-11-12
 - Issue: #69 (T33 spike)
 
