@@ -39,7 +39,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
+          check-latest: true
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - uses: expo/expo-github-action@v8
@@ -82,7 +83,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
+          check-latest: true
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - uses: expo/expo-github-action@v8

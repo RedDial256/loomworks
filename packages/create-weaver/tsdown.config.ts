@@ -5,7 +5,7 @@ import { embedTemplate } from './src/template/embed';
 export default defineConfig({
   entry: ['src/bin.ts'],
   format: 'esm',
-  target: 'node20',
+  target: 'node22',
   clean: true,
   // Bundle the standalone template and the tooling versions next to the build (read by `create`).
   async onSuccess() {

@@ -5,7 +5,7 @@ import { embedRegistry } from './src/registry/embed';
 export default defineConfig({
   entry: ['src/index.ts', 'src/bin.ts'],
   format: 'esm',
-  target: 'node20',
+  target: 'node22',
   dts: true,
   clean: true,
   // Bundle the UI sources and manifest next to the build (read through `createEmbeddedSource`).
