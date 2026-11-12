@@ -17,7 +17,8 @@ Checked with `expo export --platform web` and the export served and driven in Ch
 - It bundles once `react-dom`, `react-native-web` and `@expo/metro-runtime` are added at the SDK 58 pins. No runtime errors or warnings.
 - Unistyles, Reanimated, Gesture Handler, `Background` gradients, `Skeleton`, `Spinner`, `Switch`, `Input`, `Card`, `Text` and theme switching render as on native.
 - Unistyles styles do not reach third-party views on web unless they go through `withUnistyles`: on web Unistyles turns `StyleSheet.create` into CSS classes that only the React Native views it wraps apply. In the template, `GestureHandlerRootView` collapsed to zero height (a blank app) and the `expo-image` mark had no size; both now use `withUnistyles`.
-- Still broken on web, left to follow-up tickets: `Button` loses its styles (Gesture Handler `Pressable` is a third-party view, and its `style` can be a function of the pressed state, which `withUnistyles` does not map); `DateTimeInput` opens nothing, as `@react-native-community/datetimepicker` has no web implementation.
+- `Button` lost its styles on web, as Gesture Handler `Pressable` is a third-party view whose `style` can be a function of the pressed state, which `withUnistyles` does not map. T54 fixed it: the kit `Pressable` resolves the function and renders through `withUnistyles`, which also makes it follow a theme change on native.
+- Still broken on web, left to a follow-up ticket: `DateTimeInput` opens nothing, as `@react-native-community/datetimepicker` has no web implementation.
 
 ### Snack
 

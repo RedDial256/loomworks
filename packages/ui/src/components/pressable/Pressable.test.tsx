@@ -66,6 +66,9 @@ describe('Pressable', () => {
     await fireEvent(screen.getByTestId('p'), 'pressIn', touch);
     expect(screen.getByText('down')).toBeOnTheScreen();
     expect(screen.getByTestId('p')).toHaveStyle({ opacity: 0.5 });
+    await fireEvent(screen.getByTestId('p'), 'pressOut', touch);
+    expect(screen.getByText('up')).toBeOnTheScreen();
+    expect(screen.getByTestId('p')).toHaveStyle({ opacity: 1 });
   });
 
   it('merges the user a11y over the defaults', async () => {

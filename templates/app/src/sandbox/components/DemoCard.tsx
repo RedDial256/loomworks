@@ -14,8 +14,6 @@ import { DemoThumbnail } from './DemoThumbnail';
 
 const LINK_A11Y = { role: 'link' } as const;
 
-// Only the pressed feedback goes through the Pressable: on web Unistyles does
-// not map a style function on it (ADR 0005), so the card look stays on the Box.
 const pressedStyle = ({ pressed }: { pressed: boolean }) =>
   pressed && styles.pressed;
 
