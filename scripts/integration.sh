@@ -38,6 +38,11 @@ echo "::group::tsc --noEmit"
 npx tsc --noEmit -p tsconfig.check.json
 echo "::endgroup::"
 
+# Set up ESLint in its own process: in CI on Node 24, the `expo lint` run that installs ESLint cannot load it ("requires ESLint version 8.57.0").
+echo "::group::expo customize eslint.config.js"
+npx expo customize eslint.config.js
+echo "::endgroup::"
+
 # Only the files loom wrote: the template itself fails `expo lint` (react-hooks/set-state-in-effect on SDK 57).
 echo "::group::expo lint"
 npx expo lint src/theme src/components/background src/components/box src/components/text src/components/skeleton src/components/divider src/components/card src/components/field src/components/text-field src/components/date-time-input src/components/input src/components/switch src/components/spinner src/utils/a11y src/utils/capitalize src/hooks/reduced-motion src/hooks/debounce src/hooks/boolean src/components/pressable src/hooks/timeout src/components/button index.ts babel.config.js

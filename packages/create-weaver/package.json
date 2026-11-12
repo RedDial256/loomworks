@@ -10,6 +10,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || >=26"
+  },
   "scripts": {
     "build": "tsdown --config-loader unrun",
     "test": "vitest run",
