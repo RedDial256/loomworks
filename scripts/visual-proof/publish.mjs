@@ -48,17 +48,37 @@ if (table.size === 0) {
 
 const sha = git(['rev-parse', 'HEAD']);
 const remote = git(['remote', 'get-url', 'origin']);
+// The checkout may push with its own SSH key (core.sshCommand); the clone below uses it too.
+const sshCommand = (() => {
+  try {
+    return git(['config', '--get', 'core.sshCommand']);
+  } catch {
+    return '';
+  }
+})();
+const ssh = sshCommand ? ['-c', `core.sshCommand=${sshCommand}`] : [];
 const repo = remote.match(/github\.com[:/](.+?)(\.git)?$/)?.[1];
 const dest = `pr-${pr}/${sha}`;
 
 // A fresh clone of the orphan branch only, so the working tree stays untouched.
 const pages = mkdtempSync(join(tmpdir(), 'visual-proof-'));
 try {
-  git(['clone', '--quiet', '--depth', '1', '--branch', BRANCH, remote, pages]);
+  git([
+    ...ssh,
+    'clone',
+    '--quiet',
+    '--depth',
+    '1',
+    '--branch',
+    BRANCH,
+    remote,
+    pages,
+  ]);
 } catch {
   git(['init', '--quiet', '-b', BRANCH, pages]);
   git(['remote', 'add', 'origin', remote], pages);
 }
+if (sshCommand) git(['config', 'core.sshCommand', sshCommand], pages);
 mkdirSync(join(pages, dest), { recursive: true });
 cpSync(dir, join(pages, dest), { recursive: true });
 git(['add', '-A'], pages);
