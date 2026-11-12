@@ -1,4 +1,4 @@
 ---
 ---
 
-T33 spike: visual proof workflow for PRs (CI only, no package change).
+T33: visual proof in PRs, captured by the agent (no package change).

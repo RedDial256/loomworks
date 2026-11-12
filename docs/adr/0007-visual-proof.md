@@ -1,66 +1,40 @@
 # ADR 0007: Visual proof in PRs
 
-- Status: Proposed, backed by the runs on PR #104.
-- Date: 2026-11-10
+- Status: Proposed. The agent workflow is pending its first real run; the CI run below was done on PR #104.
+- Date: 2026-11-12
 - Issue: #69 (T33 spike)
 
-PRs that touch components or the template app showed only unit tests. The goal is screenshots of the sandbox (`templates/app`) on iOS and Android, light and dark, on the PR itself.
+PRs that touch components or the template app showed only unit tests. The goal is screenshots, and short recordings for interactions, of the sandbox (`templates/app`) on iOS and Android, light and dark, on the PR itself.
 
 ## Findings
 
-Stack: Expo SDK 58, React Native 0.88.1, Maestro CLI (latest at the run), GitHub-hosted `ubuntu-latest` and `macos-latest` (Xcode 26.6) runners.
+Stack: Expo SDK 58, React Native 0.88.1.
 
-The app needs no coordinates and no agent to be driven: every screen has a deep link (`loom://sandbox`, `loom://sandbox/<id>`, from `scheme` in `app.json`), and the theme mode starts at `system`, so the device appearance picks the theme.
+The app needs no coordinates to be driven: every screen has a deep link (`loom://sandbox`, `loom://sandbox/<id>`, from `scheme` in `app.json`), and the theme mode starts at `system`, so the device appearance picks the theme.
 
 ### Candidates
 
 | Tool | iOS | Android | Runs where | Driving | Fit |
 | --- | --- | --- | --- | --- | --- |
-| [Maestro](https://docs.maestro.dev) | Simulator | Emulator | macOS for iOS; Linux or macOS for Android; local and CI | YAML flows: `openLink`, `tapOn` by text, `swipe` in percent, `takeScreenshot`, `startRecording` | **Chosen** for CI: one flow for both platforms, no LLM in the loop |
-| [Argent](https://argent.swmansion.com) (Software Mansion) | Simulator, device | Emulator, device | macOS host (Xcode); CI through Argent Cloud ($299/month per runner) | An agent through MCP; tests recorded and replayed | Kept for local, agent-driven checks (used for ADR 0004). Not for per-PR CI: macOS host and the paid cloud |
-| [agent-device](https://github.com/callstackincubator/agent-device) (Callstack, MIT) | Simulator, device | Emulator, device | Node 22.12+; local, and CI by replaying `.ad` scripts | Accessibility tree refs (`@e5`), coordinates as fallback; exports Maestro YAML | Same niche as Argent for local agent work; its CI path ends in Maestro anyway. Not run |
-| [screenmap](https://github.com/aleqsio/screenmap) (MIT) | Simulator | **No** ("Android is not yet supported") | macOS only; GitHub Action | Argent flows plus deep links; optional LLM agent explores the rest | Closest to the goal (sticky comment, before/after diff), but iOS only and wants an EAS simulator build per PR. Not run |
+| [agent-device](https://incubator.callstack.com/agent-device/docs/commands) (Callstack, MIT) | Simulator, device | Emulator, device | The developer's machine (macOS for iOS); CI through `.ad` replays | CLI any agent can call: `open <url>`, `settings appearance light\|dark`, `screenshot`, `record start\|stop`, accessibility refs (`@e5`) | **Chosen**: one CLI for both platforms, theme and deep links built in, no MCP setup. [Expo documents it](https://docs.expo.dev/agents/agent-device/) |
+| [Argent](https://argent.swmansion.com) (Software Mansion) | Simulator, device | Emulator, device | macOS host; CI through Argent Cloud ($299/month per runner) | MCP server and CLI for an agent; opens deep links | Works for the same job (used for ADR 0004); proprietary binaries, and its docs do not cover appearance or screenshots to files. Fallback |
+| [screenmap](https://github.com/aleqsio/screenmap) (MIT) | Simulator | **No** ("Android is not yet supported") | GitHub Action on macOS runners | Argent flows plus deep links; optional LLM agent | iOS only, and a CI job again. Rejected |
+| [Maestro](https://docs.maestro.dev) | Simulator | Emulator | macOS for iOS, Linux for Android; local and CI | YAML flows | Run end to end in CI (below). Rejected for PRs |
 
-Only Maestro was run end to end. The others are compared from their docs (linked); the Argent row also draws on its use in ADR 0004.
+### Tried: every demo in CI with Maestro
 
-### The run (Maestro on GitHub Actions)
+A workflow on PR #104 built the app on GitHub runners and took every demo, light and dark, on both platforms, then posted the table as a PR comment. It worked, but:
 
-`.github/workflows/visual-proof.yml` on PR #104:
+- It took about 20 min on Linux and 60 min on macOS per push (free on this public repository, ten times the Linux rate on a private one), mostly native builds without a cache.
+- It captured every page of every demo, while a PR changes a few. The reviewer had to find the relevant screens in 100+ images.
+- It needed many workarounds, each found by a failed run: Maestro's `setDarkMode` did not reach the app, the Android image showed a "Pixel Launcher isn't responding" dialog over it, the first link after launch could stay on Home, iOS asked "Open in Loom?" for each link and sometimes late, and the iOS driver, an app launch and an emulator image download each failed once.
+- Scrolled pages and `Spinner` never matched between runs (first pages did), so the images could not be diffed byte for byte anyway.
 
-- Android, `ubuntu-latest`: `expo prebuild`, `assembleRelease` for `x86_64` (12 to 16 min, no cache), API 35 emulator through `reactivecircus/android-emulator-runner` with KVM, Maestro (6 to 12 min with the emulator boot). About 20 min in all.
-- iOS, `macos-latest` (iPhone 17 Pro simulator, iOS 26.4): `expo prebuild` and a Release simulator build with `xcodebuild` (about 30 min, no cache), simulator boot (3 to 5 min), Maestro (about 22 min). About 60 min in all.
-- Report, `ubuntu-latest`: publishes the PNGs under `pr-<n>/<sha>/` on the orphan branch `visual-proof` and keeps one sticky PR comment with a table per demo (iOS and Android, light and dark). Under a minute.
-
-The repository is public, so standard runners, macOS included, cost no minutes ([GitHub Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). On a private repository macOS minutes bill at ten times the Linux rate.
-
-What did not work, and the fix:
-
-- Maestro saves `takeScreenshot` files under `~/.maestro/tests/<run>/<flow>/takeScreenshot/`, not next to the flow or in the working directory. The workflow copies them from there.
-- Maestro's `setDarkMode` did not reach the app: iOS stayed light and Android stayed dark. The workflow sets the appearance itself (`xcrun simctl ui <udid> appearance`, `adb shell cmd uimode night`) and runs one flow per theme.
-- The API 35 Google APIs image showed "Pixel Launcher isn't responding" over the app, which also swallowed the scroll. The workflow disables the launcher and sets `hide_error_dialogs`.
-- The first link after `launchApp` could leave the app on Home, on both platforms (on iOS even after the prompt below was answered). The flow waits for the tab bar before it, and reaches the grid, which is also the Sandbox tab, by tapping the tab label; the demo links after it worked.
-- iOS asks "Open in Loom?" for a custom scheme link, sometimes only after a delay, which shifted every later screenshot by one screen. The flow waits up to 4 s for the prompt on iOS and taps `Open`.
-- Once each, outside the app: the iOS driver missed Maestro's default start timeout (raised with `MAESTRO_DRIVER_STARTUP_TIMEOUT`), an Android launch failed after the night mode switch (the launch is retried), and the emulator image download came back corrupt ("Error on ZipFile unknown archive"; a re-run passed).
-- Each link pushes a screen, so the iOS back button shows the previous demo's title. Cosmetic; left as is.
-
-### Stable output
-
-Runs of the same app code, compared pixel by pixel, with a slow `swipe` (75% to 25% of the height in 1.5 s) between pages:
-
-- iOS dark: 24 of 33 screenshots matched. The others: the three `Spinner` pages (it always spins, by design) and scrolled pages of `Button`, `Input`, theme colors and the grid.
-- Android light and dark: every first page matched apart from the status bar clock and the fading scroll indicator at the right edge; scrolled pages of `Input`, theme colors and the grid moved by a few dozen pixels. Animations are off in the emulator, so `Spinner` and `Skeleton` matched.
-- Maestro's `scroll`, used before the swipe, flung further and varied more.
-
-Scrolled pages are the weak spot: a swipe is a gesture, not a scroll offset. A fixed offset would need a hook in the app (for example a `scrollTo` from a link parameter), which the template should not carry for CI alone.
-
-So byte equality is not the bar. A reviewer reads the table, and compares with an earlier push of the PR when needed: each push keeps its own folder on the `visual-proof` branch.
+What carries over: deep links plus the device appearance reach every screen in both themes; images for a PR live best on an orphan branch, so the comment can show them inline without touching `main`.
 
 ## Decision
 
-- Maestro, in `.github/workflows/visual-proof.yml`, on every PR that touches `packages/ui`, `templates/app` or the workflow, and on demand. Fork PRs get the workflow artifacts but no comment, as they get no write token.
-- `scripts/visual-proof/flow.mjs` writes the flow from `templates/app/src/sandbox/demos.ts`, so `loom add` needs no edit here; `report.mjs` drops repeated scroll pages and writes the comment.
-- Images live on the orphan `visual-proof` branch, never on `main`, so the comment can show them inline; the workflow artifacts keep them too.
-- Locally, an agent checks a change with Argent (or agent-device) on the developer's simulator and emulator; the same Maestro flow also runs locally (`maestro test`) when a reviewer wants the CI screenshots without CI.
-- T41 (accessibility audit) takes its screenshots from this comment.
-
-Not done, for later tickets: build caching (Gradle, CocoaPods, DerivedData, the emulator image) or reusing T38's EAS simulator build, which would cut most of the iOS hour; a run on `main` to diff against; pruning old `pr-<n>` folders; short recordings (`startRecording`) for interactions.
+- The agent that does a ticket adds the visual proof: it picks the screens the PR changes, captures them with agent-device on the iOS simulator and Android emulator in both themes (recordings for interactions), checks them, and posts one PR comment. The steps are the [`visual-proof` skill](../../.claude/skills/visual-proof/SKILL.md).
+- `scripts/visual-proof/publish.mjs` pushes the captures to `pr-<n>/<sha>/` on the orphan `visual-proof` branch and prints the comment table.
+- It runs where the simulators are: the developer's Mac. A cloud session without them asks the user to run it there.
+- No CI job. T41 (accessibility audit) uses the same skill.
