@@ -43,6 +43,7 @@ describe('embedTemplate', () => {
       '.gitignore',
       'babel.config.js',
       'metro.config.js',
+      'eas.json',
     ]) {
       expect(await exists(`template/${path}`)).toBe(false);
     }

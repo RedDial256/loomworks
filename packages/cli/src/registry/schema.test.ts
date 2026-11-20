@@ -19,7 +19,7 @@ describe('parseManifest', () => {
         text: {
           kind: 'component',
           files: ['components/text/Text.tsx'],
-          demo: 'components/text/Text.demo.tsx',
+          demos: ['components/text/Text.demo.tsx'],
           dependencies: ['box'],
           packages: { 'react-native-unistyles': '^3.7.0' },
         },
@@ -59,7 +59,7 @@ describe('parseManifest', () => {
     ],
     [
       'demo not named *.demo.*',
-      manifest({ box: { ...box, demo: 'components/box/BoxExample.tsx' } }),
+      manifest({ box: { ...box, demos: ['components/box/BoxExample.tsx'] } }),
     ],
     [
       'demo also in files',
@@ -67,7 +67,7 @@ describe('parseManifest', () => {
         box: {
           ...box,
           files: ['components/box/Box.demo.tsx'],
-          demo: 'components/box/Box.demo.tsx',
+          demos: ['components/box/Box.demo.tsx'],
         },
       }),
     ],

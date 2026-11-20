@@ -37,6 +37,7 @@ export type DateTimeInputProps = FieldBaseProps<Date | null> & {
   locale?: string;
   /** Replaces the locale formatting of the shown value, per part. */
   format?: (value: Date, part: DateTimePart) => string;
+  /** Shown in the button while there is no value. */
   placeholder?: string;
   /** Blocks opening the picker and dims the field. */
   disabled?: boolean;
@@ -44,6 +45,7 @@ export type DateTimeInputProps = FieldBaseProps<Date | null> & {
   partLabels?: Record<DateTimePart, string>;
   /** Style of each button; applied last. */
   style?: StyleProp<ViewStyle>;
+  /** Imperative handle: get, set, reset, focus, blur, clear and validate. */
   ref?: Ref<DateTimeInputRef>;
 };
 

@@ -19,6 +19,7 @@ export type BackgroundGradient =
  */
 export type BackgroundPaint =
   | {
+      /** Drawn with `backgroundColor`. */
       color: BackgroundColor;
       gradient?: never;
     }

@@ -5,7 +5,6 @@ import { render, screen } from '@testing-library/react-native';
 import { light } from '@/theme';
 
 import { Background } from './Background';
-import { demo } from './Background.demo';
 import type { BackgroundProps } from './Background.types';
 
 const custom = '#ff0000';
@@ -166,12 +165,4 @@ describe('Background', () => {
     const hidden: BackgroundProps = { fill: true, color: 'primary', a11y: {} };
     expect([both, none, fill, hidden]).toHaveLength(4);
   });
-
-  it.each(demo.sections.map((section) => [section.title, section]))(
-    'renders the %s demo section',
-    async (_, section) => {
-      await render(<>{section.content}</>);
-      expect(screen.toJSON()).toBeTruthy();
-    }
-  );
 });

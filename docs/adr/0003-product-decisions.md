@@ -15,7 +15,7 @@ The packages and their roles are in the [README](../../README.md). `@red_dial/lo
 
 ## Distribution
 
-- The CLI embeds the component source in its package, so the CLI version is the component version. The manifest (item to files, npm deps, SDK-pinned packages, item deps, optional demo, minimum versions) is source-agnostic so a remote registry can replace the embedded source later.
+- The CLI embeds the component source in its package, so the CLI version is the component version. The manifest (item to files, npm deps, SDK-pinned packages, item deps, demos, minimum versions) is source-agnostic so a remote registry can replace the embedded source later.
 - Release: lockstep versions via Changesets (`fixed` group), pre-release `alpha` until stable, GitHub Actions with the Changesets action and npm provenance.
 - Testing an old release means using the published artifacts (`npx @red_dial/loom@x.y.z`, `npm create @red_dial/weaver@x.y.z`) or checking out its tag.
 
@@ -30,7 +30,7 @@ The packages and their roles are in the [README](../../README.md). `@red_dial/lo
 - No `update` command in v1: users re-run `add` and go through the conflict flow. `loom diff` and a remote registry come later.
 - `loom.json` (T05): `paths.ui` (default `src`) is the base for components, hooks and utils and keeps the registry layout (`components/…`, `hooks/…`), so relative imports between items always resolve; `paths.theme` (default `src/theme`) receives the theme and is the `@/theme` alias target; `items` records each installed item with the loom version. The Unistyles Babel plugin `root` is the top folder of `paths.ui` (the plugin rejects the project root).
 - The theme is a manifest item of kind `theme` (files under `theme/`), installed by `init`; it carries the init packages. `init` edits only what it can do safely and idempotently (`tsconfig` paths, `index.ts` entry and `main`, a new `babel.config.js`, `app.json` plugins, `expo.install.exclude`); an existing Babel config, a dynamic `app.config.*` and the root layout's `GestureHandlerRootView` are left as printed notes.
-- `loom.json` has the target folders and an optional `sandbox` path. Demos (`*.demo.tsx`, next to each component) are copied, and the sandbox index updated, only when `sandbox` is set. Test files are never copied.
+- `loom.json` has the target folders and an optional `sandbox` path. Demos (`*.demo.tsx`, next to each component; the theme item's token demos in the theme folder, copied by `init`) are copied, and the sandbox index updated, only when `sandbox` is set. The index groups them as `theme` or `components` ([ADR 0006](0006-sandbox-cards.md)). Test files are never copied.
 
 ## Component conventions
 
@@ -58,7 +58,7 @@ The packages and their roles are in the [README](../../README.md). `@red_dial/lo
 
 - Prompts with `@clack/prompts`: project name, components, hooks, install now, git init, use `@red_dial/rn-tooling-config` for ESLint and Prettier. The package manager is detected from `npm_config_user_agent`, and `loom init` always runs.
 - `--yes` gives a full automatic setup with the defaults, tooling included; every prompt has a flag (`--help`).
-- Template: Expo Router and Unistyles, two tabs (home and sandbox), a side drawer inside the sandbox listing the component demos. In the monorepo it imports `packages/ui` through the workspace and Metro `watchFolders` for hot reload; the published template uses copied files.
+- Template: Expo Router and Unistyles, two tabs (home and sandbox), the sandbox a native stack whose first screen is a searchable grid of demo cards with live thumbnails ([ADR 0006](0006-sandbox-cards.md)). In the monorepo it imports `packages/ui` through the workspace and Metro `watchFolders` for hot reload; the published template uses copied files.
 
 ## Testing
 

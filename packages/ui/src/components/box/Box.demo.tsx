@@ -14,7 +14,6 @@ const styles = StyleSheet.create((theme) => ({
 
 export const demo = {
   title: 'Box',
-  keywords: ['layout', 'container', 'view', 'surface', 'background', 'padding'],
   sections: [
     {
       title: 'Surfaces',

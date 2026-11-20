@@ -17,7 +17,9 @@ export type FieldRef<T> = {
   set: (value: T) => void;
   /** Back to `defaultValue` (empty when unset) and clears the error. */
   reset: () => void;
+  /** Focuses the control. */
   focus: () => void;
+  /** Removes the focus from the control. */
   blur: () => void;
   /** Empties the value. */
   clear: () => void;

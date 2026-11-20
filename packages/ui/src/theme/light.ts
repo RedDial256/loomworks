@@ -6,21 +6,21 @@ import { palette } from './palette';
 import { radii, spacing, touchTarget } from './spacing';
 import { typography } from './typography';
 
-const { slate, indigo, green, amber, red, sky, white } = palette;
+const { zinc, indigo, green, amber, red, sky, white } = palette;
 
 const colors: ThemeColors = {
-  background: slate[50],
+  background: zinc[50],
   surface: white,
   surfaceRaised: white,
-  surfaceSunken: slate[100],
-  text: slate[900],
-  textMuted: slate[600],
-  textDisabled: slate[400],
-  border: slate[200],
-  borderStrong: slate[500],
+  surfaceSunken: zinc[100],
+  text: zinc[900],
+  textMuted: zinc[600],
+  textDisabled: zinc[400],
+  border: zinc[200],
+  borderStrong: zinc[500],
   focusRing: indigo[500],
-  overlay: 'rgba(2, 6, 23, 0.5)',
-  shadow: slate[950],
+  overlay: 'rgba(9, 9, 11, 0.5)',
+  shadow: zinc[950],
 
   primary: indigo[600],
   onPrimary: white,
@@ -69,7 +69,7 @@ export const light: Theme = {
   typography,
   motion,
   elevation: {
-    shadow: createElevation(slate[950]),
+    shadow: createElevation(zinc[950]),
     tint: {
       none: 'transparent',
       sm: 'transparent',

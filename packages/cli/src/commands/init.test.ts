@@ -136,7 +136,7 @@ describe('init', () => {
     expect(await read(cwd, 'babel.config.js')).toContain("root: 'app-src'");
   });
 
-  it('records a sandbox and writes its empty index', async () => {
+  it('records a sandbox, copies the theme demos and indexes them', async () => {
     await writeTree(cwd, expoProject());
     const { result } = await runInit({
       install: false,
@@ -145,8 +145,11 @@ describe('init', () => {
 
     expect((await readJsonFile(cwd, 'loom.json')).sandbox).toBe('src/sandbox');
     expect(result.configured).toContain('src/sandbox/demos.ts');
+    expect(await read(cwd, 'src/theme/colors.demo.tsx')).toContain(
+      'export const demo'
+    );
     expect(await read(cwd, 'src/sandbox/demos.ts')).toContain(
-      'export const demos: readonly DemoEntry[] = [];'
+      "{ id: 'theme-colors', group: 'theme', ...themeColorsDemo },"
     );
   });
 

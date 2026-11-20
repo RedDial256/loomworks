@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~58.0.15",
     "@legendapp/list": "3.7.1",
     "@react-native-async-storage/async-storage": "3.1.1",
     "@react-native-async-storage/expo-with-async-storage": "^1.0.0",
@@ -23,6 +24,7 @@
     "expo-status-bar": "~58.0.4",
     "expo-system-ui": "~58.0.7",
     "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.1",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-nitro-modules": "0.37.1",
@@ -31,6 +33,7 @@
     "react-native-screens": "~4.30.0",
     "react-native-svg": "15.16.0",
     "react-native-unistyles": "3.7.0",
+    "react-native-web": "~0.21.4",
     "react-native-worklets": "0.13.0"
   },
   "devDependencies": {

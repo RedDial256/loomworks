@@ -141,7 +141,7 @@ export const planItems = async (
     const item = manifest.items[name];
     if (!item) continue;
     const paths = [...item.files];
-    if (item.demo && config.sandbox) paths.push(item.demo);
+    if (config.sandbox) paths.push(...item.demos);
     for (const path of paths) {
       files.push({
         target: targetPath(config, path),
