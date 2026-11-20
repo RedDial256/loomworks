@@ -20,6 +20,7 @@ jobs:
     permissions:
       contents: write # version commit, tags, GitHub releases
       pull-requests: write # Version Packages PR
+      issues: write # the `release` label
       id-token: write # npm trusted publishing (OIDC) and provenance
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +33,7 @@ jobs:
       - run: npm install -g npm@11
       - run: pnpm install --frozen-lockfile
       - uses: changesets/action@v1
+        id: changesets
         with:
           version: pnpm changeset version
           publish: pnpm release
@@ -42,3 +44,12 @@ jobs:
           # Unset: OIDC trusted publishing. A secret only as a fallback, never in the repo.
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+      # changesets/action v1 has no label input.
+      - if: steps.changesets.outputs.pullRequestNumber
+        run: |
+          gh label create release --color 5319e7 --description "Version Packages PR from the release workflow" 2>/dev/null || true
+          gh pr edit "$PR" --add-label release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ steps.changesets.outputs.pullRequestNumber }}

@@ -24,9 +24,10 @@ const PACKAGES = [
     required: (files) => {
       const manifest = JSON.parse(read(files, 'dist/registry/manifest.json'));
       const referenced = new Set(
-        Object.values(manifest.items).flatMap((item) =>
-          item.demo ? [...item.files, item.demo] : item.files
-        )
+        Object.values(manifest.items).flatMap((item) => [
+          ...item.files,
+          ...(item.demos ?? []),
+        ])
       );
       const embedded = [...files.keys()]
         .filter((f) => f.startsWith('dist/registry/files/'))
