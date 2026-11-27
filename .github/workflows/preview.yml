@@ -2,9 +2,10 @@ name: Preview
 
 # Deploys the example app (templates/app) with EAS: web on every PR and on main,
 # native builds on main, on demand, or on a PR labelled `native-preview` (ADR 0005).
+# A PR's web deployment is deleted when the PR closes; the only aliases are `production` and `pr`.
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
+    types: [opened, synchronize, reopened, labeled, closed]
   push:
     branches: [main]
   workflow_dispatch:
@@ -26,7 +27,7 @@ jobs:
   web:
     # Fork PRs get no secrets.
     if: >-
-      github.event.action != 'labeled' &&
+      github.event.action != 'labeled' && github.event.action != 'closed' &&
       (github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
@@ -48,16 +49,33 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - run: eas init --account "$EXPO_OWNER" --force --non-interactive
       - run: npx expo export --platform web
+      # A PR gets a new deployment per push, tracked by its id in the PR comment, and the shared
+      # `pr` alias moves to it. No alias per PR: the Free plan allows 5 aliases in all.
       - name: Deploy
         id: deploy
         env:
-          TARGET: ${{ github.event_name == 'pull_request' && format('--alias=pr-{0}', github.event.number) || '--prod' }}
+          TARGET: ${{ github.event_name == 'pull_request' && '--alias=pr' || '--prod' }}
         run: |
-          eas deploy $TARGET --json > deploy.json
-          echo "url=$(jq -r '.production.url // .aliases[0].url // .url' deploy.json)" >> "$GITHUB_OUTPUT"
+          eas deploy $TARGET --non-interactive --json > deploy.json
+          {
+            echo "id=$(jq -r .identifier deploy.json)"
+            echo "url=$(jq -r '.production.url // .url' deploy.json)"
+          } >> "$GITHUB_OUTPUT"
       - run: echo "Web preview - $URL" >> "$GITHUB_STEP_SUMMARY"
         env:
           URL: ${{ steps.deploy.outputs.url }}
+      - name: Delete the PR's previous deployment
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.number }}
+          NEW: ${{ steps.deploy.outputs.id }}
+        run: |
+          OLD=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq '.[].body | capture("<!-- eas-deployment: (?<id>[a-z0-9-]+) -->").id' | head -n 1)
+          if [ -n "$OLD" ] && [ "$OLD" != "$NEW" ]; then
+            eas deploy:delete "$OLD" --non-interactive || echo "::warning::Could not delete deployment $OLD"
+          fi
       - if: github.event_name == 'pull_request'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
@@ -65,7 +83,58 @@ jobs:
           message: |
             **Web preview:** ${{ steps.deploy.outputs.url }}
 
-            Native-only pieces (the date and time picker) do nothing on web. Label the PR `native-preview` for an Android APK and an iOS simulator build.
+            Deployment `${{ steps.deploy.outputs.id }}`, replaced on every push and deleted when the PR closes. Native-only pieces (the date and time picker) do nothing on web. Label the PR `native-preview` for an Android APK and an iOS simulator build.
+
+            <!-- eas-deployment: ${{ steps.deploy.outputs.id }} -->
+
+  # Deletes the web deployment of a closed PR, by the id the web job left in the PR comment.
+  cleanup:
+    if: >-
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: templates/app
+    steps:
+      - name: Find the deployment
+        id: find
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.number }}
+        run: |
+          ID=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq '.[].body | capture("<!-- eas-deployment: (?<id>[a-z0-9-]+) -->").id' | head -n 1)
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+      # The base branch, as a closed PR's merge ref may be gone.
+      - if: steps.find.outputs.id != ''
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+      - if: steps.find.outputs.id != ''
+        uses: pnpm/action-setup@v4
+      - if: steps.find.outputs.id != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - if: steps.find.outputs.id != ''
+        run: pnpm install --frozen-lockfile
+      - if: steps.find.outputs.id != ''
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - if: steps.find.outputs.id != ''
+        run: eas init --account "$EXPO_OWNER" --force --non-interactive
+      - if: steps.find.outputs.id != ''
+        env:
+          ID: ${{ steps.find.outputs.id }}
+        run: |
+          eas deploy:delete "$ID" --non-interactive
+          echo "Deleted web deployment $ID" >> "$GITHUB_STEP_SUMMARY"
 
   native:
     if: >-

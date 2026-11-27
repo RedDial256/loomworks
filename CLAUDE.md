@@ -24,6 +24,13 @@ Open-ended React Native UI kit (Unistyles 3) copied into projects by `@red_dial/
 - Decisions one at a time, with a recommendation. Look up facts that can be looked up instead of asking.
 - Benchmarks use primary sources and mark what could not be verified.
 
+## Web previews
+
+EAS Hosting allows 5 aliases per project, so the only aliases are `production` and `pr` ([ADR 0005](docs/adr/0005-deploy-and-preview.md#decision)).
+
+- Never add an alias per PR. A PR's preview is its deployment, whose id is in the PR's web preview comment.
+- When a PR you drove is merged or closed, check that the Preview workflow's `cleanup` job deleted its deployment. If the job failed, re-run it; if that fails too, give the person the deployment id to delete in the Expo dashboard.
+
 ## Gotchas
 
 - Unistyles reserves the `default` variant key for "unset", so variant values cannot be named `default`.
